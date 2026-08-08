@@ -1,0 +1,82 @@
+import { WorkCategoryType } from '@/entities/work-category';
+import axiosClient from './api';
+import { UUID } from 'crypto';
+import { WorkItemType } from '@/entities/work-item';
+
+class WorkCategoryApi {
+  async getWorkCategories(): Promise<WorkCategoryType[]> {
+    const response = await axiosClient.get('/work-category', {
+      headers: { Accept: 'application/json' },
+    });
+
+    return response.data;
+  }
+
+  async createWorkCategory(workCategory: WorkCategoryType): Promise<void> {
+    const payload = {
+      defaultIndex: workCategory.defaultIndex,
+      description: workCategory.description,
+      isActive: workCategory.isActive,
+    };
+
+    await axiosClient.post('/work-category', payload, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
+
+  async updateWorkCategory(workCategoryId: UUID, workCategory: WorkCategoryType): Promise<void> {
+    const payload = {
+      defaultIndex: workCategory.defaultIndex,
+      description: workCategory.description,
+      isActive: workCategory.isActive,
+    };
+
+    await axiosClient.put(`/work-category?workCategoryId=${workCategoryId}`, payload, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
+
+  async deleteWorkCategory(workCategoryId: UUID): Promise<void> {
+    await axiosClient.delete(`/work-category?workCategoryId=${workCategoryId}`, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
+
+  async createWorkItem(workCategoryId: UUID, workItem: WorkItemType): Promise<void> {
+    const payload = {
+      defaultIndex: workItem.defaultIndex,
+      description: workItem.description,
+      detail: workItem.detail,
+      isActive: workItem.isActive,
+    };
+
+    await axiosClient.post(`/work-category/work-item?workCategoryId=${workCategoryId}`, payload, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
+
+  async updateWorkItem(workCategoryId: UUID, workItemId: UUID, workItem: WorkItemType): Promise<void> {
+    const payload = {
+      defaultIndex: workItem.defaultIndex,
+      description: workItem.description,
+      detail: workItem.detail,
+      isActive: workItem.isActive,
+    };
+
+    await axiosClient.put(
+      `/work-category/work-item?workCategoryId=${workCategoryId}&workItemId=${workItemId}`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      },
+    );
+  }
+
+  async deleteWorkItem(workCategoryId: UUID, workItemId: UUID): Promise<void> {
+    await axiosClient.delete(`/work-category/work-item?workCategoryId=${workCategoryId}}&workItemId=${workItemId}`, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
+}
+
+export default new WorkCategoryApi();

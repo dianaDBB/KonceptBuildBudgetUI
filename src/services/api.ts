@@ -1,0 +1,57 @@
+import axios from 'axios';
+import AuthApi from './auth-api';
+import { ApiResponseStatus } from '@/types/api-response-status';
+import { RoutePaths } from '@/router/routes';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '';
+
+const axiosClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+});
+
+axiosClient.interceptors.request.use((config) => {
+  const token = AuthApi.getAccessToken();
+
+  if (token && config.url !== '/auth/login') {
+    config.headers.set?.('Authorization', `Bearer ${token}`);
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+axiosClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error.response?.status;
+    const isAuthFailure = status === 401 || status === 403;
+    const isNetworkFailure = !error.response || error.code === 'ERR_NETWORK' || error.message === 'Network Error';
+
+    if ((isAuthFailure || isNetworkFailure) && window.location.pathname !== RoutePaths.login) {
+      AuthApi.clearAccessToken();
+      window.location.assign(RoutePaths.login);
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export function apiError(error: unknown, defaultMessage: string): ApiResponseStatus {
+  let message = defaultMessage;
+
+  if (axios.isAxiosError(error)) {
+    message = error.response?.data?.message ?? error.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  return {
+    isLoading: false,
+    isSuccess: false,
+    isError: true,
+    message,
+  };
+}
+
+export default axiosClient;
