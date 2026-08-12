@@ -57,7 +57,15 @@ class ProjectApi {
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
       isActive: project.isActive == undefined ? true : project.isActive,
-      workCategories: [],
+      workCategories: project.workCategories?.map((category) => ({
+        workCategoryId: category.workCategory?.id,
+        isIncluded: category.isIncluded,
+        workItems: category.workItems?.map((item) => ({
+          workItemId: item.workItem?.id,
+          isIncluded: item.isIncluded,
+          customDescription: item.customDescription,
+        })),
+      })),
     };
 
     await axiosClient.put(`/project?projectId=${projectId}`, payload, {

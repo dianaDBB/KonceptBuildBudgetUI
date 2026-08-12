@@ -10,22 +10,23 @@
 
 <script setup lang="ts">
 interface Props {
-  entity: Record<string, unknown>;
   value: boolean | null | undefined;
-  fieldKey: string;
   isInvalid: boolean;
   isDisabled: boolean;
 }
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  'update:value': [boolean];
+}>();
+
 function handleChange(event: Event) {
   const input = event.target as HTMLInputElement;
 
-  (props.entity as Record<string, boolean | null | undefined>)[props.fieldKey] = input.checked;
+  emit('update:value', input.checked);
 }
 </script>
-
 <style>
 input[type='checkbox'] {
   appearance: none;

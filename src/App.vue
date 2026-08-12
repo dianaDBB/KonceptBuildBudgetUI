@@ -4,7 +4,6 @@
       <div class="header-content">
         <div>
           <h1>KonceptBuild Budget</h1>
-          <p>Building the future together</p>
         </div>
       </div>
 
@@ -182,7 +181,7 @@ function settingsMiddleClick(event: MouseEvent): void {
   position: relative;
   background: var(--color-main-background);
   border-bottom: 1px solid var(--color-border-light);
-  padding: 28px 20px;
+  padding: 10px 20px;
   text-align: center;
 }
 
@@ -196,7 +195,7 @@ function settingsMiddleClick(event: MouseEvent): void {
 
   h1 {
     margin: 0 0 6px;
-    font-size: 50px;
+    font-size: 45px;
     font-weight: 700;
     color: var(--color-text);
   }
@@ -327,7 +326,7 @@ function settingsMiddleClick(event: MouseEvent): void {
 
 .main {
   flex: 1;
-  padding: 32px 20px;
+  padding: 20px 20px;
   overflow: hidden;
   min-height: 0;
 }

@@ -21,6 +21,7 @@
         <div class="forms-container">
           <div class="form-section">
             <h3>Dados da Obra</h3>
+
             <div class="form-grid">
               <div class="form-group">
                 <label for="description">{{ projectConfigs.description.label }}</label>
@@ -161,9 +162,7 @@
               <div class="form-group">
                 <label for="description">{{ projectConfigs.isActive.label }}</label>
                 <CheckBox
-                  :entity="project"
                   :value="project.isActive"
-                  field-key="isActive"
                   :is-invalid="false"
                   :is-disabled="false"
                   @update:value="project.isActive = $event"
@@ -174,13 +173,25 @@
 
           <section class="form-section">
             <h3>Desagregação por Especialidades</h3>
+
+            <div class="work-categories">
+              <div v-for="category in workCategories" :key="category.id" class="form-group">
+                <label>{{ category.description }}</label>
+                <CheckBox
+                  :value="isWorkCategorySelected(category)"
+                  :is-invalid="false"
+                  :is-disabled="false"
+                  @update:value="toggleWorkCategory(category, $event)"
+                />
+              </div>
+            </div>
           </section>
         </div>
 
         <div class="actions">
-          <button type="button" class="btn btn-danger" @click="askDelete"><Trash2 :size="18" /> Apagar Projeto</button>
-
           <button type="button" class="btn" @click="goToProjectsList"><Delete :size="18" /> Lista de Projetos</button>
+
+          <button type="button" class="btn btn-danger" @click="askDelete"><Trash2 :size="18" /> Apagar Projeto</button>
 
           <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
             <Save :size="18" /> Guardar Alterações
@@ -228,6 +239,8 @@ import NumberInput from './inputs/NumberInput.vue';
 import IntInput from './inputs/IntInput.vue';
 import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
+import { WorkCategoryType } from '@/entities/work-category.ts';
+import workCategoryApi from '@/services/work-category-api.ts';
 
 const route = useRoute();
 
@@ -237,11 +250,14 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 const project = ref<ProjectType | null>(null);
 const projectConfigs = computed(() => Project.getConfigs());
 
+const workCategories = ref<WorkCategoryType[] | null>(null);
+
 onUnmounted(() => {});
 
 /*************************************************************************************************************** LOAD */
 
 onMounted(async () => {
+  await getWorkCategories();
   await getProject(projectId);
 });
 
@@ -254,6 +270,18 @@ async function getProject(projectId: UUID) {
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível carregar o projecto.');
+  }
+}
+
+async function getWorkCategories() {
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    workCategories.value = await workCategoryApi.getWorkCategories();
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
+  } catch (error: unknown) {
+    apiStatus.value = apiError(error, 'Não foi possível carregar as especialidades.');
   }
 }
 
@@ -317,6 +345,39 @@ async function confirmDelete(): Promise<void> {
     goToProjectsList();
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Erro ao eliminar o projeto.');
+  }
+}
+
+/**************************************************************************************************** WORK CATEGORIES */
+
+function isWorkCategorySelected(category: WorkCategoryType): boolean {
+  return (
+    project.value?.workCategories?.some((item) => item.workCategory?.id === category.id && item.isIncluded === true) ??
+    false
+  );
+}
+
+function toggleWorkCategory(category: WorkCategoryType, selected: boolean): void {
+  if (!project.value) {
+    return;
+  }
+
+  if (!project.value.workCategories) {
+    project.value.workCategories = [];
+  }
+
+  if (selected) {
+    const exists = project.value.workCategories.some((item) => item.workCategory?.id === category.id);
+
+    if (!exists) {
+      project.value.workCategories.push({
+        workCategory: category,
+        isIncluded: true,
+        workItems: [],
+      });
+    }
+  } else {
+    project.value.workCategories = project.value.workCategories.filter((item) => item.workCategory?.id !== category.id);
   }
 }
 </script>

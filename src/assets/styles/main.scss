@@ -136,7 +136,7 @@ body {
 .section-header {
   display: flex;
   align-items: center;
-  padding: 18px 22px;
+  padding: 10px 22px;
   background: var(--color-background);
   border-bottom: 1px solid var(--color-border-light);
   gap: 14px;
@@ -163,7 +163,7 @@ body {
 .section {
   position: relative;
   padding: 24px;
-  gap: 18px;
+  gap: 14px;
 
   display: flex;
   flex-direction: column;
@@ -172,7 +172,7 @@ body {
 }
 
 .section-body {
-  gap: 24px;
+  gap: 14px;
 
   display: flex;
   flex-direction: column;
@@ -570,7 +570,7 @@ select {
 .forms-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 
   flex: 1;
   min-height: 0;
@@ -585,10 +585,23 @@ select {
 
   padding: 10px;
 
-  background: var(--color-background-alt);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
 
+  background: transparent;
+
   overflow-y: auto;
+}
+
+.form-section h3 {
+  margin: -10px -10px 8px;
+  padding: 6px 10px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  background: var(--color-background-alt);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .form-grid {
@@ -600,7 +613,7 @@ select {
 
 .form-group {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 180px 1fr;
   align-items: center;
   gap: 6px;
 
@@ -609,7 +622,6 @@ select {
 
 .form-group label {
   font-size: 12px;
-  font-weight: 600;
 }
 
 .form-actions {
