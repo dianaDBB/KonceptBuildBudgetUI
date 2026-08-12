@@ -14,7 +14,7 @@ export class WorkCategory {
     return {
       defaultIndex: {
         label: 'Index',
-        type: ColumnType.NUMBER,
+        type: ColumnType.INT,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: (workCategory: WorkCategoryType) => !workCategory.defaultIndex,
@@ -54,7 +54,7 @@ export class WorkCategory {
         type: ColumnType.CHECK_BOX,
         styleConfig: {
           showDisabled: () => false,
-          isInvalid: (workCategory: WorkCategoryType) => !workCategory.isActive,
+          isInvalid: () => false,
           columnStyle: {
             width: '200px',
           },

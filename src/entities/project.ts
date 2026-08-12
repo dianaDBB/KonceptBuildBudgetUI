@@ -17,15 +17,19 @@ export interface ProjectType extends EntityType {
   roomsCount?: number;
   wcCount?: number;
   isActive?: boolean;
-  workCategories?: {
-    workCategory?: WorkCategoryType;
-    isIncluded?: boolean;
-    workItems?: {
-      workItem?: WorkItemType;
-      isIncluded?: boolean;
-      customDescription?: string;
-    }[];
-  }[];
+  workCategories?: ProjectWorkCategoryType[];
+}
+
+export interface ProjectWorkCategoryType {
+  workCategory?: WorkCategoryType;
+  isIncluded?: boolean;
+  workItems?: ProjectWorkItemType[];
+}
+
+export interface ProjectWorkItemType {
+  workItem?: WorkItemType;
+  isIncluded?: boolean;
+  customDescription?: string;
 }
 
 export class Project {

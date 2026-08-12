@@ -11,6 +11,14 @@ class ProjectApi {
     return response.data;
   }
 
+  async getProject(projectId: UUID): Promise<ProjectType> {
+    const response = await axiosClient.get(`/project/by-id?projectId=${projectId}`, {
+      headers: { Accept: 'application/json' },
+    });
+
+    return response.data;
+  }
+
   async createProject(project: ProjectType): Promise<void> {
     const payload = {
       description: project.description,
