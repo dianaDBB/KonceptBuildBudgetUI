@@ -7,30 +7,57 @@
           <p>Building the future together</p>
         </div>
       </div>
-      <div v-if="showLogout" ref="profileMenu" class="profile-menu">
-        <button
-          class="profile-trigger"
-          type="button"
-          aria-haspopup="menu"
-          :aria-expanded="isProfileMenuOpen"
-          aria-label="Open account menu"
-          @click="isProfileMenuOpen = !isProfileMenuOpen"
-        >
-          <span class="profile-avatar"><User2Icon :size="16" /></span>
-        </button>
 
-        <div v-if="isProfileMenuOpen" class="profile-dropdown" role="menu">
-          <div class="profile-details">
-            <div>
-              <strong>{{ username }}</strong>
-              <span>Signed in</span>
-            </div>
-          </div>
-          <div class="profile-divider"></div>
-          <button type="button" role="menuitem" @click="logout">
-            <LogOut :size="16" />
-            Log out
+      <div v-if="showLogout" class="menu-container">
+        <div ref="settingsMenu" class="menu">
+          <button
+            class="trigger-button"
+            type="button"
+            aria-haspopup="menu"
+            :aria-expanded="isSettingsMenuOpen"
+            @click="isSettingsMenuOpen = !isSettingsMenuOpen"
+          >
+            <span class="trigger-span"><Settings :size="16" /></span>
           </button>
+
+          <div v-if="isSettingsMenuOpen" class="trigger-dropdown" role="menu">
+            <button
+              type="button"
+              class="menu-btn"
+              role="menuitem"
+              @click="goToWorkCategories"
+              @mousedown="settingsMiddleClick"
+            >
+              <Settings :size="16" />
+              Especialidades
+            </button>
+          </div>
+        </div>
+
+        <div ref="profileMenu" class="menu">
+          <button
+            class="trigger-button"
+            type="button"
+            aria-haspopup="menu"
+            :aria-expanded="isProfileMenuOpen"
+            @click="isProfileMenuOpen = !isProfileMenuOpen"
+          >
+            <span class="trigger-span"><User2Icon :size="16" /></span>
+          </button>
+
+          <div v-if="isProfileMenuOpen" class="trigger-dropdown" role="menu">
+            <div class="profile-details">
+              <div>
+                <strong>{{ username }}</strong>
+                <span>Signed in</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <button type="button" class="logout-btn" role="menuitem" @click="logout">
+              <LogOut :size="16" />
+              Log out
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -50,8 +77,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { LogOut, User2Icon } from 'lucide-vue-next';
+import { LogOut, Settings, User2Icon } from 'lucide-vue-next';
 import authApi from '@/services/auth-api';
+import { RoutePaths } from './router/routes';
 
 const route = useRoute();
 const router = useRouter();
@@ -64,9 +92,15 @@ let interval: number;
 const isProfileMenuOpen = ref(false);
 const profileMenu = ref<HTMLElement | null>(null);
 
+const isSettingsMenuOpen = ref(false);
+const settingsMenu = ref<HTMLElement | null>(null);
+
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeProfileMenuButton);
   document.removeEventListener('keydown', closeProfileMenuEscape);
+
+  document.removeEventListener('click', closeSettingsMenuButton);
+  document.removeEventListener('keydown', closeSettingsMenuEscape);
 });
 
 onMounted(async () => {
@@ -78,6 +112,9 @@ onMounted(async () => {
 
   document.addEventListener('click', closeProfileMenuButton);
   document.addEventListener('keydown', closeProfileMenuEscape);
+
+  document.addEventListener('click', closeSettingsMenuButton);
+  document.addEventListener('keydown', closeSettingsMenuEscape);
 });
 
 onUnmounted(() => {
@@ -96,6 +133,18 @@ function closeProfileMenuEscape(event: KeyboardEvent): void {
   }
 }
 
+function closeSettingsMenuButton(event: MouseEvent): void {
+  if (!settingsMenu.value?.contains(event.target as Node)) {
+    isSettingsMenuOpen.value = false;
+  }
+}
+
+function closeSettingsMenuEscape(event: KeyboardEvent): void {
+  if (event.key === 'Escape') {
+    isSettingsMenuOpen.value = false;
+  }
+}
+
 async function logout(): Promise<void> {
   isProfileMenuOpen.value = false;
 
@@ -103,6 +152,19 @@ async function logout(): Promise<void> {
     await authApi.logout();
   } finally {
     await router.replace({ name: 'login' });
+  }
+}
+
+async function goToWorkCategories(): Promise<void> {
+  router.push(RoutePaths.configs.workCategories);
+  isSettingsMenuOpen.value = false;
+}
+
+function settingsMiddleClick(event: MouseEvent): void {
+  if (event.button === 1) {
+    event.preventDefault();
+    const url = router.resolve(RoutePaths.configs.workCategories).href;
+    window.open(url, '_blank');
   }
 }
 </script>
@@ -146,14 +208,20 @@ async function logout(): Promise<void> {
   }
 }
 
-.profile-menu {
+.menu-container {
   position: absolute;
   right: 24px;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
 }
 
-.profile-trigger {
+.menu {
+  position: relative;
+}
+
+.trigger-button {
   display: inline-flex;
   align-items: center;
   padding: 3px;
@@ -164,7 +232,7 @@ async function logout(): Promise<void> {
   transition: 0.2s;
 }
 
-.profile-avatar {
+.trigger-span {
   display: inline-flex;
   width: 34px;
   height: 34px;
@@ -179,7 +247,7 @@ async function logout(): Promise<void> {
   letter-spacing: 0.03em;
 }
 
-.profile-dropdown {
+.trigger-dropdown {
   position: absolute;
   z-index: 10;
   top: calc(100% + 10px);
@@ -191,6 +259,47 @@ async function logout(): Promise<void> {
   background: var(--color-background);
   box-shadow: var(--shadow);
   text-align: left;
+}
+
+.logout-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-danger);
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: var(--color-danger-bg);
+  }
+}
+
+.menu-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: var(--color-primary-light);
+  }
+}
+
+.divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-background);
 }
 
 .profile-details {
@@ -213,30 +322,6 @@ async function logout(): Promise<void> {
     margin-top: 3px;
     color: var(--color-text-muted);
     font-size: 12px;
-  }
-}
-
-.profile-divider {
-  height: 1px;
-  margin: 4px 0;
-  background: var(--color-border-light);
-}
-
-.profile-dropdown button {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 8px;
-  border: 0;
-  border-radius: 7px;
-  background: transparent;
-  color: var(--color-danger);
-  cursor: pointer;
-  font-weight: 600;
-
-  &:hover {
-    background: var(--color-danger-bg);
   }
 }
 

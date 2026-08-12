@@ -7,7 +7,10 @@
           'main-row-expanded': hasChildren(row),
         }"
         @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
-        @click="!props.rows.isEditing.value && hasChildren(row) && props.rows.handlers.toggle?.(row)"
+        @click="
+          !props.rows.isEditing.value &&
+            (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
+        "
       >
         <template v-if="props.subrows || props.rows.isChild">
           <td style="width: 20px; padding: 0">
@@ -105,7 +108,7 @@
           </template>
         </td>
 
-        <td class="actions-column">
+        <td v-if="hasHandlers" class="actions-column">
           <div v-if="!rowHasChanges(row)" class="action-buttons">
             <slot name="row-actions" :row="row" :isSubrow="!props.subrows">
               <button
@@ -161,7 +164,7 @@
                 :style="config.styleConfig.columnStyle"
               />
               <!--actions column-->
-              <col style="width: 130px" />
+              <col v-if="hasHandlers" style="width: 130px" />
             </colgroup>
             <EntityTableBody
               :rows="{
@@ -234,10 +237,17 @@ const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.CHECK_BOX]: CheckBox,
 };
 
+const hasHandlers = computed(() => {
+  const handlers = props.rows.handlers;
+
+  return !!(handlers.delete || handlers.edit || handlers.discard || handlers.save);
+});
+
 const totalColumns = computed(() => {
   const dataColumns = Object.keys(props.rows.configs).length;
   const expandColumn = props.subrows || props.rows.isChild ? 1 : 0;
-  const actionsColumn = 1;
+  const actionsColumn = hasHandlers.value ? 1 : 0;
+
   return expandColumn + dataColumns + actionsColumn;
 });
 

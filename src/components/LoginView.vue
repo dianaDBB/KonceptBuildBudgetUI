@@ -28,15 +28,15 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import authApi from '@/services/auth-api';
+import { RoutePaths } from '@/router/routes';
 
 const username = ref('');
 const password = ref('');
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
-const route = useRoute();
 
 async function submit(): Promise<void> {
   isSubmitting.value = true;
@@ -44,8 +44,7 @@ async function submit(): Promise<void> {
 
   try {
     await authApi.login({ username: username.value, password: password.value });
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/';
-    await router.replace(redirect);
+    router.push(RoutePaths.projects.list);
   } catch (error: unknown) {
     errorMessage.value =
       axios.isAxiosError(error) && error.response?.status === 401

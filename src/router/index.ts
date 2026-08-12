@@ -9,12 +9,7 @@ const routes = [
     name: RouteNames.login,
     component: () => import('@/components/LoginView.vue'),
   },
-  {
-    path: RoutePaths.home,
-    name: RouteNames.home,
-    component: () => import('@/components/HomeView.vue'),
-    meta: { requiresAuth: true },
-  },
+
   // PROJECTS
   {
     path: RoutePaths.projects.list,
@@ -22,6 +17,13 @@ const routes = [
     component: () => import('@/components/ProjectsView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: `${RoutePaths.projects.details}/:id`,
+    name: RouteNames.projectDetails,
+    component: () => import('@/components/ProjectDetailsView.vue'),
+    meta: { requiresAuth: true },
+  },
+
   // CONFIGS
   {
     path: RoutePaths.configs.workCategories,
@@ -45,7 +47,7 @@ router.beforeEach((to) => {
   }
 
   if (to.name === RouteNames.login && isAuthenticated) {
-    return { name: RouteNames.home };
+    return { name: RouteNames.projectsList };
   }
 });
 

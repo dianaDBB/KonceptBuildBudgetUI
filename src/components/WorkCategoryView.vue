@@ -5,7 +5,7 @@
       <h3>Especialidades</h3>
 
       <div class="page-nav">
-        <RouterLink to="/" class="link"> Página Inicial </RouterLink>
+        <RouterLink :to="RoutePaths.projects.list" class="link"> Ir para Lista de Projetos </RouterLink>
       </div>
     </div>
 
@@ -147,6 +147,7 @@ import { WorkItem, WorkItemType } from '@/entities/work-item.ts';
 import { apiError } from '@/services/api.ts';
 import workCategoryApi from '@/services/work-category-api.ts';
 import EntityTableBody from './EntityTableBody.vue';
+import { RoutePaths } from '@/router/routes.ts';
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 const tableBody = ref<HTMLTableSectionElement | null>(null);

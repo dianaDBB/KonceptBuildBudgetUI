@@ -38,7 +38,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: (project: ProjectType) => !project.description,
           columnStyle: {
-            width: '250px',
+            width: '200px',
           },
         },
         displayValue: (project: ProjectType) => project.description,
@@ -74,7 +74,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '150px',
+            width: '100px',
           },
         },
         displayValue: (project: ProjectType) => project.contact,
@@ -86,7 +86,13 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '150px',
+            width: '130px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.landArea),
@@ -98,7 +104,13 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '150px',
+            width: '130px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.implantationArea),
@@ -110,7 +122,13 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '150px',
+            width: '130px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.grossConstructionArea),
@@ -124,6 +142,12 @@ export class Project {
           columnStyle: {
             width: '80px',
           },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
+          },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.floorsCount),
       },
@@ -134,7 +158,13 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '130px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.ceilingHeight),
@@ -146,7 +176,13 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '130px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.maxFacadeHeight),
@@ -160,17 +196,29 @@ export class Project {
           columnStyle: {
             width: '80px',
           },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
+          },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.roomsCount),
       },
       wcCount: {
-        label: 'Nº de Casas de Banho',
+        label: 'Nº de WCs',
         type: ColumnType.INT,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '80px',
+          },
+          classes: {
+            'number-column': true,
+          },
+          headerClasses: {
+            'number-column': true,
           },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.wcCount),
@@ -182,7 +230,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '200px',
+            width: '80px',
           },
         },
         displayValue: (project: ProjectType) => (project.isActive ? 'Sim' : 'Não'),

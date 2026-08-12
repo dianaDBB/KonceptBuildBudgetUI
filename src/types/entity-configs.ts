@@ -34,6 +34,7 @@ export interface EntityTableBodySubrowProps<TEntity extends EntityType, TParentE
 }
 
 export interface RowHandlers<TEntity extends EntityType> {
+  click?(row: TableRow<TEntity>): void;
   edit?(row: TableRow<TEntity>): void;
   save?(row: TableRow<TEntity>): void;
   delete?(row: TableRow<TEntity>): void;
@@ -87,6 +88,7 @@ export interface StyleConfig<TEntity extends EntityType> {
   isHighlight?: boolean;
   columnStyle: CSSProperties;
   classes?: string | Record<string, boolean> | ((entity: EntityType) => string | Record<string, boolean> | undefined);
+  headerClasses?: Record<string, boolean>;
 }
 
 export interface SearchSelectConfig<TEntity extends EntityType> {
