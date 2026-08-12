@@ -25,6 +25,7 @@ export interface EntityTableBodyProps<TEntity extends EntityType> {
   rowIsActive: (row: TableRow<TEntity>) => boolean;
   isValid: (entity: TEntity) => boolean;
   isEditing: Ref<boolean>;
+  isChild?: boolean;
 }
 
 export interface EntityTableBodySubrowProps<TEntity extends EntityType, TParentEntity extends EntityType>
@@ -43,6 +44,7 @@ export interface RowHandlers<TEntity extends EntityType> {
 export enum ColumnType {
   TEXT,
   NUMBER,
+  INT,
   MONEY,
   DATE,
   SELECT,

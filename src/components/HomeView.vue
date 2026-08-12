@@ -6,7 +6,7 @@
           v-for="category in categories"
           :key="category.id"
           class="module-tab"
-          :class="{ active: selectedCategory.id === category.id }"
+          :class="{ active: selectedCategory?.id === category.id }"
           @click="selectedCategory = category"
         >
           {{ category.label }}
@@ -46,11 +46,52 @@
 </template>
 
 <script setup lang="ts">
+import { RoutePaths } from '@/router/routes';
 import { LayoutDashboard } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-const categories = [
+interface MenuItem {
+  label: string;
+  description?: string;
+  icon: typeof LayoutDashboard;
+  route: string;
+}
+
+interface MenuSection {
+  type: 'cards' | 'badges';
+  title?: string;
+  icon?: typeof LayoutDashboard;
+  cards: MenuItem[];
+}
+
+interface Category {
+  id: string;
+  label: string;
+  sections: MenuSection[];
+}
+
+const route = useRoute();
+const selectedCategory = ref<Category | null>(null);
+
+const categories = computed<Category[]>(() => [
+  {
+    id: 'projects',
+    label: 'PROJETOS',
+    sections: [
+      {
+        type: 'cards',
+        cards: [
+          {
+            label: 'Projetos',
+            description: 'Gerir projetos',
+            icon: LayoutDashboard,
+            route: RoutePaths.projects.list,
+          },
+        ],
+      },
+    ],
+  },
   {
     id: 'configs',
     label: 'CONFIGS',
@@ -62,19 +103,25 @@ const categories = [
             label: 'Especialidades',
             description: 'Gerir especialidades e sub-especialidades',
             icon: LayoutDashboard,
-            route: '/configs/work-categories',
+            route: RoutePaths.configs.workCategories,
           },
         ],
       },
     ],
   },
-];
+]);
 
-const route = useRoute();
+watch(
+  [categories, () => route.query.tab],
+  () => {
+    const tabParam = route.query.tab as string;
+    const category = categories.value.find((c) => c.id === tabParam);
+    selectedCategory.value = category || categories.value[0];
+  },
+  { immediate: true },
+);
 
-const selectedCategory = ref(categories.find((c) => c.id === route.query.tab) ?? categories[0]);
-
-const visibleSections = computed(() => selectedCategory.value.sections);
+const visibleSections = computed<MenuSection[]>(() => selectedCategory.value?.sections || []);
 </script>
 
 <style>
@@ -242,6 +289,8 @@ const visibleSections = computed(() => selectedCategory.value.sections);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
+
+  transition: 0.2s;
 
   &:hover {
     background: var(--color-primary);

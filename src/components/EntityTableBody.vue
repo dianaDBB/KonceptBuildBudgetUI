@@ -4,12 +4,17 @@
       <tr
         :class="{
           disabled: !isRowActive(row),
-          'main-row': row._expanded != undefined,
           'main-row-expanded': hasChildren(row),
         }"
         @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
         @click="!props.rows.isEditing.value && hasChildren(row) && props.rows.handlers.toggle?.(row)"
       >
+        <template v-if="props.subrows || props.rows.isChild">
+          <td style="width: 20px; padding: 0">
+            <component v-if="hasChildren(row)" :is="row._expanded ? ChevronDown : ChevronRight" :size="18" />
+          </td>
+        </template>
+
         <td
           v-for="(config, fieldKey, index) in props.rows.configs"
           :key="fieldKey"
@@ -60,10 +65,7 @@
 
           <template v-else>
             <slot :name="`display-${fieldKey}`" :row="row" :config="config" :field-key="fieldKey">
-              <div v-if="index === 0" class="main-cell">
-                <component v-if="hasChildren(row)" :is="row._expanded ? ChevronDown : ChevronRight" :size="18" />
-                <span v-else class="tree-placeholder" />
-
+              <div v-if="index === 0">
                 <template v-if="config.type === ColumnType.SEARCH_SELECT">
                   <div class="with-info-tooltip">
                     <span>{{ config.displayValue(row.entity) }}</span>
@@ -151,11 +153,14 @@
         <td :colspan="totalColumns">
           <table>
             <colgroup>
+              <!--expand column-->
+              <col style="width: 20px" />
               <col
                 v-for="config in Object.values(props.subrows.configs)"
                 :key="config.label"
                 :style="config.styleConfig.columnStyle"
               />
+              <!--actions column-->
               <col style="width: 130px" />
             </colgroup>
             <EntityTableBody
@@ -166,6 +171,7 @@
                 rowIsActive: props.subrows.rowIsActive,
                 isValid: props.subrows.isValid,
                 isEditing: props.subrows.isEditing,
+                isChild: true,
               }"
             >
               <!-- @vue-ignore -->
@@ -202,6 +208,8 @@ import PhoneInput from './inputs/PhoneInput.vue';
 import PercentageInput from './inputs/PercentageInput.vue';
 import Label from './inputs/Label.vue';
 import InfoTooltip from './InfoTooltip.vue';
+import IntInput from './inputs/IntInput.vue';
+import CheckBox from './inputs/CheckBox.vue';
 
 interface Props {
   rows: EntityTableBodyProps<TEntity>;
@@ -213,6 +221,7 @@ const props = defineProps<Props>();
 const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.TEXT]: TextInput,
   [ColumnType.NUMBER]: NumberInput,
+  [ColumnType.INT]: IntInput,
   [ColumnType.MONEY]: MoneyInput,
   [ColumnType.DATE]: DateInput,
   [ColumnType.SELECT]: SelectInput,
@@ -222,10 +231,15 @@ const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.PHONE]: PhoneInput,
   [ColumnType.PERCENTAGE]: PercentageInput,
   [ColumnType.LABEL]: Label,
-  [ColumnType.CHECK_BOX]: Label,
+  [ColumnType.CHECK_BOX]: CheckBox,
 };
 
-const totalColumns = computed(() => Object.keys(props.rows.configs).length + 1);
+const totalColumns = computed(() => {
+  const dataColumns = Object.keys(props.rows.configs).length;
+  const expandColumn = props.subrows || props.rows.isChild ? 1 : 0;
+  const actionsColumn = 1;
+  return expandColumn + dataColumns + actionsColumn;
+});
 
 function hasChildren(row: TableRow<TEntity>) {
   return !!props.subrows && props.subrows.rows(row.entity).length > 0;

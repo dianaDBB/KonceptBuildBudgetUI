@@ -20,23 +20,27 @@
         <div class="table">
           <table>
             <colgroup>
+              <!--expand column-->
+              <col style="width: 20px" />
               <col
                 v-for="config in Object.values(workCategoryConfigs)"
                 :key="config.label"
                 :style="config.styleConfig.columnStyle"
               />
-              <col style="width: 130px" />
               <!--actions column-->
+              <col style="width: 130px" />
             </colgroup>
             <thead>
               <tr>
+                <!--expand column-->
+                <th></th>
                 <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
                   <div class="column-heading">
                     {{ config.label }}
                   </div>
                 </th>
-                <th></th>
                 <!--actions column-->
+                <th></th>
               </tr>
             </thead>
             <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable">

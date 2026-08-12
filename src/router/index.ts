@@ -15,9 +15,16 @@ const routes = [
     component: () => import('@/components/HomeView.vue'),
     meta: { requiresAuth: true },
   },
-  // WORK CATEGORIES
+  // PROJECTS
   {
-    path: RoutePaths.workCategories.list,
+    path: RoutePaths.projects.list,
+    name: RouteNames.projectsList,
+    component: () => import('@/components/ProjectsView.vue'),
+    meta: { requiresAuth: true },
+  },
+  // CONFIGS
+  {
+    path: RoutePaths.configs.workCategories,
     name: RouteNames.workCategories,
     component: () => import('@/components/WorkCategoryView.vue'),
     meta: { requiresAuth: true },

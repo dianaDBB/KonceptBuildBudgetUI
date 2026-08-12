@@ -1,14 +1,19 @@
 export const RouteNames = {
   login: 'login',
   home: 'home',
-  // work categories
+  // PROJECTS
+  projectsList: 'projects-list',
+  // CONFIGS
   workCategories: 'work-categories',
 } as const;
 
 export const RoutePaths = {
   login: '/login',
   home: '/',
-  workCategories: {
-    list: '/configs/work-categories',
+  projects: {
+    list: '/project/list',
+  },
+  configs: {
+    workCategories: '/configs/work-categories',
   },
 } as const;
