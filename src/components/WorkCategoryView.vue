@@ -321,6 +321,7 @@ async function addWorkCategory(): Promise<void> {
 
   workCategories.value.push({
     entity: {
+      defaultIndex: workCategories.value.length + 1,
       _workItemRows: [],
     },
     _key: nextKey(),

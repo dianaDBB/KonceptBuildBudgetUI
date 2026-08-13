@@ -247,7 +247,7 @@ const draggedRowKey = ref<string | null>(null);
 const draggedRowIndex = ref<number | null>(null);
 const dragTopRowKey = ref<string | null>(null);
 const dragOverRowKey = ref<string | null>(null);
-const draggedFromParent = ref<TParentEntity | null>(null);
+const draggedIsChild = ref(false);
 
 const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.TEXT]: TextInput,
@@ -356,6 +356,7 @@ function updateFieldValue(row: TableRow<TEntity>, fieldKey: string, value: unkno
 function handleDragStart(row: TableRow<TEntity>, index: number, event: DragEvent) {
   draggedRowKey.value = row._key;
   draggedRowIndex.value = index;
+  draggedIsChild.value = props.rows.isChild === true;
 
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move';
@@ -365,6 +366,17 @@ function handleDragStart(row: TableRow<TEntity>, index: number, event: DragEvent
 
 function handleDragOver(row: TableRow<TEntity>, event: DragEvent) {
   event.preventDefault();
+
+  if (draggedRowIndex.value === null) {
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'none';
+    }
+
+    dragOverRowKey.value = null;
+    dragTopRowKey.value = null;
+
+    return;
+  }
 
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move';
@@ -389,10 +401,8 @@ function handleDragOver(row: TableRow<TEntity>, event: DragEvent) {
   const midpoint = rect.top + rect.height / 2;
 
   if (event.clientY < midpoint) {
-    // Drop before this row
     dragTopRowKey.value = row._key;
   } else {
-    // Drop after this row
     dragOverRowKey.value = row._key;
   }
 }
@@ -402,7 +412,7 @@ function handleDragEnd() {
   draggedRowIndex.value = null;
   dragOverRowKey.value = null;
   dragTopRowKey.value = null;
-  draggedFromParent.value = null;
+  draggedIsChild.value = false;
 }
 
 function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: DragEvent) {
@@ -424,23 +434,17 @@ function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: D
   }
 
   const newRows = [...rows];
-
-  // Remove dragged row first
   newRows.splice(draggedIndex, 1);
 
-  // Find target's index after removing the dragged row
   const targetIndex = newRows.findIndex((row) => row._key === targetRow._key);
-
   if (targetIndex === -1) {
     handleDragEnd();
     return;
   }
 
   if (dragTopRowKey.value === targetRow._key) {
-    // Drop before target
     newRows.splice(targetIndex, 0, draggedRow);
   } else {
-    // Drop after target
     newRows.splice(targetIndex + 1, 0, draggedRow);
   }
 

@@ -16,8 +16,8 @@ export class WorkCategory {
         label: 'Index',
         type: ColumnType.INT,
         styleConfig: {
-          showDisabled: () => false,
-          isInvalid: (workCategory: WorkCategoryType) => !workCategory.defaultIndex,
+          showDisabled: () => true,
+          isInvalid: () => false,
           isHighlight: false,
           columnStyle: {
             width: '50px',
