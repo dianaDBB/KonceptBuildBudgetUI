@@ -178,6 +178,8 @@
         <td :colspan="totalColumns">
           <table>
             <colgroup>
+              <!--reorder column for subrows-->
+              <col style="width: 20px" />
               <!--expand column-->
               <col style="width: 20px" />
               <col
@@ -245,6 +247,7 @@ const props = defineProps<Props>();
 
 const draggedRowKey = ref<string | null>(null);
 const draggedRowIndex = ref<number | null>(null);
+const draggedParentId = ref<string | null>(null);
 const dragTopRowKey = ref<string | null>(null);
 const dragOverRowKey = ref<string | null>(null);
 const draggedIsChild = ref(false);
@@ -357,6 +360,7 @@ function handleDragStart(row: TableRow<TEntity>, index: number, event: DragEvent
   draggedRowKey.value = row._key;
   draggedRowIndex.value = index;
   draggedIsChild.value = props.rows.isChild === true;
+  draggedParentId.value = (row as TableRow<TEntity> & { _parentId?: string })._parentId ?? null;
 
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move';
@@ -375,6 +379,16 @@ function handleDragOver(row: TableRow<TEntity>, event: DragEvent) {
     dragOverRowKey.value = null;
     dragTopRowKey.value = null;
 
+    return;
+  }
+
+  const targetParentId = (row as TableRow<TEntity> & { _parentId?: string })._parentId ?? null;
+  if (draggedIsChild.value && draggedParentId.value !== targetParentId) {
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'none';
+    }
+    dragOverRowKey.value = null;
+    dragTopRowKey.value = null;
     return;
   }
 
@@ -413,6 +427,7 @@ function handleDragEnd() {
   dragOverRowKey.value = null;
   dragTopRowKey.value = null;
   draggedIsChild.value = false;
+  draggedParentId.value = null;
 }
 
 function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: DragEvent) {
@@ -420,6 +435,12 @@ function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: D
   event.stopPropagation();
 
   if (draggedRowIndex.value === null) {
+    handleDragEnd();
+    return;
+  }
+
+  const targetParentId = (targetRow as TableRow<TEntity> & { _parentId?: string })._parentId ?? null;
+  if (draggedIsChild.value && draggedParentId.value !== targetParentId) {
     handleDragEnd();
     return;
   }

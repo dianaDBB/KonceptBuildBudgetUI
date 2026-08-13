@@ -187,6 +187,7 @@ const workItemTable = computed(() => ({
     save: saveWorkItem,
     delete: () => {},
     discard: discardWorkItemRow,
+    reorder: reorderWorkItems,
   },
   rowIsActive: () => true,
   isValid: (workItem: WorkItem) => WorkItem.isValid(workItem, workItemConfigs.value),
@@ -256,7 +257,7 @@ function nextKeySubRow(): string {
 
 function discardWorkCategoryRow(row: WorkCategoryRow) {
   if (row._isNew) {
-    workCategories.value = workCategories.value.filter((w) => w._key !== row._key);
+    workCategories.value = workCategories.value.filter((workCategory) => workCategory !== row);
   } else {
     row.entity = row._original!;
     row._isNew = false;
@@ -513,6 +514,32 @@ async function reorderWorkCategories(rows: WorkCategoryRow[]): Promise<void> {
   } catch (error: unknown) {
     await getWorkCategories();
     apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das especialidades.');
+  }
+}
+
+async function reorderWorkItems(rows: WorkItemRow[]): Promise<void> {
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    const parentId = rows[0]?._parentId;
+
+    if (!parentId) {
+      apiStatus.value = apiError(null, 'Não foi possível alterar a ordem das sub especialidades.');
+      return;
+    }
+
+    const workItemIds = rows.map((row) => row.entity.id).filter((id): id is UUID => id !== undefined);
+
+    await workCategoryApi.reorderWorkItems(parentId, workItemIds);
+
+    rows.forEach((row, index) => {
+      row.entity.defaultIndex = index + 1;
+    });
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
+  } catch (error: unknown) {
+    await getWorkCategories();
+    apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das sub especialidades.');
   }
 }
 </script>

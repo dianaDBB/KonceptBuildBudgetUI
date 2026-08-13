@@ -87,6 +87,16 @@ class WorkCategoryApi {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     });
   }
+
+  async reorderWorkItems(workCategoryId: UUID, workItemIds: string[]): Promise<void> {
+    const payload = {
+      workItemsIds: workItemIds,
+    };
+
+    await axiosClient.put(`/work-category/work-item/reorder?workCategoryId=${workCategoryId}`, payload, {
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    });
+  }
 }
 
 export default new WorkCategoryApi();
