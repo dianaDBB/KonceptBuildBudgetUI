@@ -359,6 +359,26 @@ td.number-column {
   cursor: pointer;
 }
 
+.sub-row {
+  td:first-child {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--color-border);
+    }
+  }
+}
+
+.table table .sub-row td {
+  color: var(--color-text-muted);
+}
+
 /************************************************************************************************ TBALE - DRAG & DROP */
 
 tr.dragging {

@@ -47,49 +47,55 @@
                 <th></th>
               </tr>
             </thead>
-            <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable">
-              <template #row-actions="{ row, isSubrow }">
-                <template v-if="!isSubrow">
-                  <button
-                    title="Eliminar fatura"
-                    :disabled="workCategoryTable.isEditing.value"
-                    @click="askDeleteWorkCategory(row)"
-                  >
-                    <Trash2 :size="16" />
-                  </button>
-                  <button
-                    title="Editar fatura"
-                    :disabled="workCategoryTable.isEditing.value"
-                    @click="startEditingWorkCategory(row)"
-                  >
-                    <Pencil :size="16" />
-                  </button>
-                  <button
-                    title="Adicionar sub especialidade"
-                    :disabled="workItemTable.isEditing.value"
-                    @click="addWorkItem(row)"
-                  >
-                    <Plus :size="16" />
-                  </button>
+            <tbody ref="tableBody">
+              <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable">
+                <template #row-actions="{ row, isSubrow }">
+                  <template v-if="!isSubrow">
+                    <button
+                      title="Eliminar especialidade"
+                      :disabled="workCategoryTable.isEditing.value"
+                      @click.stop="askDeleteWorkCategory(row)"
+                    >
+                      <Trash2 :size="16" />
+                    </button>
+
+                    <button
+                      title="Editar especialidade"
+                      :disabled="workCategoryTable.isEditing.value"
+                      @click.stop="startEditingWorkCategory(row)"
+                    >
+                      <Pencil :size="16" />
+                    </button>
+
+                    <button
+                      title="Adicionar sub especialidade"
+                      :disabled="workItemTable.isEditing.value"
+                      @click.stop="addWorkItem(row)"
+                    >
+                      <Plus :size="16" />
+                    </button>
+                  </template>
+
+                  <template v-else>
+                    <button
+                      title="Eliminar sub especialidade"
+                      :disabled="workItemTable.isEditing.value"
+                      @click.stop="askDeleteWorkItem(row)"
+                    >
+                      <Trash2 :size="16" />
+                    </button>
+
+                    <button
+                      title="Editar sub especialidade"
+                      :disabled="workItemTable.isEditing.value"
+                      @click.stop="startEditingWorkItem(row)"
+                    >
+                      <Pencil :size="16" />
+                    </button>
+                  </template>
                 </template>
-                <template v-else>
-                  <button
-                    title="Eliminar sub especialidade"
-                    :disabled="workItemTable.isEditing.value"
-                    @click="askDeleteWorkItem(row)"
-                  >
-                    <Trash2 :size="16" />
-                  </button>
-                  <button
-                    title="Editar sub especialidade"
-                    :disabled="workItemTable.isEditing.value"
-                    @click="startEditingWorkItem(row)"
-                  >
-                    <Pencil :size="16" />
-                  </button>
-                </template>
-              </template>
-            </EntityTableBody>
+              </EntityTableBody>
+            </tbody>
           </table>
         </div>
 
@@ -115,7 +121,7 @@
   <!-- delete dialog-->
   <ConfirmDialog
     v-model="showDeleteWorkCategoryDialog"
-    title="Eliminar fatura / nota crédito"
+    title="Eliminar especialidade"
     :message="[
       `${workCategoryToDelete?.entity.description}`,
       'Tem a certeza que quer eliminar definitivamente esta especialidade?',
@@ -128,7 +134,7 @@
   <!-- delete dialog subrow-->
   <ConfirmDialog
     v-model="showDeleteWorkItemDialog"
-    title="Eliminar pagamento"
+    title="Eliminar sub especialidade"
     :message="[
       `${workItemToDelete?.entity.description}`,
       'Tem a certeza que quer eliminar definitivamente esta sub especialidade?',

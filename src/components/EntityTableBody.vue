@@ -1,216 +1,181 @@
 <template>
-  <tbody ref="tableBody">
-    <template v-for="(row, rowIndex) in props.rows.rows" :key="row._key">
-      <tr
-        :class="{
-          disabled: !isRowActive(row),
-          'main-row-expanded': hasChildren(row),
-          dragging: draggedRowKey === row._key,
-          'drag-over': dragOverRowKey === row._key,
-          'drag-over-top': dragTopRowKey === row._key,
-        }"
-        @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
-        @click="
-          !props.rows.isEditing.value &&
-            (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
-        "
-        @dragover="handleDragOver(row, $event)"
-        @drop="handleDrop(row, rowIndex, $event)"
+  <template v-for="(row, rowIndex) in props.rows.rows" :key="row._key">
+    <tr
+      :class="{
+        disabled: !isRowActive(row),
+        'main-row-expanded': !props.rows.isChild && hasChildren(row),
+        'sub-row': props.rows.isChild,
+        dragging: draggedRowKey === row._key,
+        'drag-over': dragOverRowKey === row._key,
+        'drag-over-top': dragTopRowKey === row._key,
+      }"
+      @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
+      @click="
+        !props.rows.isEditing.value &&
+          (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
+      "
+      @dragover="handleDragOver(row, $event)"
+      @drop="handleDrop(row, rowIndex, $event)"
+    >
+      <!-- reorder column -->
+      <template v-if="hasReorderHandler">
+        <td class="reorder-column">
+          <button
+            v-if="!rowHasChanges(row)"
+            class="reorder-button"
+            title="Reordenar"
+            :disabled="props.rows.isEditing.value"
+            draggable="true"
+            @click.stop
+            @dragstart="handleDragStart(row, rowIndex, $event)"
+            @dragend="handleDragEnd"
+          >
+            <GripVertical :size="12" />
+          </button>
+        </td>
+      </template>
+
+      <!-- expand column -->
+      <template v-if="props.subrows || props.rows.isChild">
+        <td style="width: 20px; padding: 0">
+          <component v-if="hasChildren(row)" :is="row._expanded ? ChevronDown : ChevronRight" :size="18" />
+        </td>
+      </template>
+
+      <!-- data columns -->
+      <td
+        v-for="(config, fieldKey) in props.rows.configs"
+        :key="fieldKey"
+        :style="config.styleConfig.columnStyle"
+        :class="[getColumnClasses(fieldKey, row.entity), { editing: rowHasChanges(row) }]"
       >
-        <template v-if="hasReorderHandler">
-          <td class="reorder-column">
-            <button
-              v-if="!rowHasChanges(row)"
-              class="reorder-button"
-              title="Reordenar"
-              :disabled="props.rows.isEditing.value"
-              draggable="true"
-              @click.stop
-              @dragstart="handleDragStart(row, rowIndex, $event)"
-              @dragend="handleDragEnd"
-            >
-              <GripVertical :size="12" />
-            </button>
-          </td>
+        <!-- EDITING -->
+        <template v-if="rowHasChanges(row)">
+          <slot :name="`edit-${fieldKey}`" :row="row" :config="config" :field-key="fieldKey">
+            <component
+              :is="getEditableComponent(config.type)"
+              :value="config.type === ColumnType.LABEL ? config.displayValue(row.entity) : getFieldValue(row, fieldKey)"
+              :entity="row.entity"
+              :field-key="fieldKey"
+              :secondary-value="
+                config.phoneConfig?.secondaryField ? getFieldValue(row, String(config.phoneConfig.secondaryField)) : ''
+              "
+              :config="config"
+              :select-options="config.selectConfig?.options"
+              :search-select-options="
+                typeof config.searchSelectConfig?.options === 'function'
+                  ? config.searchSelectConfig.options(
+                      row.entity,
+                      props.rows.rows.map((r) => r.entity),
+                    )
+                  : config.searchSelectConfig?.options
+              "
+              :search-select-multiple-options="
+                typeof config.searchSelectMultipleConfig?.options === 'function'
+                  ? config.searchSelectMultipleConfig.options(row.entity)
+                  : config.searchSelectMultipleConfig
+              "
+              :search-select-multiple-option-key="config.searchSelectMultipleConfig?.optionKey"
+              :is-invalid="config.styleConfig.isInvalid(row.entity)"
+              :is-disabled="config.styleConfig.showDisabled(row.entity, row)"
+              @update:value="updateFieldValue(row, fieldKey, $event)"
+              @update:secondary-value="
+                config.phoneConfig?.secondaryField
+                  ? updateFieldValue(row, String(config.phoneConfig.secondaryField), $event)
+                  : undefined
+              "
+            />
+          </slot>
         </template>
 
-        <template v-if="props.subrows || props.rows.isChild">
-          <td style="width: 20px; padding: 0">
-            <component v-if="hasChildren(row)" :is="row._expanded ? ChevronDown : ChevronRight" :size="18" />
-          </td>
-        </template>
+        <!-- DISPLAY -->
+        <template v-else>
+          <slot :name="`display-${fieldKey}`" :row="row" :config="config" :field-key="fieldKey">
+            <template v-if="config.type === ColumnType.SEARCH_SELECT">
+              <div class="with-info-tooltip">
+                <span>{{ config.displayValue(row.entity) }}</span>
 
-        <td
-          v-for="(config, fieldKey, index) in props.rows.configs"
-          :key="fieldKey"
-          :style="config.styleConfig.columnStyle"
-          :class="[getColumnClasses(fieldKey, row.entity), { editing: rowHasChanges(row) }]"
-        >
-          <template v-if="rowHasChanges(row)">
-            <slot :name="`edit-${fieldKey}`" :row="row" :config="config" :field-key="fieldKey">
-              <component
-                :is="getEditableComponent(config.type)"
-                :value="
-                  config.type == ColumnType.LABEL ? config.displayValue(row.entity) : getFieldValue(row, fieldKey)
-                "
-                :entity="row.entity"
-                :field-key="fieldKey"
-                :secondary-value="
-                  config.phoneConfig?.secondaryField
-                    ? getFieldValue(row, String(config.phoneConfig.secondaryField))
-                    : ''
-                "
-                :config="config"
-                :select-options="config.selectConfig?.options"
-                :search-select-options="
-                  typeof config.searchSelectConfig?.options == 'function'
-                    ? config.searchSelectConfig.options(
-                        row.entity,
-                        props.rows.rows.map((r) => r.entity),
-                      )
-                    : config.searchSelectConfig?.options
-                "
-                :search-select-multiple-options="
-                  typeof config.searchSelectMultipleConfig?.options == 'function'
-                    ? config.searchSelectMultipleConfig?.options(row.entity)
-                    : config.searchSelectMultipleConfig
-                "
-                :search-select-multiple-option-key="config.searchSelectMultipleConfig?.optionKey"
-                :is-invalid="config.styleConfig.isInvalid(row.entity)"
-                :is-disabled="config.styleConfig.showDisabled(row.entity, row)"
-                @update:value="updateFieldValue(row, fieldKey, $event)"
-                @update:secondary-value="
-                  config.phoneConfig?.secondaryField
-                    ? updateFieldValue(row, String(config.phoneConfig.secondaryField), $event)
-                    : undefined
-                "
-              />
-            </slot>
-          </template>
-
-          <template v-else>
-            <slot :name="`display-${fieldKey}`" :row="row" :config="config" :field-key="fieldKey">
-              <div v-if="index === 0">
-                <template v-if="config.type === ColumnType.SEARCH_SELECT">
-                  <div class="with-info-tooltip">
-                    <span>{{ config.displayValue(row.entity) }}</span>
-
-                    <InfoTooltip
-                      v-if="getFieldValue(row, fieldKey)"
-                      position="left"
-                      :title="config.searchSelectConfig?.tooltipTitle?.(getFieldValue(row, fieldKey) as TEntity)"
-                      :items="config.searchSelectConfig?.tooltipItems?.(getFieldValue(row, fieldKey) as TEntity)"
-                    />
-                  </div>
-                </template>
-
-                <template v-else>
-                  {{ config.displayValue(row.entity) }}
-                </template>
+                <InfoTooltip
+                  v-if="getFieldValue(row, fieldKey)"
+                  position="left"
+                  :title="config.searchSelectConfig?.tooltipTitle?.(getFieldValue(row, fieldKey) as TEntity)"
+                  :items="config.searchSelectConfig?.tooltipItems?.(getFieldValue(row, fieldKey) as TEntity)"
+                />
               </div>
+            </template>
 
-              <template v-else>
-                <template v-if="config.type === ColumnType.SEARCH_SELECT">
-                  <div class="with-info-tooltip">
-                    <span>{{ config.displayValue(row.entity) }}</span>
+            <template v-else>
+              {{ config.displayValue(row.entity) }}
+            </template>
+          </slot>
+        </template>
+      </td>
 
-                    <InfoTooltip
-                      v-if="getFieldValue(row, fieldKey)"
-                      position="left"
-                      :title="config.searchSelectConfig?.tooltipTitle?.(getFieldValue(row, fieldKey) as TEntity)"
-                      :items="config.searchSelectConfig?.tooltipItems?.(getFieldValue(row, fieldKey) as TEntity)"
-                    />
-                  </div>
-                </template>
-                <template v-else>
-                  {{ config.displayValue(row.entity) }}
-                </template>
-              </template>
-            </slot>
-          </template>
-        </td>
-
-        <td v-if="hasActionHandlers" class="actions-column">
-          <div v-if="!rowHasChanges(row)" class="action-buttons">
-            <slot name="row-actions" :row="row" :isSubrow="!props.subrows">
-              <button
-                v-if="props.rows.handlers.delete"
-                title="Eliminar"
-                :disabled="props.rows.isEditing.value"
-                @click="props.rows.handlers.delete(row)"
-              >
-                <Trash2 :size="16" />
-              </button>
-
-              <button
-                v-if="props.rows.handlers.edit"
-                title="Editar"
-                :disabled="props.rows.isEditing.value"
-                @click="props.rows.handlers.edit(row)"
-              >
-                <Pencil :size="16" />
-              </button>
-            </slot>
-          </div>
-
-          <div v-else class="action-buttons editing">
+      <!-- actions column -->
+      <td v-if="hasActionHandlers" class="actions-column">
+        <div v-if="!rowHasChanges(row)" class="action-buttons">
+          <slot name="row-actions" :row="row" :isSubrow="props.rows.isChild">
             <button
-              v-if="props.rows.handlers.discard"
-              title="Descartar alterações"
-              @click="props.rows.handlers.discard(row)"
+              v-if="props.rows.handlers.delete"
+              title="Eliminar"
+              :disabled="props.rows.isEditing.value"
+              @click.stop="props.rows.handlers.delete(row)"
             >
-              <Undo2 :size="16" />
+              <Trash2 :size="16" />
             </button>
 
             <button
-              v-if="props.rows.handlers.save"
-              title="Guardar alterações"
-              :disabled="!isRowValid(row.entity)"
-              @click="props.rows.handlers.save(row)"
+              v-if="props.rows.handlers.edit"
+              title="Editar"
+              :disabled="props.rows.isEditing.value"
+              @click.stop="props.rows.handlers.edit(row)"
             >
-              <Check :size="16" />
+              <Pencil :size="16" />
             </button>
-          </div>
-        </td>
-      </tr>
+          </slot>
+        </div>
 
-      <tr v-if="row._expanded && props.subrows">
-        <td :colspan="totalColumns">
-          <table>
-            <colgroup>
-              <!--reorder column for subrows-->
-              <col style="width: 20px" />
-              <!--expand column-->
-              <col style="width: 20px" />
-              <col
-                v-for="config in Object.values(props.subrows.configs)"
-                :key="config.label"
-                :style="config.styleConfig.columnStyle"
-              />
-              <!--actions column-->
-              <col v-if="hasActionHandlers" style="width: 130px" />
-            </colgroup>
-            <EntityTableBody
-              :rows="{
-                rows: props.subrows.rows(row.entity),
-                configs: props.subrows.configs,
-                handlers: props.subrows.handlers,
-                rowIsActive: props.subrows.rowIsActive,
-                isValid: props.subrows.isValid,
-                isEditing: props.subrows.isEditing,
-                isChild: true,
-              }"
-            >
-              <!-- @vue-ignore -->
-              <template #row-actions="{ row: subrow }">
-                <slot name="row-actions" :row="subrow" :isSubrow="true" />
-              </template>
-            </EntityTableBody>
-          </table>
-        </td>
-      </tr>
+        <div v-else class="action-buttons editing">
+          <button
+            v-if="props.rows.handlers.discard"
+            title="Descartar alterações"
+            @click.stop="props.rows.handlers.discard(row)"
+          >
+            <Undo2 :size="16" />
+          </button>
+
+          <button
+            v-if="props.rows.handlers.save"
+            title="Guardar alterações"
+            :disabled="!isRowValid(row.entity)"
+            @click.stop="props.rows.handlers.save(row)"
+          >
+            <Check :size="16" />
+          </button>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Subrows -->
+    <template v-if="row._expanded && props.subrows">
+      <EntityTableBody
+        :rows="{
+          rows: props.subrows.rows(row.entity),
+          configs: props.subrows.configs,
+          handlers: props.subrows.handlers,
+          rowIsActive: props.subrows.rowIsActive,
+          isValid: props.subrows.isValid,
+          isEditing: props.subrows.isEditing,
+          isChild: true,
+        }"
+      >
+        <!-- @vue-ignore -->
+        <template #row-actions="{ row: subrow }: { row: TableRow<TParentEntity>, isSubrow: boolean | undefined }">
+          <slot name="row-actions" :row="subrow" :isSubrow="true" />
+        </template>
+      </EntityTableBody>
     </template>
-  </tbody>
+  </template>
 </template>
 
 <script setup lang="ts" generic="TEntity extends EntityType, TParentEntity extends EntityType">
@@ -275,18 +240,7 @@ const hasActionHandlers = computed(() => {
 });
 
 const hasReorderHandler = computed(() => {
-  const handlers = props.rows.handlers;
-
-  return !!handlers.reorder;
-});
-
-const totalColumns = computed(() => {
-  const dataColumns = Object.keys(props.rows.configs).length;
-  const expandColumn = props.subrows || props.rows.isChild ? 1 : 0;
-  const actionsColumn = hasActionHandlers.value ? 1 : 0;
-  const reorderColumn = hasReorderHandler.value ? 1 : 0;
-
-  return expandColumn + dataColumns + actionsColumn + reorderColumn;
+  return !!props.rows.handlers.reorder;
 });
 
 function hasChildren(row: TableRow<TEntity>) {
