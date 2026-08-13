@@ -20,6 +20,8 @@
         <div class="table">
           <table>
             <colgroup>
+              <!--reorder column-->
+              <col style="width: 20px" />
               <!--expand column-->
               <col style="width: 20px" />
               <col
@@ -32,6 +34,8 @@
             </colgroup>
             <thead>
               <tr>
+                <!--reorder column-->
+                <th></th>
                 <!--expand column-->
                 <th></th>
                 <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
@@ -43,7 +47,7 @@
                 <th></th>
               </tr>
             </thead>
-            <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable" @reorder="reorderWorkCategories">
+            <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable">
               <template #row-actions="{ row, isSubrow }">
                 <template v-if="!isSubrow">
                   <button
@@ -168,6 +172,7 @@ const workCategoryTable = computed<EntityTableBodyProps<WorkCategoryType>>(() =>
     save: saveWorkCategory,
     discard: discardWorkCategoryRow,
     toggle: toggleWorkCategoryRow,
+    reorder: reorderWorkCategories,
   },
   rowIsActive: () => true,
   isValid: (workCategory) => WorkCategory.isValid(workCategory, workCategoryConfigs.value),
@@ -491,26 +496,19 @@ async function confirmDeleteWorkItem(): Promise<void> {
 
 /************************************************************************************************************* REORDER*/
 
-async function reorderWorkCategories(): Promise<void> {
+async function reorderWorkCategories(rows: WorkCategoryRow[]): Promise<void> {
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
   try {
-    const workCategoryIds = workCategories.value
-      .map((row) => row.entity.id)
-      .filter((id): id is UUID => id !== undefined);
+    const workCategoryIds = rows.map((row) => row.entity.id).filter((id): id is UUID => id !== undefined);
 
     await workCategoryApi.reorderWorkCategories(workCategoryIds);
 
-    workCategories.value.forEach((row, index) => {
+    rows.forEach((row, index) => {
       row.entity.defaultIndex = index + 1;
     });
 
-    apiStatus.value = {
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      message: 'Ordem das especialidades alterada com sucesso.',
-    };
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
   } catch (error: unknown) {
     await getWorkCategories();
     apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das especialidades.');

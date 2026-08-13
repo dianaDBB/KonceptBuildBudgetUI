@@ -2,7 +2,6 @@
   <tbody ref="tableBody">
     <template v-for="(row, rowIndex) in props.rows.rows" :key="row._key">
       <tr
-        draggable="true"
         :class="{
           disabled: !isRowActive(row),
           'main-row-expanded': hasChildren(row),
@@ -15,12 +14,26 @@
           !props.rows.isEditing.value &&
             (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
         "
-        @dragstart="handleDragStart(row, rowIndex, $event)"
         @dragover="handleDragOver(row, $event)"
-        @dragleave="handleDragLeave"
-        @dragend="handleDragEnd"
         @drop="handleDrop(row, rowIndex, $event)"
       >
+        <template v-if="hasReorderHandler">
+          <td class="reorder-column">
+            <button
+              v-if="!rowHasChanges(row)"
+              class="reorder-button"
+              title="Reordenar"
+              :disabled="props.rows.isEditing.value"
+              draggable="true"
+              @click.stop
+              @dragstart="handleDragStart(row, rowIndex, $event)"
+              @dragend="handleDragEnd"
+            >
+              <GripVertical :size="12" />
+            </button>
+          </td>
+        </template>
+
         <template v-if="props.subrows || props.rows.isChild">
           <td style="width: 20px; padding: 0">
             <component v-if="hasChildren(row)" :is="row._expanded ? ChevronDown : ChevronRight" :size="18" />
@@ -117,7 +130,7 @@
           </template>
         </td>
 
-        <td v-if="hasHandlers" class="actions-column">
+        <td v-if="hasActionHandlers" class="actions-column">
           <div v-if="!rowHasChanges(row)" class="action-buttons">
             <slot name="row-actions" :row="row" :isSubrow="!props.subrows">
               <button
@@ -173,7 +186,7 @@
                 :style="config.styleConfig.columnStyle"
               />
               <!--actions column-->
-              <col v-if="hasHandlers" style="width: 130px" />
+              <col v-if="hasActionHandlers" style="width: 130px" />
             </colgroup>
             <EntityTableBody
               :rows="{
@@ -206,7 +219,7 @@ import {
   ColumnType,
   TableRow,
 } from '@/types/entity-configs';
-import { Trash2, Pencil, Undo2, Check, ChevronDown, ChevronRight } from 'lucide-vue-next';
+import { Trash2, Pencil, Undo2, Check, ChevronDown, ChevronRight, GripVertical } from 'lucide-vue-next';
 import { computed, ref, type Component } from 'vue';
 import TextInput from './inputs/TextInput.vue';
 import NumberInput from './inputs/NumberInput.vue';
@@ -230,11 +243,6 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<{
-  reorder: [rowKeys: string[]];
-  reorderSubrows: [parentRowKey: string, subrowKeys: string[]];
-}>();
-
 const draggedRowKey = ref<string | null>(null);
 const draggedRowIndex = ref<number | null>(null);
 const dragTopRowKey = ref<string | null>(null);
@@ -257,18 +265,25 @@ const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.CHECK_BOX]: CheckBox,
 };
 
-const hasHandlers = computed(() => {
+const hasActionHandlers = computed(() => {
   const handlers = props.rows.handlers;
 
   return !!(handlers.delete || handlers.edit || handlers.discard || handlers.save);
 });
 
+const hasReorderHandler = computed(() => {
+  const handlers = props.rows.handlers;
+
+  return !!handlers.reorder;
+});
+
 const totalColumns = computed(() => {
   const dataColumns = Object.keys(props.rows.configs).length;
   const expandColumn = props.subrows || props.rows.isChild ? 1 : 0;
-  const actionsColumn = hasHandlers.value ? 1 : 0;
+  const actionsColumn = hasActionHandlers.value ? 1 : 0;
+  const reorderColumn = hasReorderHandler.value ? 1 : 0;
 
-  return expandColumn + dataColumns + actionsColumn;
+  return expandColumn + dataColumns + actionsColumn + reorderColumn;
 });
 
 function hasChildren(row: TableRow<TEntity>) {
@@ -390,11 +405,6 @@ function handleDragEnd() {
   draggedFromParent.value = null;
 }
 
-function handleDragLeave() {
-  dragOverRowKey.value = null;
-  dragTopRowKey.value = null;
-}
-
 function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: DragEvent) {
   event.preventDefault();
   event.stopPropagation();
@@ -436,10 +446,8 @@ function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: D
 
   props.rows.rows.splice(0, props.rows.rows.length, ...newRows);
 
-  emit(
-    'reorder',
-    newRows.map((row) => row._key),
-  );
+  props.rows.handlers.reorder?.(newRows);
+
   handleDragEnd();
 }
 </script>

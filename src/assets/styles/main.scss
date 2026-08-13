@@ -50,12 +50,6 @@
   --shadow-hover: 0 10px 24px rgba(59, 130, 246, 0.1);
   --shadow-pop: 0 10px 30px rgba(0, 0, 0, 0.15);
   --shadow-pop-small: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-  /* Statistics */
-  --color-statistics-neutral: #3b82f6;
-  --color-statistics-positive: #15803d;
-  --color-statistics-warning: #ffa500;
-  --color-statistics-negative: #dc2626;
 }
 
 html,
@@ -365,16 +359,60 @@ td.number-column {
   cursor: pointer;
 }
 
+/************************************************************************************************ TBALE - DRAG & DROP */
+
 tr.dragging {
   opacity: 0.5;
 }
 
 tr.drag-over-top > td {
-  box-shadow: inset 0 3px 0 rgb(59, 130, 246);
+  box-shadow: inset 0 3px 0 var(--color-primary);
 }
 
 tr.drag-over > td {
-  box-shadow: inset 0 -3px 0 rgb(59, 130, 246);
+  box-shadow: inset 0 -3px 0 var(--color-primary);
+}
+
+.reorder-column {
+  overflow: visible;
+}
+
+.reorder-button {
+  position: relative;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  color: inherit;
+  cursor: grab;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+tr:hover .reorder-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.reorder-button:hover {
+  color: var(--color-primary-hover);
+}
+
+.reorder-button:active {
+  cursor: grabbing;
 }
 
 /************************************************************************************************************* FIELDS */

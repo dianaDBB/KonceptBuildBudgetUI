@@ -40,6 +40,7 @@ export interface RowHandlers<TEntity extends EntityType> {
   delete?(row: TableRow<TEntity>): void;
   discard?(row: TableRow<TEntity>): void;
   toggle?(row: TableRow<TEntity>): void;
+  reorder?(rows: TableRow<TEntity>[]): void;
 }
 
 export enum ColumnType {
