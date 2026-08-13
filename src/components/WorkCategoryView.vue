@@ -43,7 +43,7 @@
                 <th></th>
               </tr>
             </thead>
-            <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable">
+            <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable" @reorder="reorderWorkCategories">
               <template #row-actions="{ row, isSubrow }">
                 <template v-if="!isSubrow">
                   <button
@@ -148,6 +148,7 @@ import { apiError } from '@/services/api.ts';
 import workCategoryApi from '@/services/work-category-api.ts';
 import EntityTableBody from './EntityTableBody.vue';
 import { RoutePaths } from '@/router/routes.ts';
+import { UUID } from 'node:crypto';
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 const tableBody = ref<HTMLTableSectionElement | null>(null);
@@ -243,6 +244,11 @@ function nextKey(): string {
   return `row-${++_keyCounter}`;
 }
 
+let _keySubRowCounter = 0;
+function nextKeySubRow(): string {
+  return `subrow-${++_keySubRowCounter}`;
+}
+
 function discardWorkCategoryRow(row: WorkCategoryRow) {
   if (row._isNew) {
     workCategories.value = workCategories.value.filter((w) => w._key !== row._key);
@@ -263,14 +269,9 @@ function toggleWorkCategoryRow(row: WorkCategoryRow) {
   row._expanded = !row._expanded;
 }
 
-/********************************************************************************************* ROW ACTIONS - SUB ROWS */
+/********************************************************************************************** ROW ACTIONS - SUBROWS */
 
 interface WorkItemRow extends TableRow<WorkItemType> {}
-
-let _keyCounterSubrow = 0;
-function nextKeySubRow(): string {
-  return `row-${++_keyCounterSubrow}`;
-}
 
 function discardWorkItemRow(row: WorkItemRow) {
   if (row._isNew) {
@@ -485,6 +486,34 @@ async function confirmDeleteWorkItem(): Promise<void> {
   } catch (error: unknown) {
     await getWorkCategories();
     apiStatus.value = apiError(error, 'Não foi possível guardar as alterações.');
+  }
+}
+
+/************************************************************************************************************* REORDER*/
+
+async function reorderWorkCategories(): Promise<void> {
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    const workCategoryIds = workCategories.value
+      .map((row) => row.entity.id)
+      .filter((id): id is UUID => id !== undefined);
+
+    await workCategoryApi.reorderWorkCategories(workCategoryIds);
+
+    workCategories.value.forEach((row, index) => {
+      row.entity.defaultIndex = index + 1;
+    });
+
+    apiStatus.value = {
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+      message: 'Ordem das especialidades alterada com sucesso.',
+    };
+  } catch (error: unknown) {
+    await getWorkCategories();
+    apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das especialidades.');
   }
 }
 </script>

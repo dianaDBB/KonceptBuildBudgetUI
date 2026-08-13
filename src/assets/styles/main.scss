@@ -365,6 +365,18 @@ td.number-column {
   cursor: pointer;
 }
 
+tr.dragging {
+  opacity: 0.5;
+}
+
+tr.drag-over-top > td {
+  box-shadow: inset 0 3px 0 rgb(59, 130, 246);
+}
+
+tr.drag-over > td {
+  box-shadow: inset 0 -3px 0 rgb(59, 130, 246);
+}
+
 /************************************************************************************************************* FIELDS */
 
 .negative {

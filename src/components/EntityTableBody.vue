@@ -1,16 +1,25 @@
 <template>
   <tbody ref="tableBody">
-    <template v-for="row in props.rows.rows" :key="row._key">
+    <template v-for="(row, rowIndex) in props.rows.rows" :key="row._key">
       <tr
+        draggable="true"
         :class="{
           disabled: !isRowActive(row),
           'main-row-expanded': hasChildren(row),
+          dragging: draggedRowKey === row._key,
+          'drag-over': dragOverRowKey === row._key,
+          'drag-over-top': dragTopRowKey === row._key,
         }"
         @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
         @click="
           !props.rows.isEditing.value &&
             (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
         "
+        @dragstart="handleDragStart(row, rowIndex, $event)"
+        @dragover="handleDragOver(row, $event)"
+        @dragleave="handleDragLeave"
+        @dragend="handleDragEnd"
+        @drop="handleDrop(row, rowIndex, $event)"
       >
         <template v-if="props.subrows || props.rows.isChild">
           <td style="width: 20px; padding: 0">
@@ -198,7 +207,7 @@ import {
   TableRow,
 } from '@/types/entity-configs';
 import { Trash2, Pencil, Undo2, Check, ChevronDown, ChevronRight } from 'lucide-vue-next';
-import { computed, type Component } from 'vue';
+import { computed, ref, type Component } from 'vue';
 import TextInput from './inputs/TextInput.vue';
 import NumberInput from './inputs/NumberInput.vue';
 import MoneyInput from './inputs/MoneyInput.vue';
@@ -220,6 +229,17 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const emit = defineEmits<{
+  reorder: [rowKeys: string[]];
+  reorderSubrows: [parentRowKey: string, subrowKeys: string[]];
+}>();
+
+const draggedRowKey = ref<string | null>(null);
+const draggedRowIndex = ref<number | null>(null);
+const dragTopRowKey = ref<string | null>(null);
+const dragOverRowKey = ref<string | null>(null);
+const draggedFromParent = ref<TParentEntity | null>(null);
 
 const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.TEXT]: TextInput,
@@ -314,6 +334,113 @@ function updateFieldValue(row: TableRow<TEntity>, fieldKey: string, value: unkno
   row._isEdited = true;
 
   props.rows.configs[fieldKey]?.onValueChanged?.(row, value);
+}
+
+/******************************************************************************************************** DRAG & DROP */
+
+function handleDragStart(row: TableRow<TEntity>, index: number, event: DragEvent) {
+  draggedRowKey.value = row._key;
+  draggedRowIndex.value = index;
+
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', row._key);
+  }
+}
+
+function handleDragOver(row: TableRow<TEntity>, event: DragEvent) {
+  event.preventDefault();
+
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move';
+  }
+
+  dragOverRowKey.value = null;
+  dragTopRowKey.value = null;
+
+  const target = event.target;
+
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  const tr = target.closest('tr');
+
+  if (!tr) {
+    return;
+  }
+
+  const rect = tr.getBoundingClientRect();
+  const midpoint = rect.top + rect.height / 2;
+
+  if (event.clientY < midpoint) {
+    // Drop before this row
+    dragTopRowKey.value = row._key;
+  } else {
+    // Drop after this row
+    dragOverRowKey.value = row._key;
+  }
+}
+
+function handleDragEnd() {
+  draggedRowKey.value = null;
+  draggedRowIndex.value = null;
+  dragOverRowKey.value = null;
+  dragTopRowKey.value = null;
+  draggedFromParent.value = null;
+}
+
+function handleDragLeave() {
+  dragOverRowKey.value = null;
+  dragTopRowKey.value = null;
+}
+
+function handleDrop(targetRow: TableRow<TEntity>, _targetIndex: number, event: DragEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (draggedRowIndex.value === null) {
+    handleDragEnd();
+    return;
+  }
+
+  const rows = props.rows.rows;
+  const draggedIndex = draggedRowIndex.value;
+  const draggedRow = rows[draggedIndex];
+
+  if (!draggedRow) {
+    handleDragEnd();
+    return;
+  }
+
+  const newRows = [...rows];
+
+  // Remove dragged row first
+  newRows.splice(draggedIndex, 1);
+
+  // Find target's index after removing the dragged row
+  const targetIndex = newRows.findIndex((row) => row._key === targetRow._key);
+
+  if (targetIndex === -1) {
+    handleDragEnd();
+    return;
+  }
+
+  if (dragTopRowKey.value === targetRow._key) {
+    // Drop before target
+    newRows.splice(targetIndex, 0, draggedRow);
+  } else {
+    // Drop after target
+    newRows.splice(targetIndex + 1, 0, draggedRow);
+  }
+
+  props.rows.rows.splice(0, props.rows.rows.length, ...newRows);
+
+  emit(
+    'reorder',
+    newRows.map((row) => row._key),
+  );
+  handleDragEnd();
 }
 </script>
 
