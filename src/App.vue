@@ -340,7 +340,7 @@ function settingsMiddleClick(event: MouseEvent): void {
 }
 
 .footer {
-  padding: 18px;
+  padding: 10px;
   text-align: center;
   background: var(--color-main-background);
   border-top: 1px solid var(--color-border-light);
