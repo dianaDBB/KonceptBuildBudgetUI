@@ -1,6 +1,4 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { WorkItemType } from './work-item';
-import { WorkCategoryType } from './work-category';
 import { formatIntNumber, formatNumber } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
@@ -33,6 +31,7 @@ export interface ProjectWorkItemType extends EntityType {
   workItemId?: UUID;
   isIncluded?: boolean;
   description?: string;
+  detail?: string;
   index?: number;
 }
 

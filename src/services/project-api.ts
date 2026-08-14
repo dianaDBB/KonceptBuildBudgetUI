@@ -60,10 +60,13 @@ class ProjectApi {
       workCategories: project.workCategories?.map((category) => ({
         workCategoryId: category.workCategoryId,
         isIncluded: category.isIncluded,
+        customDescription: category.description,
+        customIndex: category.index,
         workItems: category.workItems?.map((item) => ({
           workItemId: item.workItemId,
           isIncluded: item.isIncluded,
           customDescription: item.description,
+          customDetail: item.detail,
           customIndex: item.index,
         })),
       })),

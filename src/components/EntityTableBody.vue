@@ -12,7 +12,7 @@
       @dblclick="!props.rows.isEditing.value && props.rows.handlers.edit?.(row)"
       @click="
         !props.rows.isEditing.value &&
-          (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.toggle?.(row))
+          (props.rows.handlers.click?.(row), hasChildren(row) && props.rows.handlers.expandCollapse?.(row))
       "
       @dragover="handleDragOver(row, $event)"
       @drop="handleDrop(row, rowIndex, $event)"

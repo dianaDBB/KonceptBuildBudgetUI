@@ -174,17 +174,7 @@
           <section class="form-section">
             <h3>Desagregação por Especialidades</h3>
 
-            <div class="work-categories">
-              <div v-for="category in workCategories" :key="category.id" class="form-group">
-                <label>{{ category.description }}</label>
-                <CheckBox
-                  :value="isWorkCategorySelected(category)"
-                  :is-invalid="false"
-                  :is-disabled="false"
-                  @update:value="toggleWorkCategory(category, $event)"
-                />
-              </div>
-            </div>
+            <ProjectWorkCategoriesForm v-if="project?.workCategories" v-model="project.workCategories" />
           </section>
         </div>
 
@@ -239,8 +229,7 @@ import NumberInput from './inputs/NumberInput.vue';
 import IntInput from './inputs/IntInput.vue';
 import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
-import { WorkCategoryType } from '@/entities/work-category.ts';
-import workCategoryApi from '@/services/work-category-api.ts';
+import ProjectWorkCategoriesForm from './ProjectWorkCategoriesForm.vue';
 
 const route = useRoute();
 
@@ -250,14 +239,11 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 const project = ref<ProjectType | null>(null);
 const projectConfigs = computed(() => Project.getConfigs());
 
-const workCategories = ref<WorkCategoryType[] | null>(null);
-
 onUnmounted(() => {});
 
 /*************************************************************************************************************** LOAD */
 
 onMounted(async () => {
-  await getWorkCategories();
   await getProject(projectId);
 });
 
@@ -273,18 +259,6 @@ async function getProject(projectId: UUID) {
   }
 }
 
-async function getWorkCategories() {
-  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
-
-  try {
-    workCategories.value = await workCategoryApi.getWorkCategories();
-
-    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
-  } catch (error: unknown) {
-    apiStatus.value = apiError(error, 'Não foi possível carregar as especialidades.');
-  }
-}
-
 /*************************************************************************************************************** SAVE */
 
 async function saveProject() {
@@ -297,7 +271,7 @@ async function saveProject() {
   try {
     await projectApi.updateProject(projectId, project.value);
 
-    project.value = await projectApi.getProject(projectId);
+    await getProject(projectId);
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto guardado com sucesso.' };
   } catch (error: unknown) {
@@ -332,34 +306,6 @@ async function confirmDelete(): Promise<void> {
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Erro ao eliminar o projeto.');
   }
-}
-
-/**************************************************************************************************** WORK CATEGORIES */
-
-function isWorkCategorySelected(category: WorkCategoryType): boolean {
-  return (
-    project.value?.workCategories?.some((item) => item.workCategoryId === category.id && item.isIncluded === true) ??
-    false
-  );
-}
-
-function toggleWorkCategory(category: WorkCategoryType, selected: boolean): void {
-  if (!project.value?.workCategories) {
-    return;
-  }
-
-  const projectCategory = project.value.workCategories.find((item) => item.workCategoryId === category.id);
-
-  if (!projectCategory) {
-    return;
-  }
-
-  projectCategory.isIncluded = selected;
-
-  projectCategory.workItems = projectCategory.workItems!.map((item) => ({
-    ...item,
-    isIncluded: selected,
-  }));
 }
 </script>
 <style lang="scss"></style>

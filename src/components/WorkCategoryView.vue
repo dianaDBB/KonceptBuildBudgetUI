@@ -54,7 +54,7 @@
                     <button
                       title="Eliminar especialidade"
                       :disabled="workCategoryTable.isEditing.value"
-                      @click.stop="askDeleteWorkCategory(row)"
+                      @click.stop="askDeleteWorkCategory(row as WorkCategoryRow)"
                     >
                       <Trash2 :size="16" />
                     </button>
@@ -62,7 +62,7 @@
                     <button
                       title="Editar especialidade"
                       :disabled="workCategoryTable.isEditing.value"
-                      @click.stop="startEditingWorkCategory(row)"
+                      @click.stop="startEditingWorkCategory(row as WorkCategoryRow)"
                     >
                       <Pencil :size="16" />
                     </button>
@@ -70,7 +70,7 @@
                     <button
                       title="Adicionar sub especialidade"
                       :disabled="workItemTable.isEditing.value"
-                      @click.stop="addWorkItem(row)"
+                      @click.stop="addWorkItem(row as WorkCategoryRow)"
                     >
                       <Plus :size="16" />
                     </button>
@@ -80,7 +80,7 @@
                     <button
                       title="Eliminar sub especialidade"
                       :disabled="workItemTable.isEditing.value"
-                      @click.stop="askDeleteWorkItem(row)"
+                      @click.stop="askDeleteWorkItem(row as WorkItemRow)"
                     >
                       <Trash2 :size="16" />
                     </button>
@@ -88,7 +88,7 @@
                     <button
                       title="Editar sub especialidade"
                       :disabled="workItemTable.isEditing.value"
-                      @click.stop="startEditingWorkItem(row)"
+                      @click.stop="startEditingWorkItem(row as WorkItemRow)"
                     >
                       <Pencil :size="16" />
                     </button>
@@ -177,7 +177,7 @@ const workCategoryTable = computed<EntityTableBodyProps<WorkCategoryType>>(() =>
     delete: askDeleteWorkCategory,
     save: saveWorkCategory,
     discard: discardWorkCategoryRow,
-    toggle: toggleWorkCategoryRow,
+    expandCollapse: expandCollapseWorkCategoryRow,
     reorder: reorderWorkCategories,
   },
   rowIsActive: () => true,
@@ -273,7 +273,7 @@ function discardWorkCategoryRow(row: WorkCategoryRow) {
   isEditing.value = false;
 }
 
-function toggleWorkCategoryRow(row: WorkCategoryRow) {
+function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
   if (row._isNew || row._isEdited) {
     return;
   }
