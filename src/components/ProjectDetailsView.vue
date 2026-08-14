@@ -285,30 +285,21 @@ async function getWorkCategories() {
   }
 }
 
-/*************************************************************************************************************** sAVE */
+/*************************************************************************************************************** SAVE */
 
 async function saveProject() {
   if (!project.value) {
     return;
   }
 
-  apiStatus.value = {
-    isLoading: true,
-    isSuccess: false,
-    isError: false,
-  };
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
   try {
     await projectApi.updateProject(projectId, project.value);
 
     project.value = await projectApi.getProject(projectId);
 
-    apiStatus.value = {
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      message: 'Projeto guardado com sucesso.',
-    };
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto guardado com sucesso.' };
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível guardar o projeto.');
   }
@@ -334,12 +325,7 @@ async function confirmDelete(): Promise<void> {
   try {
     await projectApi.deleteProject(project.value?.id!);
 
-    apiStatus.value = {
-      isLoading: false,
-      isSuccess: true,
-      isError: false,
-      message: 'Projeto eliminado com sucesso.',
-    };
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto eliminado com sucesso.' };
 
     showDeleteDialog.value = false;
     goToProjectsList();
@@ -352,33 +338,28 @@ async function confirmDelete(): Promise<void> {
 
 function isWorkCategorySelected(category: WorkCategoryType): boolean {
   return (
-    project.value?.workCategories?.some((item) => item.workCategory?.id === category.id && item.isIncluded === true) ??
+    project.value?.workCategories?.some((item) => item.workCategoryId === category.id && item.isIncluded === true) ??
     false
   );
 }
 
 function toggleWorkCategory(category: WorkCategoryType, selected: boolean): void {
-  if (!project.value) {
+  if (!project.value?.workCategories) {
     return;
   }
 
-  if (!project.value.workCategories) {
-    project.value.workCategories = [];
+  const projectCategory = project.value.workCategories.find((item) => item.workCategoryId === category.id);
+
+  if (!projectCategory) {
+    return;
   }
 
-  if (selected) {
-    const exists = project.value.workCategories.some((item) => item.workCategory?.id === category.id);
+  projectCategory.isIncluded = selected;
 
-    if (!exists) {
-      project.value.workCategories.push({
-        workCategory: category,
-        isIncluded: true,
-        workItems: [],
-      });
-    }
-  } else {
-    project.value.workCategories = project.value.workCategories.filter((item) => item.workCategory?.id !== category.id);
-  }
+  projectCategory.workItems = projectCategory.workItems!.map((item) => ({
+    ...item,
+    isIncluded: selected,
+  }));
 }
 </script>
 <style lang="scss"></style>

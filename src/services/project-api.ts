@@ -56,14 +56,15 @@ class ProjectApi {
       maxFacadeHeight: project.maxFacadeHeight,
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
-      isActive: project.isActive == undefined ? true : project.isActive,
+      isActive: project.isActive ?? true,
       workCategories: project.workCategories?.map((category) => ({
-        workCategoryId: category.workCategory?.id,
+        workCategoryId: category.workCategoryId,
         isIncluded: category.isIncluded,
         workItems: category.workItems?.map((item) => ({
-          workItemId: item.workItem?.id,
+          workItemId: item.workItemId,
           isIncluded: item.isIncluded,
-          customDescription: item.customDescription,
+          customDescription: item.description,
+          customIndex: item.index,
         })),
       })),
     };

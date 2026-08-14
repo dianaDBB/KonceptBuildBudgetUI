@@ -2,6 +2,7 @@ import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
 import { WorkItemType } from './work-item';
 import { WorkCategoryType } from './work-category';
 import { formatIntNumber, formatNumber } from '@/utils/validation';
+import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
   description?: string;
@@ -20,16 +21,19 @@ export interface ProjectType extends EntityType {
   workCategories?: ProjectWorkCategoryType[];
 }
 
-export interface ProjectWorkCategoryType {
-  workCategory?: WorkCategoryType;
+export interface ProjectWorkCategoryType extends EntityType {
+  workCategoryId?: UUID;
   isIncluded?: boolean;
+  description?: string;
+  index?: number;
   workItems?: ProjectWorkItemType[];
 }
 
-export interface ProjectWorkItemType {
-  workItem?: WorkItemType;
+export interface ProjectWorkItemType extends EntityType {
+  workItemId?: UUID;
   isIncluded?: boolean;
-  customDescription?: string;
+  description?: string;
+  index?: number;
 }
 
 export class Project {

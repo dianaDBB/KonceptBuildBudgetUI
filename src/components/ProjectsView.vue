@@ -77,6 +77,8 @@ const projectTable = computed<EntityTableBodyProps<ProjectType>>(() => ({
   configs: projectConfigs.value,
   handlers: {
     click: openProject,
+    save: saveProject,
+    discard: discardProjectRow,
   },
   rowIsActive: () => true,
   isValid: (project) => Project.isValid(project, projectConfigs.value),
@@ -119,6 +121,8 @@ async function getProjects() {
 
 /******************************************************************************************************** ROW ACTIONS */
 
+interface ProjectRow extends TableRow<ProjectType> {}
+
 function openProject(row: ProjectRow) {
   router.push({
     name: RouteNames.projectDetails,
@@ -128,13 +132,27 @@ function openProject(row: ProjectRow) {
   });
 }
 
+function discardProjectRow(row: ProjectRow) {
+  if (row._isNew) {
+    projects.value = projects.value.filter((w) => w._key !== row._key);
+  } else {
+    row.entity = row._original!;
+    row._isNew = false;
+    row._isEdited = false;
+  }
+
+  isEditing.value = false;
+}
+
 /**************************************************************************************************************** ADD */
 
 async function addProject(): Promise<void> {
   isEditing.value = true;
 
   projects.value.push({
-    entity: {},
+    entity: {
+      isActive: true,
+    },
     _key: nextKey(),
     _isNew: true,
     _isEdited: false,
@@ -149,6 +167,34 @@ async function addProject(): Promise<void> {
   });
 
   (lastRow?.querySelector('input') as HTMLInputElement)?.focus();
+}
+
+/*************************************************************************************************************** SAVE */
+
+async function saveProject(row: ProjectRow): Promise<void> {
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    if (row._isNew) {
+      await projectApi.createProject(row.entity);
+    } else if (row._isEdited) {
+      await projectApi.updateProject(row.entity.id!, row.entity);
+    }
+
+    await getProjects();
+    isEditing.value = false;
+
+    apiStatus.value = {
+      isLoading: false,
+      isSuccess: true,
+      isError: false,
+      message: 'Alterações guardadas com sucesso.',
+    };
+  } catch (error: unknown) {
+    await getProjects();
+    isEditing.value = false;
+    apiStatus.value = apiError(error, 'Não foi possível guardar as alterações.');
+  }
 }
 </script>
 <style lang="scss"></style>
