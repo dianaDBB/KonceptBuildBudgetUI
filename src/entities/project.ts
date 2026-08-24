@@ -24,6 +24,7 @@ export interface ProjectWorkCategoryType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
+  margin?: number;
   workItems?: ProjectWorkItemType[];
 }
 

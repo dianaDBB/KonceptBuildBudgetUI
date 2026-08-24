@@ -5,7 +5,7 @@
     inputmode="decimal"
     :disabled="isDisabled"
     :class="{ required: isInvalid }"
-    @input="handleInput($event)"
+    @input="handleInput"
   />
 </template>
 
@@ -13,21 +13,32 @@
 import { formatNumber } from '@/utils/validation';
 
 interface Props {
-  entity: Record<string, unknown>;
-  value: number | null | undefined;
-  fieldKey: string;
+  value: number | undefined;
   isInvalid: boolean;
   isDisabled: boolean;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
-function handleInput(event: Event) {
+const emit = defineEmits<{
+  'update:value': [number | undefined];
+}>();
+
+function handleInput(event: Event): void {
   const input = event.target as HTMLInputElement;
+
   const digits = input.value.replace(/\D/g, '');
+
+  if (!digits) {
+    emit('update:value', undefined);
+    input.value = '';
+    return;
+  }
+
   const numericValue = Number(digits) / 100;
 
-  (props.entity as Record<string, number | null | undefined>)[props.fieldKey] = numericValue;
+  emit('update:value', numericValue);
+
   input.value = formatNumber(numericValue);
 }
 </script>

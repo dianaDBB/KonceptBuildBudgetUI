@@ -46,6 +46,15 @@
             @click.stop
             @update:value="category.description = $event"
           />
+
+          <PercentageInput
+            class="compact-input-header"
+            :value="category.margin"
+            :is-invalid="!category.margin"
+            :is-disabled="false"
+            @click.stop
+            @update:value="category.margin = $event"
+          />
         </div>
 
         <template v-if="hasWorkItems(category)">
@@ -114,6 +123,7 @@ import CheckBox from './inputs/CheckBox.vue';
 import TextInput from './inputs/TextInput.vue';
 import { ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
 import TextArea from './inputs/TextArea.vue';
+import PercentageInput from './inputs/PercentageInput.vue';
 
 const props = defineProps<{ modelValue: ProjectWorkCategoryType[] }>();
 
@@ -382,8 +392,6 @@ function endDrag(): void {
 
   min-height: 32px;
   padding: 6px 10px;
-
-  background: var(--color-main-background);
 }
 
 .work-category-header.expandable {
