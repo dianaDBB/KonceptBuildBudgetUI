@@ -448,7 +448,8 @@ function endDrag(): void {
   top: -2px;
 }
 
-.work-category.drop-after::after .work-item.drop-after::after {
+.work-category.drop-after::after,
+.work-item.drop-after::after {
   bottom: -2px;
 }
 

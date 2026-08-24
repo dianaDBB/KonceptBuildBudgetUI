@@ -202,7 +202,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { Delete, Save, Trash2 } from 'lucide-vue-next';
+import { Delete, LoaderCircle, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
