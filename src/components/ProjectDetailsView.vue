@@ -120,8 +120,8 @@ async function getProject(projectId: UUID) {
 <style lang="scss">
 .project-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 6px;
   border-bottom: 1px solid var(--color-border-light);
 }
 

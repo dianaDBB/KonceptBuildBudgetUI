@@ -156,7 +156,7 @@ body {
 
 .section {
   position: relative;
-  padding: 24px;
+  padding: 15px;
   gap: 14px;
 
   display: flex;
@@ -166,7 +166,7 @@ body {
 }
 
 .section-body {
-  gap: 14px;
+  gap: 5px;
 
   display: flex;
   flex-direction: column;
@@ -641,7 +641,7 @@ select {
 .forms-container {
   display: grid;
   grid-template-columns: 30fr 70fr;
-  gap: 14px;
+  gap: 10px;
 
   flex: 1;
   min-height: 0;
@@ -665,7 +665,7 @@ select {
 }
 
 .form-section h3 {
-  margin: -10px -10px 8px;
+  margin: -10px -10px 6px;
   padding: 6px 10px;
 
   font-size: 15px;
@@ -679,7 +679,7 @@ select {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 .form-group {
@@ -700,10 +700,10 @@ select {
   display: flex;
   justify-content: flex-end;
 
-  gap: 12px;
+  gap: 10px;
 
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 
   button {
     display: inline-flex;

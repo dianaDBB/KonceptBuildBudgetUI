@@ -75,25 +75,25 @@ export class Project {
         displayValue: (project: ProjectType) => project.client,
       },
       contact: {
-        label: 'Contacto do Cliente',
+        label: 'Contacto Cliente',
         type: ColumnType.TEXT,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '80px',
           },
         },
         displayValue: (project: ProjectType) => project.contact,
       },
       landArea: {
-        label: 'Área Total do Terreno (m²)',
+        label: 'Área Total Terreno (m²)',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '130px',
+            width: '120px',
           },
           classes: {
             'number-column': true,
@@ -105,7 +105,7 @@ export class Project {
         displayValue: (project: ProjectType) => formatNumber(project.landArea),
       },
       implantationArea: {
-        label: 'Área de Implantação (m²)',
+        label: 'Área Implantação (m²)',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => false,
@@ -123,7 +123,7 @@ export class Project {
         displayValue: (project: ProjectType) => formatNumber(project.implantationArea),
       },
       grossConstructionArea: {
-        label: 'Área Bruta de Construção (m²)',
+        label: 'Área Bruta Construção (m²)',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => false,
@@ -147,7 +147,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '80px',
+            width: '70px',
           },
           classes: {
             'number-column': true,
@@ -165,7 +165,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '130px',
+            width: '120px',
           },
           classes: {
             'number-column': true,
@@ -183,7 +183,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '130px',
+            width: '120px',
           },
           classes: {
             'number-column': true,
@@ -201,7 +201,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '80px',
+            width: '70px',
           },
           classes: {
             'number-column': true,
@@ -219,7 +219,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '80px',
+            width: '70px',
           },
           classes: {
             'number-column': true,
@@ -237,7 +237,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '80px',
+            width: '70px',
           },
         },
         displayValue: (project: ProjectType) => (project.isActive ? 'Sim' : 'Não'),

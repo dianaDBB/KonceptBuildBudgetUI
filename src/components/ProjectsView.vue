@@ -21,6 +21,8 @@
                 :key="config.label"
                 :style="config.styleConfig.columnStyle"
               />
+              <!--actions column-->
+              <col style="width: 60px" />
             </colgroup>
             <thead>
               <tr>
@@ -29,9 +31,13 @@
                     {{ config.label }}
                   </div>
                 </th>
+                <!--actions column-->
+                <th></th>
               </tr>
             </thead>
-            <EntityTableBody :rows="projectTable" />
+            <tbody>
+              <EntityTableBody :rows="projectTable" />
+            </tbody>
           </table>
         </div>
 
