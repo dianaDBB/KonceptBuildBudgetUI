@@ -33,6 +33,7 @@
 
         <div class="project-view">
           <ProjectCoverView v-if="selectedTab === 'cover'" v-model="project" @reload="getProject(projectId)" />
+          <QuantityMap v-if="selectedTab === 'quantity-map'" v-model="project" @reload="getProject(projectId)" />
         </div>
 
         <Toast
@@ -57,6 +58,7 @@ import { RoutePaths } from '@/router/routes.ts';
 import { ProjectType } from '@/entities/project';
 import { UUID } from 'node:crypto';
 import ProjectCoverView from './ProjectCoverView.vue';
+import QuantityMap from './QuantityMap.vue';
 
 const route = useRoute();
 

@@ -67,8 +67,9 @@ class ProjectApi {
           workItemId: item.workItemId,
           isIncluded: item.isIncluded,
           customDescription: item.description,
-          customDetail: item.detail,
           customIndex: item.index,
+          customUnitPrice: item.unitPrice,
+          quantity: item.quantity,
         })),
       })),
     };

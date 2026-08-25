@@ -32,8 +32,12 @@ export interface ProjectWorkItemType extends EntityType {
   workItemId?: UUID;
   isIncluded?: boolean;
   description?: string;
-  detail?: string;
   index?: number;
+  units?: string;
+  unitPrice?: number;
+  quantity?: number;
+  total?: number;
+  notes?: string;
 }
 
 export class Project {

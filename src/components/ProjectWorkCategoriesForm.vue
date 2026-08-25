@@ -60,69 +60,6 @@
 
             <span class="percentage-symbol"> % </span>
           </div>
-
-          <div v-if="hasWorkItems(category)" class="expand-button" @click.stop="toggleCategory(category)">
-            <ChevronDown v-if="isCategoryExpanded(category)" :size="16" />
-
-            <ChevronRight v-else :size="16" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Work items -->
-      <div v-if="isCategoryExpanded(category)" class="work-items">
-        <div
-          v-for="(item, itemIndex) in category.workItems"
-          :key="item.id"
-          class="work-item"
-          :class="{
-            dragging: isDraggingItem(item),
-            'drop-before': isDropBeforeItem(item),
-            'drop-after': isDropAfterItem(item),
-            'last-item':
-              itemIndex ===
-              category.workItems!.length - 1,
-          }"
-          @dragover.prevent="handleItemDragOver(category, item, $event)"
-          @drop.prevent="dropItem(category, item)"
-        >
-          <div class="drag-column">
-            <div
-              class="drag-handle"
-              draggable="true"
-              title="Arrastar subespecialidade"
-              @dragstart.stop="startItemDrag(category, item, $event)"
-              @dragend.stop="endDrag"
-              @click.stop
-            >
-              <GripVertical :size="14" />
-            </div>
-          </div>
-
-          <div class="item-content">
-            <CheckBox
-              :value="item.isIncluded"
-              :is-invalid="false"
-              :is-disabled="!category.isIncluded"
-              @update:value="item.isIncluded = $event"
-            />
-
-            <TextInput
-              class="item-input"
-              :value="item.description"
-              :is-invalid="!item.description"
-              :is-disabled="!category.isIncluded"
-              @update:value="item.description = $event"
-            />
-
-            <TextArea
-              class="detail-input"
-              :value="item.detail ?? ''"
-              :is-invalid="!item.detail"
-              :is-disabled="!category.isIncluded"
-              @update:value="item.detail = $event"
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -131,11 +68,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-vue-next';
+import { GripVertical } from 'lucide-vue-next';
 
 import CheckBox from './inputs/CheckBox.vue';
 import TextInput from './inputs/TextInput.vue';
-import TextArea from './inputs/TextArea.vue';
 import PercentageInput from './inputs/PercentageInput.vue';
 
 import { ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
@@ -150,8 +86,6 @@ const emit = defineEmits<{
 
 /************************************************************************************************************** STATE */
 
-const expandedCategories = ref<Set<string>>(new Set());
-
 const draggedCategory = ref<ProjectWorkCategoryType | null>(null);
 
 const draggedItem = ref<{
@@ -164,30 +98,6 @@ const dropTarget = ref<{
   id: string;
   position: 'before' | 'after';
 } | null>(null);
-
-/*********************************************************************************************************** CATEGORY */
-
-function hasWorkItems(category: ProjectWorkCategoryType): boolean {
-  return !!category.workItems?.length;
-}
-
-function isCategoryExpanded(category: ProjectWorkCategoryType): boolean {
-  return expandedCategories.value.has(category.id!);
-}
-
-function toggleCategory(category: ProjectWorkCategoryType): void {
-  if (!hasWorkItems(category)) {
-    return;
-  }
-
-  const categoryId = category.id!;
-
-  if (expandedCategories.value.has(categoryId)) {
-    expandedCategories.value.delete(categoryId);
-  } else {
-    expandedCategories.value.add(categoryId);
-  }
-}
 
 /************************************************************************************************************ INCLUDE */
 
@@ -297,120 +207,6 @@ function dropCategory(targetCategory: ProjectWorkCategoryType): void {
       index,
     })),
   );
-
-  endDrag();
-}
-
-/*************************************************************************************************** ITEM DRAG & DROP */
-
-function isDraggingItem(item: ProjectWorkItemType): boolean {
-  return draggedItem.value?.item.id === item.id;
-}
-
-function isDropBeforeItem(item: ProjectWorkItemType): boolean {
-  return dropTarget.value?.type === 'item' && dropTarget.value.id === item.id && dropTarget.value.position === 'before';
-}
-
-function isDropAfterItem(item: ProjectWorkItemType): boolean {
-  return dropTarget.value?.type === 'item' && dropTarget.value.id === item.id && dropTarget.value.position === 'after';
-}
-
-function startItemDrag(category: ProjectWorkCategoryType, item: ProjectWorkItemType, event: DragEvent): void {
-  draggedItem.value = {
-    category,
-    item,
-  };
-
-  draggedCategory.value = null;
-  dropTarget.value = null;
-
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', item.id ?? '');
-  }
-}
-
-function handleItemDragOver(
-  category: ProjectWorkCategoryType,
-  targetItem: ProjectWorkItemType,
-  event: DragEvent,
-): void {
-  const dragged = draggedItem.value;
-
-  if (!dragged) {
-    return;
-  }
-
-  if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move';
-  }
-
-  if (dragged.category.id !== category.id) {
-    dropTarget.value = null;
-    return;
-  }
-
-  if (dragged.item.id === targetItem.id) {
-    dropTarget.value = null;
-    return;
-  }
-
-  const element = event.currentTarget as HTMLElement;
-
-  const rect = element.getBoundingClientRect();
-
-  const middle = rect.top + rect.height / 2;
-
-  dropTarget.value = {
-    type: 'item',
-    id: targetItem.id!,
-    position: event.clientY < middle ? 'before' : 'after',
-  };
-}
-
-function dropItem(category: ProjectWorkCategoryType, targetItem: ProjectWorkItemType): void {
-  const dragged = draggedItem.value;
-  const target = dropTarget.value;
-
-  if (
-    !dragged ||
-    !target ||
-    target.type !== 'item' ||
-    dragged.category.id !== category.id ||
-    dragged.item.id === targetItem.id
-  ) {
-    endDrag();
-    return;
-  }
-
-  const items = [...(category.workItems ?? [])];
-
-  const sourceIndex = items.findIndex((item) => item.id === dragged.item.id);
-
-  if (sourceIndex === -1) {
-    endDrag();
-    return;
-  }
-
-  const [movedItem] = items.splice(sourceIndex, 1);
-
-  const targetIndex = items.findIndex((item) => item.id === targetItem.id);
-
-  if (targetIndex === -1) {
-    endDrag();
-    return;
-  }
-
-  const insertIndex = target.position === 'before' ? targetIndex : targetIndex + 1;
-
-  items.splice(insertIndex, 0, movedItem);
-
-  category.workItems = items.map((item, index) => ({
-    ...item,
-    index,
-  }));
-
-  emit('update:modelValue', [...props.modelValue]);
 
   endDrag();
 }

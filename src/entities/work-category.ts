@@ -27,7 +27,7 @@ export class WorkCategory {
       },
       description: {
         label: 'Descrição',
-        type: ColumnType.TEXT,
+        type: ColumnType.TEXTAREA,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: (workCategory: WorkCategoryType) => !workCategory.description,
@@ -37,14 +37,26 @@ export class WorkCategory {
         },
         displayValue: (workCategory: WorkCategoryType) => workCategory.description,
       },
-      detail: {
-        label: 'Detalhes',
+      units: {
+        label: 'Un.',
         type: ColumnType.TEXT,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '200px',
+            width: '50px',
+          },
+        },
+        displayValue: () => '---',
+      },
+      unitPrice: {
+        label: 'Preço Un.',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
           },
         },
         displayValue: () => '---',

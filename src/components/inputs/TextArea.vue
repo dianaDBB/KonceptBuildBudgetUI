@@ -21,3 +21,11 @@ const emit = defineEmits<{
   'update:value': [string];
 }>();
 </script>
+
+<style>
+textarea {
+  resize: vertical;
+  min-height: 50px;
+  max-height: 200px;
+}
+</style>

@@ -220,7 +220,7 @@ async function getWorkCategories() {
       _key: workCategory.id ?? nextKey(),
       _isNew: false,
       _isEdited: false,
-      _expanded: false,
+      _expanded: true,
     }));
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false };

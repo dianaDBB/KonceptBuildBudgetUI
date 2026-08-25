@@ -57,6 +57,7 @@ export enum ColumnType {
   PERCENTAGE,
   LABEL,
   CHECK_BOX,
+  TEXTAREA,
 }
 
 export type Configs<TEntity extends EntityType> = Record<string, EntityConfig<TEntity>>;

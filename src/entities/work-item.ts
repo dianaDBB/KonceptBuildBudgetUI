@@ -4,7 +4,8 @@ import { WorkCategory } from './work-category';
 export interface WorkItemType extends EntityType {
   defaultIndex?: number;
   description?: string;
-  detail?: string;
+  units?: string;
+  unitPrice?: number;
   isActive?: boolean;
 }
 
@@ -47,21 +48,30 @@ export class WorkItem {
         },
         displayValue: (workItem: WorkItemType) => workItem.description,
       },
-      detail: {
-        ...workItemConfigs.detail,
+      units: {
+        ...workItemConfigs.units,
         styleConfig: {
-          ...workItemConfigs.detail.styleConfig,
+          ...workItemConfigs.units.styleConfig,
           showDisabled: () => false,
-          isInvalid: (workItem: WorkItemType) => !workItem.detail,
+          isInvalid: (workItem: WorkItemType) => !workItem.units,
         },
-        displayValue: (workItem: WorkItemType) => workItem.detail,
+        displayValue: (workItem: WorkItemType) => workItem.units,
+      },
+      unitPrice: {
+        ...workItemConfigs.unitPrice,
+        styleConfig: {
+          ...workItemConfigs.unitPrice.styleConfig,
+          showDisabled: () => false,
+          isInvalid: (workItem: WorkItemType) => !workItem.unitPrice,
+        },
+        displayValue: (workItem: WorkItemType) => workItem.unitPrice,
       },
       isActive: {
         ...workItemConfigs.isActive,
         styleConfig: {
           ...workItemConfigs.isActive.styleConfig,
           showDisabled: () => false,
-          isInvalid: (workItem: WorkItemType) => !workItem.isActive,
+          isInvalid: () => false,
         },
         displayValue: (workItem: WorkItemType) => (workItem.isActive ? 'Sim' : 'Não'),
       },

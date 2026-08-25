@@ -46,7 +46,8 @@ class WorkCategoryApi {
     const payload = {
       defaultIndex: workItem.defaultIndex,
       description: workItem.description,
-      detail: workItem.detail,
+      units: workItem.units,
+      unitPrice: workItem.unitPrice,
       isActive: workItem.isActive,
     };
 
@@ -59,7 +60,8 @@ class WorkCategoryApi {
     const payload = {
       defaultIndex: workItem.defaultIndex,
       description: workItem.description,
-      detail: workItem.detail,
+      units: workItem.units,
+      unitPrice: workItem.unitPrice,
       isActive: workItem.isActive,
     };
 

@@ -21,7 +21,6 @@
       <template v-if="hasReorderHandler">
         <td class="reorder-column">
           <button
-            v-if="!rowHasChanges(row)"
             class="reorder-button"
             title="Reordenar"
             :disabled="props.rows.isEditing.value"
@@ -202,6 +201,7 @@ import Label from './inputs/Label.vue';
 import InfoTooltip from './InfoTooltip.vue';
 import IntInput from './inputs/IntInput.vue';
 import CheckBox from './inputs/CheckBox.vue';
+import TextArea from './inputs/TextArea.vue';
 
 interface Props {
   rows: EntityTableBodyProps<TEntity>;
@@ -231,6 +231,7 @@ const editableComponentMap: Record<ColumnType, Component | undefined> = {
   [ColumnType.PERCENTAGE]: PercentageInput,
   [ColumnType.LABEL]: Label,
   [ColumnType.CHECK_BOX]: CheckBox,
+  [ColumnType.TEXTAREA]: TextArea,
 };
 
 const hasActionHandlers = computed(() => {
