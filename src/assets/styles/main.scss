@@ -379,6 +379,16 @@ td.number-column {
   color: var(--color-text-muted);
 }
 
+tr.disabled,
+tr.disabled > td,
+tr.disabled input,
+tr.disabled textarea,
+tr.disabled select,
+tr.disabled button tr.disabled span {
+  color: var(--color-text-disabled);
+  background: var(--color-background-disabled);
+}
+
 /************************************************************************************************ TBALE - DRAG & DROP */
 
 tr.dragging {

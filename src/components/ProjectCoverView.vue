@@ -163,7 +163,33 @@
       <section class="form-section">
         <h3>Desagregação por Especialidades</h3>
 
-        <ProjectWorkCategoriesForm v-if="project.workCategories" v-model="project.workCategories" />
+        <div class="table">
+          <table>
+            <colgroup>
+              <!--reorder column-->
+              <col style="width: 20px" />
+              <col
+                v-for="config in Object.values(workCategoryConfigs)"
+                :key="config.label"
+                :style="config.styleConfig.columnStyle"
+              />
+            </colgroup>
+            <thead>
+              <tr>
+                <!--reorder column-->
+                <th></th>
+                <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
+                  <div class="column-heading">
+                    {{ config.label }}
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody ref="tableBody">
+              <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
 
@@ -201,21 +227,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Delete, LoaderCircle, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
 import router from '@/router';
 import { RouteNames } from '@/router/routes.ts';
-import { Project, ProjectType } from '@/entities/project';
+import { Project, ProjectType, ProjectWorkCategory, ProjectWorkCategoryType } from '@/entities/project';
 import Toast from '@/components/Toast.vue';
 import TextInput from './inputs/TextInput.vue';
 import NumberInput from './inputs/NumberInput.vue';
 import IntInput from './inputs/IntInput.vue';
 import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
-import ProjectWorkCategoriesForm from './ProjectWorkCategoriesForm.vue';
+import EntityTableBody from './EntityTableBody.vue';
+import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
 
 const project = defineModel<ProjectType>({ required: true });
 const projectConfigs = computed(() => Project.getConfigs());
@@ -223,9 +250,66 @@ const projectEntity = computed(() => project.value as Record<string, unknown>);
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
+const workCategories = ref<WorkCategoryRow[]>([]);
+const workCategoryConfigs = computed(() => ProjectWorkCategory.getConfigs());
+
+const isEditing = ref(false);
+
+const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>>(() => ({
+  rows: workCategories.value,
+  configs: workCategoryConfigs.value,
+  handlers: {
+    reorder: reorderWorkCategories,
+  },
+  rowIsActive: isActive,
+  isValid: (workCategory) => ProjectWorkCategory.isValid(workCategory, workCategoryConfigs.value),
+  isEditing: isEditing,
+}));
+
 const emit = defineEmits<{
   reload: [];
 }>();
+
+/*************************************************************************************************************** LOAD */
+
+onMounted(async () => {
+  await getWorkCategories();
+});
+
+async function getWorkCategories() {
+  workCategories.value = project.value.workCategories!.map((workCategory) => ({
+    entity: {
+      ...workCategory,
+    },
+    _key: workCategory.id ?? nextKey(),
+    _isNew: false,
+    _isEdited: true,
+    _expanded: true,
+  }));
+}
+
+/**************************************************************************************************************** ROW */
+
+interface WorkCategoryRow extends TableRow<ProjectWorkCategoryType> {}
+
+let _keyCounter = 0;
+function nextKey(): string {
+  return `row-${++_keyCounter}`;
+}
+
+function isActive(workCategory: WorkCategoryRow) {
+  return workCategory.entity.isIncluded!;
+}
+
+/************************************************************************************************************* REORDER*/
+
+function reorderWorkCategories(rows: WorkCategoryRow[]): void {
+  rows.forEach((row, index) => {
+    row.entity.index = index + 1;
+  });
+
+  project.value.workCategories = rows.map((row) => row.entity);
+}
 
 /*************************************************************************************************************** SAVE */
 
