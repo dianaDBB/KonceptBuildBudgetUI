@@ -104,7 +104,7 @@ const workItemTable = computed(() => ({
   handlers: {
     reorder: reorderWorkItems,
   },
-  rowIsActive: () => true,
+  rowIsActive: isActive,
   isValid: (workItem: QuantityMapItem) => QuantityMapItem.isValid(workItem, workItemConfigs.value),
   isEditing: isEditing,
 }));
@@ -116,16 +116,18 @@ onMounted(async () => {
 });
 
 async function getWorkCategories() {
-  workCategories.value = project.value.workCategories!.map((workCategory) => ({
-    entity: {
-      ...workCategory,
-      _workItemRows: getWorkItems(workCategory),
-    },
-    _key: workCategory.id ?? nextKey(),
-    _isNew: false,
-    _isEdited: false,
-    _expanded: true,
-  }));
+  workCategories.value = project.value
+    .workCategories!.filter((workCategory) => workCategory.isIncluded)
+    .map((workCategory) => ({
+      entity: {
+        ...workCategory,
+        _workItemRows: getWorkItems(workCategory),
+      },
+      _key: workCategory.id ?? nextKey(),
+      _isNew: false,
+      _isEdited: false,
+      _expanded: true,
+    }));
 }
 
 function getWorkItems(workCategory: ProjectWorkCategoryType): WorkItemRow[] {
@@ -162,6 +164,10 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
   }
 
   row._expanded = !row._expanded;
+}
+
+function isActive(workItem: WorkItemRow) {
+  return workItem.entity.isIncluded!;
 }
 
 /************************************************************************************************************* REORDER*/

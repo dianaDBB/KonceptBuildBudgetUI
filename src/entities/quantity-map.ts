@@ -5,6 +5,18 @@ import { ProjectWorkCategoryType, ProjectWorkItemType } from './project';
 export class QuantityMapCategory {
   static getConfigs(): Configs<ProjectWorkCategoryType> {
     return {
+      isIncluded: {
+        label: '',
+        type: ColumnType.CHECK_BOX,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '30px',
+          },
+        },
+        displayValue: () => '',
+      },
       index: {
         label: 'Cód.',
         type: ColumnType.INT,
@@ -119,6 +131,15 @@ export class QuantityMapItem {
 
     return {
       ...workItemConfigs,
+      isIncluded: {
+        ...workItemConfigs.isIncluded,
+        styleConfig: {
+          ...workItemConfigs.isIncluded.styleConfig,
+          showDisabled: () => false,
+          isInvalid: () => false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? 'Sim' : 'Não'),
+      },
       index: {
         ...workItemConfigs.index,
         displayValue: (workItem: ProjectWorkItemType) => formatIntNumber(workItem.index),
@@ -127,8 +148,8 @@ export class QuantityMapItem {
         ...workItemConfigs.description,
         styleConfig: {
           ...workItemConfigs.description.styleConfig,
-          showDisabled: () => false,
-          isInvalid: (workItem: ProjectWorkItemType) => !workItem.description,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.description : false),
         },
         displayValue: (workItem: ProjectWorkItemType) => workItem.description,
       },
@@ -145,8 +166,8 @@ export class QuantityMapItem {
         ...workItemConfigs.unitPrice,
         styleConfig: {
           ...workItemConfigs.unitPrice.styleConfig,
-          showDisabled: () => false,
-          isInvalid: (workItem: ProjectWorkItemType) => !workItem.unitPrice,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.unitPrice : false),
         },
         displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.unitPrice),
       },
@@ -154,8 +175,8 @@ export class QuantityMapItem {
         ...workItemConfigs.quantity,
         styleConfig: {
           ...workItemConfigs.quantity.styleConfig,
-          showDisabled: () => false,
-          isInvalid: (workItem: ProjectWorkItemType) => !workItem.quantity,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.quantity : false),
         },
         displayValue: (workItem: ProjectWorkItemType) => formatNumber(workItem.quantity),
       },
@@ -172,7 +193,7 @@ export class QuantityMapItem {
         ...workItemConfigs.notes,
         styleConfig: {
           ...workItemConfigs.notes.styleConfig,
-          showDisabled: () => false,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
           isInvalid: () => false,
         },
         displayValue: (workItem: ProjectWorkItemType) => workItem.notes,
