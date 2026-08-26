@@ -194,11 +194,6 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn" @click="goToProjectsList">
-        <Delete :size="18" />
-        Lista de Projetos
-      </button>
-
       <button type="button" class="btn btn-danger" @click="askDelete">
         <Trash2 :size="18" />
         Apagar Projeto
@@ -228,7 +223,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { Delete, LoaderCircle, Save, Trash2 } from 'lucide-vue-next';
+import { LoaderCircle, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
@@ -317,6 +312,8 @@ async function saveProject() {
   if (!project.value.id) {
     return;
   }
+
+  project.value.workCategories = workCategories.value.map((row) => row.entity);
 
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 

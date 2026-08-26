@@ -25,15 +25,25 @@
             type="button"
             class="project-tab"
             :class="{ active: selectedTab === tab.id }"
-            @click="selectedTab = tab.id"
+            @click="selectTab(tab.id)"
           >
             {{ tab.label }}
           </button>
         </div>
 
         <div class="project-view">
-          <ProjectCoverView v-if="selectedTab === 'cover'" v-model="project" @reload="getProject(projectId)" />
-          <QuantityMap v-if="selectedTab === 'quantity-map'" v-model="project" @reload="getProject(projectId)" />
+          <ProjectCoverView
+            v-if="selectedTab === 'cover'"
+            :key="projectRefreshKey"
+            v-model="project"
+            @reload="getProject(projectId)"
+          />
+          <QuantityMap
+            v-if="selectedTab === 'quantity-map'"
+            :key="projectRefreshKey"
+            v-model="project"
+            @reload="getProject(projectId)"
+          />
         </div>
 
         <Toast
@@ -53,7 +63,7 @@ import { FileInput, LoaderCircle } from 'lucide-vue-next';
 import Toast from '@/components/Toast.vue';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { RoutePaths } from '@/router/routes.ts';
 import { ProjectType } from '@/entities/project';
 import { UUID } from 'node:crypto';
@@ -61,11 +71,13 @@ import ProjectCoverView from './ProjectCoverView.vue';
 import QuantityMap from './QuantityMap.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const projectId = route.params.id as UUID;
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
 const project = ref<ProjectType | null>(null);
+const projectRefreshKey = ref(0);
 
 onUnmounted(() => {});
 
@@ -82,14 +94,6 @@ const projectTabs: {
     label: 'CAPA',
   },
   {
-    id: 'general-parameters',
-    label: 'PARÂMETROS GERAIS',
-  },
-  {
-    id: 'calculations',
-    label: 'CÁLCULOS',
-  },
-  {
     id: 'quantity-map',
     label: 'MAPA DE QUANTIDADES',
   },
@@ -99,7 +103,18 @@ const projectTabs: {
   },
 ];
 
-const selectedTab = ref<ProjectTab>('cover');
+const selectedTab = ref<ProjectTab>((route.query.tab as ProjectTab) ?? 'cover');
+
+function selectTab(tab: ProjectTab) {
+  selectedTab.value = tab;
+
+  router.replace({
+    query: {
+      ...route.query,
+      tab,
+    },
+  });
+}
 
 /*************************************************************************************************************** LOAD */
 
@@ -112,6 +127,8 @@ async function getProject(projectId: UUID) {
 
   try {
     project.value = await projectApi.getProject(projectId);
+
+    projectRefreshKey.value++;
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
   } catch (error: unknown) {

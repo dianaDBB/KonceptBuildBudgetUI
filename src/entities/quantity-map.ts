@@ -26,6 +26,7 @@ export class QuantityMapCategory {
           isHighlight: false,
           columnStyle: {
             width: '50px',
+            'font-weight': 600,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatIntNumber(workCategory.index),
@@ -38,6 +39,7 @@ export class QuantityMapCategory {
           isInvalid: (workCategory: ProjectWorkCategoryType) => !workCategory.description,
           columnStyle: {
             width: '600px',
+            'font-weight': 600,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.description,
@@ -52,7 +54,7 @@ export class QuantityMapCategory {
             width: '50px',
           },
         },
-        displayValue: () => '---',
+        displayValue: () => '',
       },
       unitPrice: {
         label: 'Preço Unidade',
@@ -64,7 +66,7 @@ export class QuantityMapCategory {
             width: '100px',
           },
         },
-        displayValue: () => '---',
+        displayValue: () => '',
       },
       quantity: {
         label: 'Quantidade',
@@ -76,7 +78,7 @@ export class QuantityMapCategory {
             width: '100px',
           },
         },
-        displayValue: () => '---',
+        displayValue: () => '',
       },
       total: {
         label: 'TOTAL',
@@ -86,9 +88,10 @@ export class QuantityMapCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '100px',
+            'font-weight': 600,
           },
         },
-        displayValue: () => '---',
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
       },
       notes: {
         label: 'Notas',

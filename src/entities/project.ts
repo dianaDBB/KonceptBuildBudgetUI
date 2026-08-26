@@ -1,5 +1,5 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
+import { formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
@@ -25,6 +25,8 @@ export interface ProjectWorkCategoryType extends EntityType {
   description?: string;
   index?: number;
   margin?: number;
+  directCost?: number;
+  valueWithMargin?: number;
   workItems?: ProjectWorkItemType[];
 }
 
@@ -258,6 +260,18 @@ export class Project {
 export class ProjectWorkCategory {
   static getConfigs(): Configs<ProjectWorkCategoryType> {
     return {
+      index: {
+        label: 'Cod.',
+        type: ColumnType.INT,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '15px',
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatIntNumber(workCategory.index),
+      },
       isIncluded: {
         label: 'Incluir?',
         type: ColumnType.CHECK_BOX,
@@ -287,12 +301,37 @@ export class ProjectWorkCategory {
         type: ColumnType.PERCENTAGE,
         styleConfig: {
           showDisabled: () => false,
-          isInvalid: (workCategory: ProjectWorkCategoryType) => !workCategory.margin,
+          isInvalid: (workCategory: ProjectWorkCategoryType) =>
+            workCategory.isIncluded ? !(workCategory.margin != undefined && workCategory.margin >= 0) : false,
           columnStyle: {
             width: '50px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatPercentage(workCategory.margin),
+      },
+      directCost: {
+        label: 'Custo Directo (€)',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '50px',
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
+      },
+      valueWithMargin: {
+        label: 'Valor c/ Margem (€)',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '50px',
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.valueWithMargin),
       },
     };
   }

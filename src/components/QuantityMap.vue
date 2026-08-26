@@ -42,11 +42,6 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn" @click="goToProjectsList">
-        <Delete :size="18" />
-        Lista de Projetos
-      </button>
-
       <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
         <Save :size="18" />
         Guardar Alterações
@@ -59,18 +54,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { Delete, LoaderCircle, Save } from 'lucide-vue-next';
+import { LoaderCircle, Save } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
-import router from '@/router';
-import { RouteNames } from '@/router/routes.ts';
 import { ProjectType, ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
 import Toast from '@/components/Toast.vue';
 import { QuantityMapCategory, QuantityMapItem } from '@/entities/quantity-map';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs';
 import EntityTableBody from './EntityTableBody.vue';
-import { UUID } from 'crypto';
 
 const project = defineModel<ProjectType>({ required: true });
 
@@ -173,27 +165,9 @@ function isActive(workItem: WorkItemRow) {
 /************************************************************************************************************* REORDER*/
 
 async function reorderWorkItems(rows: WorkItemRow[]): Promise<void> {
-  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
-
-  try {
-    const parentId = rows[0]?._parentId;
-
-    if (!parentId) {
-      apiStatus.value = apiError(null, 'Não foi possível alterar a ordem das sub especialidades.');
-      return;
-    }
-
-    const workItemIds = rows.map((row) => row.entity.id).filter((id): id is UUID => id !== undefined);
-
-    rows.forEach((row, index) => {
-      row.entity.index = index + 1;
-    });
-
-    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
-  } catch (error: unknown) {
-    await getWorkCategories();
-    apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das sub especialidades.');
-  }
+  rows.forEach((row, index) => {
+    row.entity.index = index + 1;
+  });
 }
 
 /*************************************************************************************************************** SAVE */
@@ -214,12 +188,6 @@ async function saveProject() {
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível guardar o projeto.');
   }
-}
-
-/********************************************************************************************************* NAVIGATION */
-
-function goToProjectsList() {
-  router.push({ name: RouteNames.projectsList });
 }
 </script>
 

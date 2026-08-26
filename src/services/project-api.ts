@@ -70,6 +70,7 @@ class ProjectApi {
           customIndex: item.index,
           customUnitPrice: item.unitPrice,
           quantity: item.quantity,
+          notes: item.notes,
         })),
       })),
     };
