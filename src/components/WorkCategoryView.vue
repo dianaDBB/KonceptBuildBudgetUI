@@ -180,7 +180,7 @@ const workCategoryTable = computed<EntityTableBodyProps<WorkCategoryType>>(() =>
     expandCollapse: expandCollapseWorkCategoryRow,
     reorder: reorderWorkCategories,
   },
-  rowIsActive: () => true,
+  rowIsActive: isActive,
   isValid: (workCategory) => WorkCategory.isValid(workCategory, workCategoryConfigs.value),
   isEditing: isEditing,
 }));
@@ -195,7 +195,7 @@ const workItemTable = computed(() => ({
     discard: discardWorkItemRow,
     reorder: reorderWorkItems,
   },
-  rowIsActive: () => true,
+  rowIsActive: subRowIsActive,
   isValid: (workItem: WorkItem) => WorkItem.isValid(workItem, workItemConfigs.value),
   isEditing: isEditing,
 }));
@@ -261,6 +261,10 @@ function nextKeySubRow(): string {
   return `subrow-${++_keySubRowCounter}`;
 }
 
+function isActive(row: WorkCategoryRow) {
+  return row.entity.isActive!;
+}
+
 function discardWorkCategoryRow(row: WorkCategoryRow) {
   if (row._isNew) {
     workCategories.value = workCategories.value.filter((workCategory) => workCategory !== row);
@@ -284,6 +288,10 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
 /********************************************************************************************** ROW ACTIONS - SUBROWS */
 
 interface WorkItemRow extends TableRow<WorkItemType> {}
+
+function subRowIsActive(row: WorkItemRow) {
+  return row.entity.isActive!;
+}
 
 function discardWorkItemRow(row: WorkItemRow) {
   if (row._isNew) {
@@ -328,7 +336,7 @@ async function addWorkCategory(): Promise<void> {
 
   workCategories.value.push({
     entity: {
-      defaultIndex: workCategories.value.length + 1,
+      code: workCategories.value.length + 1,
       _workItemRows: [],
     },
     _key: nextKey(),
@@ -352,7 +360,9 @@ async function addWorkCategory(): Promise<void> {
 async function addWorkItem(row: WorkCategoryRow): Promise<void> {
   isEditing.value = true;
 
-  const entity: WorkCategoryType = {};
+  const entity: WorkItemType = {
+    code: row.entity.workItems ? row.entity.workItems.length + 1 : 1,
+  };
 
   row.entity.workItems ??= [];
   row.entity.workItems.push(entity);
@@ -512,9 +522,7 @@ async function reorderWorkCategories(rows: WorkCategoryRow[]): Promise<void> {
 
     await workCategoryApi.reorderWorkCategories(workCategoryIds);
 
-    rows.forEach((row, index) => {
-      row.entity.defaultIndex = index + 1;
-    });
+    await getWorkCategories();
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
   } catch (error: unknown) {
@@ -538,9 +546,7 @@ async function reorderWorkItems(rows: WorkItemRow[]): Promise<void> {
 
     await workCategoryApi.reorderWorkItems(parentId, workItemIds);
 
-    rows.forEach((row, index) => {
-      row.entity.defaultIndex = index + 1;
-    });
+    await getWorkCategories();
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
   } catch (error: unknown) {

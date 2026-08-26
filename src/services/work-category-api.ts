@@ -14,7 +14,7 @@ class WorkCategoryApi {
 
   async createWorkCategory(workCategory: WorkCategoryType): Promise<void> {
     const payload = {
-      defaultIndex: workCategory.defaultIndex,
+      index: workCategory.code,
       description: workCategory.description,
       isActive: workCategory.isActive,
     };
@@ -26,7 +26,7 @@ class WorkCategoryApi {
 
   async updateWorkCategory(workCategoryId: UUID, workCategory: WorkCategoryType): Promise<void> {
     const payload = {
-      defaultIndex: workCategory.defaultIndex,
+      index: workCategory.code,
       description: workCategory.description,
       isActive: workCategory.isActive,
     };
@@ -44,7 +44,7 @@ class WorkCategoryApi {
 
   async createWorkItem(workCategoryId: UUID, workItem: WorkItemType): Promise<void> {
     const payload = {
-      defaultIndex: workItem.defaultIndex,
+      index: workItem.code,
       description: workItem.description,
       units: workItem.units,
       unitPrice: workItem.unitPrice,
@@ -58,7 +58,7 @@ class WorkCategoryApi {
 
   async updateWorkItem(workCategoryId: UUID, workItemId: UUID, workItem: WorkItemType): Promise<void> {
     const payload = {
-      defaultIndex: workItem.defaultIndex,
+      index: workItem.code,
       description: workItem.description,
       units: workItem.units,
       unitPrice: workItem.unitPrice,

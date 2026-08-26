@@ -1,9 +1,9 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
 import { WorkItemType } from './work-item';
-import { formatIntNumber } from '@/utils/validation';
+import { formatCode } from '@/utils/validation';
 
 export interface WorkCategoryType extends EntityType {
-  defaultIndex?: number;
+  code?: number;
   description?: string;
   isActive?: boolean;
   workItems?: WorkItemType[];
@@ -12,9 +12,9 @@ export interface WorkCategoryType extends EntityType {
 export class WorkCategory {
   static getConfigs(): Configs<WorkCategoryType> {
     return {
-      defaultIndex: {
+      code: {
         label: 'Index',
-        type: ColumnType.INT,
+        type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -23,7 +23,7 @@ export class WorkCategory {
             width: '50px',
           },
         },
-        displayValue: (workCategory: WorkCategoryType) => formatIntNumber(workCategory.defaultIndex),
+        displayValue: (workCategory: WorkCategoryType) => formatCode(workCategory.code),
       },
       description: {
         label: 'Descrição',

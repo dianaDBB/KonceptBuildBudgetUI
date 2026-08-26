@@ -11,6 +11,7 @@
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
   --color-primary-light: #eff6ff;
+  --color-primary-light-hover: #e5efff;
   --color-primary-focus: rgba(59, 130, 246, 0.15);
 
   /* Backgrounds */
@@ -357,6 +358,12 @@ td.number-column {
 
 .main-row-expanded {
   cursor: pointer;
+  font-weight: 600;
+  background-color: var(--color-primary-light);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-light-hover);
+  }
 }
 
 .sub-row {
@@ -376,7 +383,7 @@ td.number-column {
 }
 
 .table table .sub-row td {
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 tr.disabled,
@@ -385,6 +392,16 @@ tr.disabled input,
 tr.disabled textarea,
 tr.disabled select,
 tr.disabled button tr.disabled span {
+  color: var(--color-text-disabled);
+  background: var(--color-background-disabled);
+}
+
+.table table .sub-row.disabled td,
+.table table .sub-row.disabled td span,
+.table table .sub-row.disabled td input,
+.table table .sub-row.disabled td textarea,
+.table table .sub-row.disabled td select,
+.table table .sub-row.disabled td button {
   color: var(--color-text-disabled);
   background: var(--color-background-disabled);
 }

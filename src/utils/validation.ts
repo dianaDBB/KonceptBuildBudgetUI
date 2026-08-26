@@ -41,3 +41,17 @@ export function formatCurrency(value?: number | null): string {
 export function formatPercentage(value?: number | null): string {
   return value == null ? '-' : `${numberFormatter.format(value)} %`;
 }
+
+export function formatCode(value?: number | null): string {
+  return value == null ? '-' : value.toFixed(0).padStart(2, '0');
+}
+
+export function formatSubCode(value?: number | null): string {
+  if (value == null) {
+    return '-';
+  }
+
+  return Number.isInteger(value)
+    ? value.toFixed(0).padStart(2, '0')
+    : value.toFixed(2).replace(/0$/, '').padStart(4, '0');
+}
