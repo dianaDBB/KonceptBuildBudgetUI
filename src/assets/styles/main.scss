@@ -11,14 +11,19 @@
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
   --color-primary-light: #eff6ff;
-  --color-primary-light-hover: #e5efff;
+  --color-primary-light-hover: #dbeafe;
   --color-primary-focus: rgba(59, 130, 246, 0.15);
+
+  /* Tables */
+  --color-table-row-hover: #f8fbff;
+  --color-table-main-row-background: #eff6ff;
+  --color-table-main-row-hover: #dbeafe;
 
   /* Backgrounds */
   --color-main-background: #f5f7fa;
   --color-background: #ffffff;
   --color-background-alt: #f8fafc;
-  --color-background-disabled: #f9fafb;
+  --color-background-disabled: #f7f8f9;
   --color-background-muted: rgba(255, 255, 255, 0.72);
   --color-background-dilaog-muted: rgba(0, 0, 0, 0.45);
 
@@ -26,7 +31,7 @@
   --color-text: #111827;
   --color-text-secondary: #374151;
   --color-text-muted: #6b7280;
-  --color-text-disabled: #9ca3af;
+  --color-text-disabled: #b0b7c3;
 
   /* Borders */
   --color-border: #d1d5db;
@@ -212,7 +217,7 @@ body {
     table-layout: fixed;
 
     tbody tr:hover {
-      background: var(--color-main-background);
+      background: var(--color-table-row-hover);
     }
 
     th {
@@ -359,10 +364,10 @@ td.number-column {
 .main-row-expanded {
   cursor: pointer;
   font-weight: 600;
-  background-color: var(--color-primary-light);
+  background-color: var(--color-table-main-row-background);
 
   &:hover:not(:disabled) {
-    background: var(--color-primary-light-hover);
+    background-color: var(--color-table-main-row-hover);
   }
 }
 
