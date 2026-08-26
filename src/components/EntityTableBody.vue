@@ -3,6 +3,7 @@
     <tr
       :class="{
         disabled: !isRowActive(row),
+        'main-row': props.subrows,
         'main-row-expanded': !props.rows.isChild && hasChildren(row),
         'sub-row': props.rows.isChild,
         dragging: draggedRowKey === row._key,

@@ -337,6 +337,7 @@ async function addWorkCategory(): Promise<void> {
   workCategories.value.push({
     entity: {
       code: workCategories.value.length + 1,
+      isActive: true,
       _workItemRows: [],
     },
     _key: nextKey(),
@@ -362,6 +363,7 @@ async function addWorkItem(row: WorkCategoryRow): Promise<void> {
 
   const entity: WorkItemType = {
     code: row.entity.workItems ? row.entity.workItems.length + 1 : 1,
+    isActive: true,
   };
 
   row.entity.workItems ??= [];
