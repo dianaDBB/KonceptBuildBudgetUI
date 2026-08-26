@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { FileInput, Plus, LoaderCircle, Trash2, Pencil } from 'lucide-vue-next';
 import Toast from '@/components/Toast.vue';
@@ -393,6 +393,13 @@ async function saveWorkCategory(row: WorkCategoryRow): Promise<void> {
       await workCategoryApi.createWorkCategory(row.entity);
     } else if (row._isEdited) {
       await workCategoryApi.updateWorkCategory(row.entity.id!, row.entity);
+
+      const workItems = row.entity.workItems ?? [];
+      await Promise.all(
+        workItems
+          .filter((workItem) => workItem.id)
+          .map((workItem) => workCategoryApi.updateWorkItem(row.entity.id!, workItem.id!, workItem)),
+      );
     }
 
     await getWorkCategories();
@@ -556,5 +563,47 @@ async function reorderWorkItems(rows: WorkItemRow[]): Promise<void> {
     apiStatus.value = apiError(error, 'Não foi possível alterar a ordem das sub especialidades.');
   }
 }
+
+/*********************************************************************************************************** IS ACTIVE*/
+
+const previousWorkCategoryActiveState = new Map<string, boolean>();
+
+watch(
+  () =>
+    workCategories.value.map((row) => ({
+      id: row.entity.id,
+      isActive: row.entity.isActive,
+    })),
+  (newRows) => {
+    for (const row of newRows) {
+      if (!row.id) {
+        continue;
+      }
+
+      const previousIsActive = previousWorkCategoryActiveState.get(row.id);
+
+      if (previousIsActive !== undefined && previousIsActive !== row.isActive) {
+        const category = workCategories.value.find((categoryRow) => categoryRow.entity.id === row.id);
+
+        if (!category) {
+          continue;
+        }
+
+        const isActive = row.isActive ?? false;
+
+        category.entity.workItems?.forEach((workItem) => {
+          workItem.isActive = isActive;
+        });
+
+        getWorkItems(category.entity).forEach((workItemRow) => {
+          workItemRow.entity.isActive = isActive;
+        });
+      }
+
+      previousWorkCategoryActiveState.set(row.id, row.isActive ?? false);
+    }
+  },
+  { immediate: true },
+);
 </script>
 <style lang="scss"></style>

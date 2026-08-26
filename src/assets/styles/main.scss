@@ -310,7 +310,7 @@ td.number-column {
     color: var(--color-text);
 
     &:hover:not(:disabled) {
-      background: var(--color-primary-light);
+      background: none;
       border-color: var(--color-primary);
       color: var(--color-primary);
     }
@@ -361,23 +361,31 @@ td.number-column {
   gap: 8px;
 }
 
-.main-row {
+.main-row > td,
+.main-row-expanded > td {
+  box-shadow: inset 0 1px 0 var(--color-primary);
+}
+
+.main-row,
+.main-row-expanded {
   font-weight: 600;
   background-color: var(--color-table-main-row-background);
-
-  &:hover:not(:disabled) {
-    background-color: var(--color-table-main-row-hover);
-  }
 }
 
 .main-row-expanded {
   cursor: pointer;
-  font-weight: 600;
-  background-color: var(--color-table-main-row-background);
+}
 
-  &:hover:not(:disabled) {
-    background-color: var(--color-table-main-row-hover);
-  }
+.main-row:hover > td,
+.main-row-expanded:hover > td {
+  background-color: var(--color-table-main-row-hover);
+}
+
+.main-row.disabled > td,
+.main-row-expanded.disabled > td {
+  color: var(--color-text-disabled);
+  background-color: var(--color-background-disabled);
+  box-shadow: inset 0 1px 0 var(--color-primary);
 }
 
 .sub-row {
@@ -405,7 +413,8 @@ tr.disabled > td,
 tr.disabled input,
 tr.disabled textarea,
 tr.disabled select,
-tr.disabled button tr.disabled span {
+tr.disabled button,
+tr.disabled span {
   color: var(--color-text-disabled);
   background: var(--color-background-disabled);
 }

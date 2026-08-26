@@ -3,6 +3,7 @@ import { WorkCategory } from './work-category';
 import { formatSubCode } from '@/utils/validation';
 
 export interface WorkItemType extends EntityType {
+  index?: number;
   code?: number;
   description?: string;
   units?: string;
