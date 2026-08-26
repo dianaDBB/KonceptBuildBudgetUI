@@ -1,6 +1,7 @@
 import axiosClient from './api';
 import { UUID } from 'crypto';
 import { ProjectType } from '@/entities/project';
+import { WorkCategoryType } from '@/entities/work-category';
 
 class ProjectApi {
   async getProjects(): Promise<ProjectType[]> {
@@ -84,6 +85,14 @@ class ProjectApi {
     await axiosClient.delete(`/project?projectId=${projectId}`, {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     });
+  }
+
+  async getNewWorkCategoriesAndItems(projectId: UUID): Promise<WorkCategoryType[]> {
+    const response = await axiosClient.get(`/project/new-work-categories?projectId=${projectId}`, {
+      headers: { Accept: 'application/json' },
+    });
+
+    return response.data;
   }
 }
 

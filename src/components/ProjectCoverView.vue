@@ -199,6 +199,11 @@
         Apagar Projeto
       </button>
 
+      <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="getNewWorkCategoriesAndItems">
+        <RefreshCcw :size="18" />
+        Actualizar Especialidades
+      </button>
+
       <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
         <Save :size="18" />
         Guardar Alterações
@@ -219,11 +224,17 @@
     cancel-text="Cancelar"
     @confirm="confirmDelete"
   />
+
+  <NewWorkCategoriesDialog
+    v-model="showNewWorkCategoriesDialog"
+    :categories="newWorkCategories"
+    @confirm="addSelectedWorkCategories"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { LoaderCircle, Save, Trash2 } from 'lucide-vue-next';
+import { LoaderCircle, RefreshCcw, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
@@ -238,6 +249,8 @@ import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import EntityTableBody from './EntityTableBody.vue';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
+import { WorkCategoryType } from '@/entities/work-category.ts';
+import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
 
 const project = defineModel<ProjectType>({ required: true });
 const projectConfigs = computed(() => Project.getConfigs());
@@ -260,6 +273,9 @@ const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>
   isValid: (workCategory) => ProjectWorkCategory.isValid(workCategory, workCategoryConfigs.value),
   isEditing: isEditing,
 }));
+
+const newWorkCategories = ref<WorkCategoryType[]>([]);
+const showNewWorkCategoriesDialog = ref(false);
 
 const emit = defineEmits<{
   reload: [];
@@ -304,6 +320,85 @@ function reorderWorkCategories(rows: WorkCategoryRow[]): void {
   });
 
   project.value.workCategories = rows.map((row) => row.entity);
+}
+
+/************************************************************************************* REFRESH WORK CATEGORIES & ITEMS*/
+
+async function getNewWorkCategoriesAndItems() {
+  if (!project.value.id) {
+    return;
+  }
+
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    const categories = await projectApi.getNewWorkCategoriesAndItems(project.value.id);
+
+    newWorkCategories.value = categories;
+    showNewWorkCategoriesDialog.value = true;
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
+  } catch (error: unknown) {
+    apiStatus.value = apiError(error, 'Não foi possível actualizar as especialidades.');
+  }
+}
+
+function addSelectedWorkCategories(categories: WorkCategoryType[]) {
+  categories.forEach((category) => {
+    const existingRow = workCategories.value.find((row) => row.entity.workCategoryId === category.id);
+
+    if (!existingRow) {
+      workCategories.value.push({
+        entity: {
+          workCategoryId: category.id,
+          description: category.description,
+          index: workCategories.value.length + 1,
+          isIncluded: true,
+          margin: 15,
+          workItems: (category.workItems ?? []).map((workItem, index) => ({
+            workItemId: workItem.id,
+            description: workItem.description,
+            units: workItem.units,
+            unitPrice: workItem.unitPrice,
+            index: index + 1,
+            isIncluded: true,
+          })),
+        },
+        _key: category.id!,
+        _isNew: true,
+        _isEdited: true,
+        _expanded: true,
+      });
+
+      return;
+    }
+
+    const existingWorkItems = existingRow.entity.workItems ?? [];
+    const existingWorkItemIds = new Set(existingWorkItems.map((workItem) => workItem.workItemId).filter(Boolean));
+    const newWorkItems = (category.workItems ?? []).filter((workItem) => !existingWorkItemIds.has(workItem.id));
+
+    if (newWorkItems.length === 0) {
+      return;
+    }
+
+    const nextIndex = existingWorkItems.length + 1;
+
+    existingRow.entity.workItems = [
+      ...existingWorkItems,
+      ...newWorkItems.map((workItem, index) => ({
+        workItemId: workItem.id,
+        description: workItem.description,
+        units: workItem.units,
+        unitPrice: workItem.unitPrice,
+        index: nextIndex + index,
+        isIncluded: true,
+      })),
+    ];
+
+    existingRow._isEdited = true;
+  });
+
+  project.value.workCategories = workCategories.value.map((row) => row.entity);
 }
 
 /*************************************************************************************************************** SAVE */
