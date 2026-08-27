@@ -1,5 +1,5 @@
 import { ColumnType, Configs } from '@/types/entity-configs';
-import { formatCurrency, formatIntNumber, formatNumber } from '@/utils/validation';
+import { formatCode, formatCurrency, formatNumber, formatSubCode } from '@/utils/validation';
 import { ProjectWorkCategoryType, ProjectWorkItemType } from './project';
 
 export class QuantityMapCategory {
@@ -17,9 +17,9 @@ export class QuantityMapCategory {
         },
         displayValue: () => '',
       },
-      index: {
+      code: {
         label: 'Cód.',
-        type: ColumnType.INT,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -29,7 +29,7 @@ export class QuantityMapCategory {
             'font-weight': 600,
           },
         },
-        displayValue: (workCategory: ProjectWorkCategoryType) => formatIntNumber(workCategory.index),
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
       },
       description: {
         label: 'Descrição',
@@ -46,7 +46,7 @@ export class QuantityMapCategory {
       },
       units: {
         label: 'Un.',
-        type: ColumnType.TEXT,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -82,7 +82,7 @@ export class QuantityMapCategory {
       },
       total: {
         label: 'TOTAL',
-        type: ColumnType.MONEY,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -143,9 +143,9 @@ export class QuantityMapItem {
         },
         displayValue: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? 'Sim' : 'Não'),
       },
-      index: {
-        ...workItemConfigs.index,
-        displayValue: (workItem: ProjectWorkItemType) => formatIntNumber(workItem.index),
+      code: {
+        ...workItemConfigs.code,
+        displayValue: (workItem: ProjectWorkItemType) => formatSubCode(workItem.code),
       },
       description: {
         ...workItemConfigs.description,

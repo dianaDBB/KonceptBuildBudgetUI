@@ -216,7 +216,7 @@ body {
     font-size: 14px;
     table-layout: fixed;
 
-    tbody tr:hover {
+    tbody tr:not(.subtotal-row):not(.total-row):hover {
       background: var(--color-table-row-hover);
     }
 
@@ -406,6 +406,16 @@ td.number-column {
 
 .table table .sub-row td {
   color: var(--color-text-secondary);
+}
+
+.subtotal-row {
+  font-weight: 600;
+  background-color: var(--color-table-main-row-background);
+}
+
+.total-row {
+  font-weight: 600;
+  background-color: var(--color-table-main-row-hover);
 }
 
 tr.disabled,

@@ -1,5 +1,5 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
+import { formatCode, formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
@@ -17,6 +17,9 @@ export interface ProjectType extends EntityType {
   wcCount?: number;
   isActive?: boolean;
   workCategories?: ProjectWorkCategoryType[];
+  totalWithoutTax?: number;
+  totalTax?: number;
+  totalWithTax?: number;
 }
 
 export interface ProjectWorkCategoryType extends EntityType {
@@ -24,6 +27,7 @@ export interface ProjectWorkCategoryType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
+  code?: number;
   margin?: number;
   directCost?: number;
   valueWithMargin?: number;
@@ -35,11 +39,13 @@ export interface ProjectWorkItemType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
+  code?: number;
   units?: string;
   unitPrice?: number;
   quantity?: number;
   total?: number;
   notes?: string;
+  clientTotal?: number;
 }
 
 export class Project {
@@ -260,17 +266,17 @@ export class Project {
 export class ProjectWorkCategory {
   static getConfigs(): Configs<ProjectWorkCategoryType> {
     return {
-      index: {
+      code: {
         label: 'Cod.',
-        type: ColumnType.INT,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '15px',
+            width: '20px',
           },
         },
-        displayValue: (workCategory: ProjectWorkCategoryType) => formatIntNumber(workCategory.index),
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
       },
       isIncluded: {
         label: 'Incluir?',
@@ -311,7 +317,7 @@ export class ProjectWorkCategory {
       },
       directCost: {
         label: 'Custo Directo (€)',
-        type: ColumnType.MONEY,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -323,7 +329,7 @@ export class ProjectWorkCategory {
       },
       valueWithMargin: {
         label: 'Valor c/ Margem (€)',
-        type: ColumnType.MONEY,
+        type: ColumnType.LABEL,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,

@@ -44,6 +44,12 @@
             v-model="project"
             @reload="getProject(projectId)"
           />
+          <ClientBudget
+            v-if="selectedTab === 'client-budget'"
+            :key="projectRefreshKey"
+            v-model="project"
+            @reload="getProject(projectId)"
+          />
         </div>
 
         <Toast
@@ -69,6 +75,7 @@ import { ProjectType } from '@/entities/project';
 import { UUID } from 'node:crypto';
 import ProjectCoverView from './ProjectCoverView.vue';
 import QuantityMap from './QuantityMap.vue';
+import ClientBudget from './ClientBudget.vue';
 
 const route = useRoute();
 const router = useRouter();
