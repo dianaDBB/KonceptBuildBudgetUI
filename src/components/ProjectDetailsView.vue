@@ -167,8 +167,11 @@ async function getProject(projectId: UUID) {
 }
 
 .project-view {
+  display: flex;
+  flex-direction: column;
+
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 </style>

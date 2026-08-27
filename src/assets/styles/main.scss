@@ -693,8 +693,7 @@ select {
   grid-template-columns: 30fr 70fr;
   gap: 10px;
 
-  flex: 1;
-  min-height: 0;
+  min-height: min-content;
 }
 
 .form-section {
@@ -752,8 +751,8 @@ select {
 
   gap: 10px;
 
-  margin-top: 10px;
-  margin-bottom: 10px;
+  padding: 16px;
+  background: var(--color-background);
 
   button {
     display: inline-flex;
@@ -801,4 +800,41 @@ select {
   to {
     transform: rotate(360deg);
   }
+}
+
+/*************************************************************************************************************** TABS */
+
+.tab-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0;
+}
+
+.tab-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+.tab-actions {
+  flex-shrink: 0;
+  background: var(--color-background);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
 }

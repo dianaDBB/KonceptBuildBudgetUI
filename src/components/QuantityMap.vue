@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="tab-view">
     <div v-if="apiStatus.isLoading" class="loading-overlay">
       <div>
         <LoaderCircle :size="18" class="spinner" />
@@ -7,45 +7,51 @@
       </div>
     </div>
 
-    <div class="table">
-      <table>
-        <colgroup>
-          <!--reorder column-->
-          <col style="width: 20px" />
-          <!--expand column-->
-          <col style="width: 20px" />
-          <col
-            v-for="config in Object.values(workCategoryConfigs)"
-            :key="config.label"
-            :style="config.styleConfig.columnStyle"
-          />
-        </colgroup>
-        <thead>
-          <tr>
-            <!--reorder column-->
-            <th></th>
-            <!--expand column-->
-            <th></th>
-            <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
-              <div class="column-heading">
-                {{ config.label }}
-              </div>
-            </th>
-            <!--actions column-->
-            <th></th>
-          </tr>
-        </thead>
-        <tbody ref="tableBody">
-          <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
-        </tbody>
-      </table>
-    </div>
+    <div class="tab-content">
+      <div class="tab-body">
+        <div class="table-container">
+          <div class="table">
+            <table>
+              <colgroup>
+                <!--reorder column-->
+                <col style="width: 20px" />
+                <!--expand column-->
+                <col style="width: 20px" />
+                <col
+                  v-for="config in Object.values(workCategoryConfigs)"
+                  :key="config.label"
+                  :style="config.styleConfig.columnStyle"
+                />
+              </colgroup>
+              <thead>
+                <tr>
+                  <!--reorder column-->
+                  <th></th>
+                  <!--expand column-->
+                  <th></th>
+                  <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
+                    <div class="column-heading">
+                      {{ config.label }}
+                    </div>
+                  </th>
+                  <!--actions column-->
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody ref="tableBody">
+                <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-    <div class="form-actions">
-      <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
-        <Save :size="18" />
-        Guardar Alterações
-      </button>
+      <div class="tab-actions">
+        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
+          <Save :size="18" />
+          Guardar Alterações
+        </button>
+      </div>
     </div>
   </div>
 
@@ -191,4 +197,19 @@ async function saveProject() {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.table-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+
+  background: var(--color-background);
+
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+</style>
