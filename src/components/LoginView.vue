@@ -1,6 +1,6 @@
 <template>
-  <section class="login-page">
-    <form class="login-card" @submit.prevent="submit">
+  <section class="login-page" data-testid="login">
+    <form class="login-card" @submit.prevent="submit" data-testid="login-form">
       <div>
         <h2>Welcome back</h2>
         <p>Sign in to access KonceptBuild</p>
@@ -8,17 +8,24 @@
 
       <label>
         Username
-        <input v-model="username" autocomplete="username" required :disabled="isSubmitting" />
+        <input v-model="username" autocomplete="username" required :disabled="isSubmitting" data-testid="username" />
       </label>
 
       <label>
         Password
-        <input v-model="password" type="password" autocomplete="current-password" required :disabled="isSubmitting" />
+        <input
+          v-model="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          :disabled="isSubmitting"
+          data-testid="password"
+        />
       </label>
 
       <p v-if="errorMessage" class="login-error" role="alert">{{ errorMessage }}</p>
 
-      <button type="submit" :disabled="isSubmitting">
+      <button type="submit" :disabled="isSubmitting" data-testid="sign-in-button">
         {{ isSubmitting ? 'Signing in…' : 'Sign in' }}
       </button>
     </form>

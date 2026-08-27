@@ -1,6 +1,6 @@
 <template>
-  <div class="main-section">
-    <div class="section-header">
+  <div class="main-section" data-testid="work-categories">
+    <div class="section-header" data-testid="header">
       <span><FileInput :size="24" /></span>
       <h3>Especialidades</h3>
 
@@ -10,7 +10,7 @@
     </div>
 
     <div class="section">
-      <div v-if="apiStatus.isLoading" class="loading-overlay">
+      <div v-if="apiStatus.isLoading" class="loading-overlay" data-testid="loading">
         <div>
           <LoaderCircle :size="18" class="spinner" />
           A carregar especialidades...
@@ -38,7 +38,7 @@
                 <th></th>
                 <!--expand column-->
                 <th></th>
-                <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
+                <th v-for="(config, index) in Object.values(workCategoryConfigs)" :key="config.label">
                   <div class="column-heading">
                     {{ config.label }}
                   </div>
