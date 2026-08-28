@@ -94,6 +94,15 @@ class ProjectApi {
 
     return response.data;
   }
+
+  async exportToExcel(projectId: UUID): Promise<Blob> {
+    const response = await axiosClient.get(`/project/export-excel?projectId=${projectId}`, {
+      headers: { Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+      responseType: 'blob',
+    });
+
+    return response.data;
+  }
 }
 
 export default new ProjectApi();

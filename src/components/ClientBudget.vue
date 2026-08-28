@@ -71,11 +71,6 @@
           <Sheet :size="18" />
           Exportar para Excel
         </button>
-
-        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="exportToPdf">
-          <FileText :size="18" />
-          Exportar para PDF
-        </button>
       </div>
     </div>
   </div>
@@ -85,7 +80,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { FileText, LoaderCircle, Sheet } from 'lucide-vue-next';
+import { LoaderCircle, Sheet } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import { ProjectType, ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
@@ -95,6 +90,7 @@ import { EntityTableBodyProps, TableRow } from '@/types/entity-configs';
 import EntityTableBody from './EntityTableBody.vue';
 import { ClientBudgetCategory, ClientBudgetItem } from '@/entities/client-budget.ts';
 import { formatCurrency } from '@/utils/validation.ts';
+import projectApi from '@/services/project-api.ts';
 
 const project = defineModel<ProjectType>({ required: true });
 
@@ -194,32 +190,23 @@ function isActive(workItem: WorkItemRow) {
 /************************************************************************************************************* EXPORT */
 
 async function exportToExcel() {
-  if (!project.value.id) {
-    return;
-  }
+  if (!project.value.id) return;
 
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
   try {
-    // TODO : export to Excel
+    const blob = await projectApi.exportToExcel(project.value.id);
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Orçamento - ${project.value.client}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Excel gerado com sucesso.' };
-  } catch (error: unknown) {
-    apiStatus.value = apiError(error, 'Não foi possível gerar o ficheiro.');
-  }
-}
-
-async function exportToPdf() {
-  if (!project.value.id) {
-    return;
-  }
-
-  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
-
-  try {
-    // TODO : export to Excel
-
-    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'PDF gerado com sucesso.' };
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível gerar o ficheiro.');
   }
