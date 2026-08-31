@@ -189,6 +189,11 @@
                 </thead>
                 <tbody ref="tableBody">
                   <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
+                  <tr class="total-row">
+                    <td colspan="5" class="number-column">TOTAL</td>
+                    <td>{{ formatCurrency(project.totalDirectCost) }}</td>
+                    <td>{{ formatCurrency(project.totalWithoutTax) }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -255,6 +260,7 @@ import EntityTableBody from './EntityTableBody.vue';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
 import { WorkCategoryType } from '@/entities/work-category.ts';
 import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
+import { formatCurrency } from '@/utils/validation.ts';
 
 const project = defineModel<ProjectType>({ required: true });
 const projectConfigs = computed(() => Project.getConfigs());

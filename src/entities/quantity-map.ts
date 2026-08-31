@@ -87,7 +87,7 @@ export class QuantityMapCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '120px',
             'font-weight': 600,
           },
         },

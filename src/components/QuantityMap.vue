@@ -40,6 +40,12 @@
               </thead>
               <tbody ref="tableBody">
                 <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
+                <tr></tr>
+                <tr class="total-row">
+                  <td colspan="8" class="number-column">TOTAL CUSTO DIRETO (BRUTO)</td>
+                  <td>{{ formatCurrency(project.totalDirectCost) }}</td>
+                  <td />
+                </tr>
               </tbody>
             </table>
           </div>
@@ -69,6 +75,7 @@ import Toast from '@/components/Toast.vue';
 import { QuantityMapCategory, QuantityMapItem } from '@/entities/quantity-map';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs';
 import EntityTableBody from './EntityTableBody.vue';
+import { formatCurrency } from '@/utils/validation.ts';
 
 const project = defineModel<ProjectType>({ required: true });
 

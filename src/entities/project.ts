@@ -17,6 +17,7 @@ export interface ProjectType extends EntityType {
   wcCount?: number;
   isActive?: boolean;
   workCategories?: ProjectWorkCategoryType[];
+  totalDirectCost?: number;
   totalWithoutTax?: number;
   totalTax?: number;
   totalWithTax?: number;
