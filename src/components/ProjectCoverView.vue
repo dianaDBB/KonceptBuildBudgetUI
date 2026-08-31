@@ -298,6 +298,12 @@
     :categories="newWorkCategories"
     @confirm="addSelectedWorkCategories"
   />
+
+  <NewIndirectCostsDialog
+    v-model="showNewIndirectCostsDialog"
+    :indirectCosts="newIndirectCosts"
+    @confirm="addSelectedIndirectCosts"
+  />
 </template>
 
 <script setup lang="ts">
@@ -329,6 +335,7 @@ import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
 import { formatCurrency } from '@/utils/validation.ts';
 import { IndirectCostType } from '@/entities/indirect-cost.ts';
 import PercentageInput from './inputs/PercentageInput.vue';
+import NewIndirectCostsDialog from './NewIndirectCostsDialog.vue';
 
 const project = defineModel<ProjectType>({ required: true });
 const projectConfigs = computed(() => Project.getConfigs());
