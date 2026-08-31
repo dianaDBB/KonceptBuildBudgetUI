@@ -75,7 +75,7 @@ class WorkCategoryApi {
   }
 
   async deleteWorkItem(workCategoryId: UUID, workItemId: UUID): Promise<void> {
-    await axiosClient.delete(`/work-category/work-item?workCategoryId=${workCategoryId}}&workItemId=${workItemId}`, {
+    await axiosClient.delete(`/work-category/work-item?workCategoryId=${workCategoryId}&workItemId=${workItemId}`, {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     });
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="main-section" data-testid="work-categories">
     <div class="section-header" data-testid="header">
-      <span><FileInput :size="24" /></span>
+      <span><Settings :size="24" /></span>
       <h3>Especialidades</h3>
 
       <div class="page-nav">
@@ -148,7 +148,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { ApiResponseStatus } from '@/types/api-response-status';
-import { FileInput, Plus, LoaderCircle, Trash2, Pencil } from 'lucide-vue-next';
+import { Plus, LoaderCircle, Trash2, Pencil, Settings } from 'lucide-vue-next';
 import Toast from '@/components/Toast.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
@@ -336,7 +336,7 @@ async function addWorkCategory(): Promise<void> {
 
   workCategories.value.push({
     entity: {
-      code: workCategories.value.length + 1,
+      index: workCategories.value.length + 1,
       isActive: true,
       _workItemRows: [],
     },

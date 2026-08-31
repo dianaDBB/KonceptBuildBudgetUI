@@ -7,6 +7,7 @@ export const RouteNames = {
 
   // CONFIGS
   workCategories: 'work-categories',
+  indirectCosts: 'indirect-costs',
 } as const;
 
 export const RoutePaths = {
@@ -19,5 +20,6 @@ export const RoutePaths = {
 
   configs: {
     workCategories: '/configs/work-categories',
+    indirectCosts: '/configs/indirect-costs',
   },
 } as const;

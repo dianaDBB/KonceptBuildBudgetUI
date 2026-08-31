@@ -25,10 +25,21 @@
               class="menu-btn"
               role="menuitem"
               @click="goToWorkCategories"
-              @mousedown="settingsMiddleClick"
+              @mousedown="settingsMiddleClick($event, RoutePaths.configs.workCategories)"
             >
               <Settings :size="16" />
               Especialidades
+            </button>
+
+            <button
+              type="button"
+              class="menu-btn"
+              role="menuitem"
+              @click="goToIndirectCosts"
+              @mousedown="settingsMiddleClick($event, RoutePaths.configs.indirectCosts)"
+            >
+              <Euro :size="16" />
+              Custos Indiretos
             </button>
           </div>
         </div>
@@ -76,7 +87,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { LogOut, Settings, User2Icon } from 'lucide-vue-next';
+import { Euro, LogOut, Settings, User2Icon } from 'lucide-vue-next';
 import authApi from '@/services/auth-api';
 import { RoutePaths } from './router/routes';
 
@@ -159,10 +170,15 @@ async function goToWorkCategories(): Promise<void> {
   isSettingsMenuOpen.value = false;
 }
 
-function settingsMiddleClick(event: MouseEvent): void {
+async function goToIndirectCosts(): Promise<void> {
+  router.push(RoutePaths.configs.indirectCosts);
+  isSettingsMenuOpen.value = false;
+}
+
+function settingsMiddleClick(event: MouseEvent, route: string): void {
   if (event.button === 1) {
     event.preventDefault();
-    const url = router.resolve(RoutePaths.configs.workCategories).href;
+    const url = router.resolve(route).href;
     window.open(url, '_blank');
   }
 }

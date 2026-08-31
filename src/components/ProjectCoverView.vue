@@ -198,6 +198,60 @@
               </table>
             </div>
           </section>
+
+          <div class="form-column">
+            <section class="form-section">
+              <h3>Custos Indiretos</h3>
+
+              <div class="table">
+                <table>
+                  <colgroup>
+                    <!--reorder column-->
+                    <col style="width: 20px" />
+                    <col
+                      v-for="config in Object.values(indirectCostsConfigs)"
+                      :key="config.label"
+                      :style="config.styleConfig.columnStyle"
+                    />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <!--reorder column-->
+                      <th></th>
+                      <th v-for="config in Object.values(indirectCostsConfigs)" :key="config.label">
+                        <div class="column-heading">
+                          {{ config.label }}
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody ref="tableBody">
+                    <EntityTableBody :rows="indirectCostsTable"> </EntityTableBody>
+                    <tr class="total-row">
+                      <td colspan="4" class="number-column">TOTAL</td>
+                      <td>{{ formatCurrency(project.totalIndirectCost) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <h3>Taxa IVA</h3>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>IVA (%)</label>
+                  <PercentageInput
+                    :value="project.tax"
+                    :is-invalid="!project.tax"
+                    :is-disabled="false"
+                    @update:value="project.tax = $event"
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
 
@@ -210,6 +264,11 @@
         <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="getNewWorkCategoriesAndItems">
           <RefreshCcw :size="18" />
           Actualizar Especialidades
+        </button>
+
+        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="getNewIndirectCosts">
+          <RefreshCcw :size="18" />
+          Actualizar Custos Diretos
         </button>
 
         <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
@@ -249,7 +308,14 @@ import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
 import router from '@/router';
 import { RouteNames } from '@/router/routes.ts';
-import { Project, ProjectType, ProjectWorkCategory, ProjectWorkCategoryType } from '@/entities/project';
+import {
+  Project,
+  ProjectIndirectCost,
+  ProjectindirectCostType,
+  ProjectType,
+  ProjectWorkCategory,
+  ProjectWorkCategoryType,
+} from '@/entities/project';
 import Toast from '@/components/Toast.vue';
 import TextInput from './inputs/TextInput.vue';
 import NumberInput from './inputs/NumberInput.vue';
@@ -261,6 +327,8 @@ import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
 import { WorkCategoryType } from '@/entities/work-category.ts';
 import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
 import { formatCurrency } from '@/utils/validation.ts';
+import { IndirectCostType } from '@/entities/indirect-cost.ts';
+import PercentageInput from './inputs/PercentageInput.vue';
 
 const project = defineModel<ProjectType>({ required: true });
 const projectConfigs = computed(() => Project.getConfigs());
@@ -268,10 +336,10 @@ const projectEntity = computed(() => project.value as Record<string, unknown>);
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
+const isEditing = ref(false);
+
 const workCategories = ref<WorkCategoryRow[]>([]);
 const workCategoryConfigs = computed(() => ProjectWorkCategory.getConfigs());
-
-const isEditing = ref(false);
 
 const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>>(() => ({
   rows: workCategories.value,
@@ -279,13 +347,30 @@ const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>
   handlers: {
     reorder: reorderWorkCategories,
   },
-  rowIsActive: isActive,
+  rowIsActive: isActiveWorkCategory,
   isValid: (workCategory) => ProjectWorkCategory.isValid(workCategory, workCategoryConfigs.value),
   isEditing: isEditing,
 }));
 
 const newWorkCategories = ref<WorkCategoryType[]>([]);
 const showNewWorkCategoriesDialog = ref(false);
+
+const indirectCosts = ref<IndirectCostRow[]>([]);
+const indirectCostsConfigs = computed(() => ProjectIndirectCost.getConfigs());
+
+const indirectCostsTable = computed<EntityTableBodyProps<ProjectindirectCostType>>(() => ({
+  rows: indirectCosts.value,
+  configs: indirectCostsConfigs.value,
+  handlers: {
+    reorder: reorderIndirectCosts,
+  },
+  rowIsActive: isActiveIndirectCost,
+  isValid: (indirectCost) => ProjectIndirectCost.isValid(indirectCost, indirectCostsConfigs.value),
+  isEditing: isEditing,
+}));
+
+const newIndirectCosts = ref<IndirectCostType[]>([]);
+const showNewIndirectCostsDialog = ref(false);
 
 const emit = defineEmits<{
   reload: [];
@@ -295,6 +380,7 @@ const emit = defineEmits<{
 
 onMounted(async () => {
   await getWorkCategories();
+  await getIndirectCosts();
 });
 
 async function getWorkCategories() {
@@ -302,7 +388,19 @@ async function getWorkCategories() {
     entity: {
       ...workCategory,
     },
-    _key: workCategory.id ?? nextKey(),
+    _key: workCategory.id ?? nextKeyWorkCategory(),
+    _isNew: false,
+    _isEdited: true,
+    _expanded: true,
+  }));
+}
+
+async function getIndirectCosts() {
+  indirectCosts.value = project.value.indirectCosts!.map((indirectCost) => ({
+    entity: {
+      ...indirectCost,
+    },
+    _key: indirectCost.id ?? nextKeyIndirectCost(),
     _isNew: false,
     _isEdited: true,
     _expanded: true,
@@ -313,13 +411,24 @@ async function getWorkCategories() {
 
 interface WorkCategoryRow extends TableRow<ProjectWorkCategoryType> {}
 
-let _keyCounter = 0;
-function nextKey(): string {
-  return `row-${++_keyCounter}`;
+let _keyCounterWorkCategory = 0;
+function nextKeyWorkCategory(): string {
+  return `row-${++_keyCounterWorkCategory}`;
 }
 
-function isActive(workCategory: WorkCategoryRow) {
+function isActiveWorkCategory(workCategory: WorkCategoryRow) {
   return workCategory.entity.isIncluded!;
+}
+
+interface IndirectCostRow extends TableRow<ProjectindirectCostType> {}
+
+let _keyCounterIndirectCost = 0;
+function nextKeyIndirectCost(): string {
+  return `row-${++_keyCounterIndirectCost}`;
+}
+
+function isActiveIndirectCost(indirectCost: IndirectCostRow) {
+  return indirectCost.entity.isIncluded!;
 }
 
 /************************************************************************************************************* REORDER*/
@@ -330,6 +439,14 @@ function reorderWorkCategories(rows: WorkCategoryRow[]): void {
   });
 
   project.value.workCategories = rows.map((row) => row.entity);
+}
+
+function reorderIndirectCosts(rows: IndirectCostRow[]): void {
+  rows.forEach((row, index) => {
+    row.entity.index = index + 1;
+  });
+
+  project.value.indirectCosts = rows.map((row) => row.entity);
 }
 
 /************************************************************************************* REFRESH WORK CATEGORIES & ITEMS*/
@@ -411,6 +528,55 @@ function addSelectedWorkCategories(categories: WorkCategoryType[]) {
   project.value.workCategories = workCategories.value.map((row) => row.entity);
 }
 
+/********************************************************************************************** REFRESH INDIRECT COSTS*/
+
+async function getNewIndirectCosts() {
+  if (!project.value.id) {
+    return;
+  }
+
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    const indirectCosts = await projectApi.getNewindirectCosts(project.value.id);
+
+    newIndirectCosts.value = indirectCosts;
+    showNewIndirectCostsDialog.value = true;
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false };
+  } catch (error: unknown) {
+    apiStatus.value = apiError(error, 'Não foi possível actualizar os custos indiretos.');
+  }
+}
+
+function addSelectedIndirectCosts(indirectCostsToAdd: IndirectCostType[]) {
+  indirectCostsToAdd.forEach((indirectCostToAdd) => {
+    const existingRow = indirectCosts.value.find((row) => row.entity.indirectCostId === indirectCostToAdd.id);
+
+    if (!existingRow) {
+      indirectCosts.value.push({
+        entity: {
+          indirectCostId: indirectCostToAdd.id,
+          description: indirectCostToAdd.description,
+          index: workCategories.value.length + 1,
+          isIncluded: true,
+          value: indirectCostToAdd.value,
+        },
+        _key: indirectCostToAdd.id!,
+        _isNew: true,
+        _isEdited: true,
+        _expanded: true,
+      });
+
+      return;
+    }
+
+    existingRow._isEdited = true;
+  });
+
+  project.value.indirectCosts = indirectCosts.value.map((row) => row.entity);
+}
+
 /*************************************************************************************************************** SAVE */
 
 async function saveProject() {
@@ -419,6 +585,7 @@ async function saveProject() {
   }
 
   project.value.workCategories = workCategories.value.map((row) => row.entity);
+  project.value.indirectCosts = indirectCosts.value.map((row) => row.entity);
 
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 

@@ -2,6 +2,7 @@ import axiosClient from './api';
 import { UUID } from 'crypto';
 import { ProjectType } from '@/entities/project';
 import { WorkCategoryType } from '@/entities/work-category';
+import { IndirectCostType } from '@/entities/indirect-cost';
 
 class ProjectApi {
   async getProjects(): Promise<ProjectType[]> {
@@ -34,6 +35,7 @@ class ProjectApi {
       maxFacadeHeight: project.maxFacadeHeight,
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
+      tax: project.tax,
       isActive: project.isActive == undefined ? true : project.isActive,
       workCategories: [],
     };
@@ -57,6 +59,7 @@ class ProjectApi {
       maxFacadeHeight: project.maxFacadeHeight,
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
+      tax: project.tax,
       isActive: project.isActive ?? true,
       workCategories: project.workCategories?.map((category) => ({
         workCategoryId: category.workCategoryId,
@@ -74,6 +77,13 @@ class ProjectApi {
           notes: item.notes,
         })),
       })),
+      indirectCosts: project.indirectCosts?.map((indirectCost) => ({
+        indirectCostId: indirectCost.indirectCostId,
+        isIncluded: indirectCost.isIncluded,
+        customValue: indirectCost.value,
+        customDescription: indirectCost.description,
+        customIndex: indirectCost.index,
+      })),
     };
 
     await axiosClient.put(`/project?projectId=${projectId}`, payload, {
@@ -89,6 +99,14 @@ class ProjectApi {
 
   async getNewWorkCategoriesAndItems(projectId: UUID): Promise<WorkCategoryType[]> {
     const response = await axiosClient.get(`/project/new-work-categories?projectId=${projectId}`, {
+      headers: { Accept: 'application/json' },
+    });
+
+    return response.data;
+  }
+
+  async getNewindirectCosts(projectId: UUID): Promise<IndirectCostType[]> {
+    const response = await axiosClient.get(`/project/new-indirect-costs?projectId=${projectId}`, {
       headers: { Accept: 'application/json' },
     });
 

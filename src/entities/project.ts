@@ -15,12 +15,15 @@ export interface ProjectType extends EntityType {
   maxFacadeHeight?: number;
   roomsCount?: number;
   wcCount?: number;
+  tax?: number;
   isActive?: boolean;
   workCategories?: ProjectWorkCategoryType[];
+  indirectCosts?: ProjectindirectCostType[];
   totalDirectCost?: number;
   totalWithoutTax?: number;
   totalTax?: number;
   totalWithTax?: number;
+  totalIndirectCost?: number;
 }
 
 export interface ProjectWorkCategoryType extends EntityType {
@@ -47,6 +50,15 @@ export interface ProjectWorkItemType extends EntityType {
   total?: number;
   notes?: string;
   clientTotal?: number;
+}
+
+export interface ProjectindirectCostType extends EntityType {
+  indirectCostId?: UUID;
+  isIncluded?: boolean;
+  description?: string;
+  index?: number;
+  code?: number;
+  value?: number;
 }
 
 export class Project {
@@ -274,19 +286,19 @@ export class ProjectWorkCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '20px',
+            width: '40px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
       },
       isIncluded: {
-        label: 'Incluir?',
+        label: 'Inc.?',
         type: ColumnType.CHECK_BOX,
         styleConfig: {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '25px',
+            width: '40px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => (workCategory.isIncluded ? 'Sim' : 'Não'),
@@ -298,7 +310,7 @@ export class ProjectWorkCategory {
           showDisabled: () => false,
           isInvalid: (workCategory: ProjectWorkCategoryType) => !workCategory.description,
           columnStyle: {
-            width: '200px',
+            width: '160px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.description,
@@ -311,7 +323,7 @@ export class ProjectWorkCategory {
           isInvalid: (workCategory: ProjectWorkCategoryType) =>
             workCategory.isIncluded ? !(workCategory.margin != undefined && workCategory.margin >= 0) : false,
           columnStyle: {
-            width: '50px',
+            width: '60px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatPercentage(workCategory.margin),
@@ -323,7 +335,7 @@ export class ProjectWorkCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '50px',
+            width: '90px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
@@ -335,10 +347,70 @@ export class ProjectWorkCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '50px',
+            width: '90px',
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.valueWithMargin),
+      },
+    };
+  }
+
+  static isValid(project: ProjectType, configs: Configs<ProjectType>): boolean {
+    return Object.values(configs).every((config) => !config.styleConfig.isInvalid(project));
+  }
+}
+
+export class ProjectIndirectCost {
+  static getConfigs(): Configs<ProjectindirectCostType> {
+    return {
+      code: {
+        label: 'Cod.',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '40px',
+          },
+        },
+        displayValue: (indirectCost: ProjectindirectCostType) => formatCode(indirectCost.code),
+      },
+      isIncluded: {
+        label: 'Inc?',
+        type: ColumnType.CHECK_BOX,
+        styleConfig: {
+          showDisabled: () => false,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '40px',
+          },
+        },
+        displayValue: (indirectCost: ProjectindirectCostType) => (indirectCost.isIncluded ? 'Sim' : 'Não'),
+      },
+      description: {
+        label: 'Custo Indireto',
+        type: ColumnType.TEXT,
+        styleConfig: {
+          showDisabled: () => false,
+          isInvalid: (indirectCost: ProjectindirectCostType) => !indirectCost.description,
+          columnStyle: {
+            width: '160px',
+          },
+        },
+        displayValue: (indirectCost: ProjectindirectCostType) => indirectCost.description,
+      },
+      value: {
+        label: 'Valor (€)',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => false,
+          isInvalid: (indirectCost: ProjectindirectCostType) =>
+            indirectCost.isIncluded ? !(indirectCost.value != undefined && indirectCost.value >= 0) : false,
+          columnStyle: {
+            width: '80px',
+          },
+        },
+        displayValue: (indirectCost: ProjectindirectCostType) => formatCurrency(indirectCost.value),
       },
     };
   }

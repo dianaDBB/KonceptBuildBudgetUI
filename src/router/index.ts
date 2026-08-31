@@ -31,6 +31,12 @@ const routes = [
     component: () => import('@/components/WorkCategoryView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: RoutePaths.configs.indirectCosts,
+    name: RouteNames.indirectCosts,
+    component: () => import('@/components/IndirectCostView.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

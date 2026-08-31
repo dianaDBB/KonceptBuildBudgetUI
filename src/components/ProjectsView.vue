@@ -158,6 +158,7 @@ async function addProject(): Promise<void> {
   projects.value.push({
     entity: {
       isActive: true,
+      tax: 23,
     },
     _key: nextKey(),
     _isNew: true,

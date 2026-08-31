@@ -700,10 +700,18 @@ select {
 
 .forms-container {
   display: grid;
-  grid-template-columns: 30fr 70fr;
+  grid-template-columns: 30fr 40fr 30fr;
   gap: 10px;
 
   min-height: min-content;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .form-section {
