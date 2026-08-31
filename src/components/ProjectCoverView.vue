@@ -199,6 +199,66 @@
             </div>
           </section>
 
+          <section class="form-section">
+            <h3>Resumo Financeiro</h3>
+
+            <div class="table">
+              <table>
+                <colgroup>
+                  <col style="width: 150px" />
+                  <col style="width: 80px" />
+                  <col style="width: 60px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Rubrica</th>
+                    <th>Valor</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody ref="tableBody">
+                  <tr>
+                    <td>Custo Direto das Especialidades</td>
+                    <td>{{ formatCurrency(project.totalDirectCost) }}</td>
+                    <td>{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Custos Indiretos</td>
+                    <td>{{ formatCurrency(project.totalIndirectCost) }}</td>
+                    <td>{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Margem de Lucro</td>
+                    <td>{{ formatCurrency(project.totalMarginProfit) }}</td>
+                    <td>{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
+                  </tr>
+                  <tr class="subtotal-row">
+                    <td>SUBTOTAL SEM IVA</td>
+                    <td>{{ formatCurrency(project.totalWithoutTax) }}</td>
+                    <td>{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
+                  </tr>
+                  <tr>
+                    <td>IVA</td>
+                    <td>{{ formatCurrency(project.totalTax) }}</td>
+                    <td>{{ formatPercentage(project.tax) }}</td>
+                  </tr>
+                  <tr class="total-row">
+                    <td>TOTAL DA EMPREITADA (c/ IVA)</td>
+                    <td colspan="2" class="number-column">{{ formatCurrency(project.totalWithTax) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Custo por m² (s/ IVA)</td>
+                    <td colspan="2" class="number-column">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
+                  </tr>
+                  <tr>
+                    <td>Custo por m² (c/ IVA)</td>
+                    <td colspan="2" class="number-column">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
           <div class="form-column">
             <section class="form-section">
               <h3>Custos Indiretos</h3>
@@ -332,7 +392,7 @@ import EntityTableBody from './EntityTableBody.vue';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
 import { WorkCategoryType } from '@/entities/work-category.ts';
 import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
-import { formatCurrency } from '@/utils/validation.ts';
+import { formatCurrency, formatPercentage } from '@/utils/validation.ts';
 import { IndirectCostType } from '@/entities/indirect-cost.ts';
 import PercentageInput from './inputs/PercentageInput.vue';
 import NewIndirectCostsDialog from './NewIndirectCostsDialog.vue';

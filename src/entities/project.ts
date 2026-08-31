@@ -20,10 +20,17 @@ export interface ProjectType extends EntityType {
   workCategories?: ProjectWorkCategoryType[];
   indirectCosts?: ProjectindirectCostType[];
   totalDirectCost?: number;
+  totalDirectCostPercentage?: number;
   totalWithoutTax?: number;
+  totalWithoutTaxPercentage?: number;
   totalTax?: number;
   totalWithTax?: number;
   totalIndirectCost?: number;
+  totalIndirectCostPercentage?: number;
+  totalMarginProfit?: number;
+  totalMarginProfitPercentage?: number;
+  costPerSquareWithoutTax?: number;
+  costPerSquareWithTax?: number;
 }
 
 export interface ProjectWorkCategoryType extends EntityType {
