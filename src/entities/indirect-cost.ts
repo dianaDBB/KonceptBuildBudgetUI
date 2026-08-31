@@ -1,5 +1,5 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatCode } from '@/utils/validation';
+import { formatCode, formatCurrency } from '@/utils/validation';
 
 export interface IndirectCostType extends EntityType {
   index?: number;
@@ -42,12 +42,12 @@ export class IndirectCost {
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => false,
-          isInvalid: (indirectCost: IndirectCostType) => !indirectCost.value,
+          isInvalid: (indirectCost: IndirectCostType) => indirectCost.value == undefined || indirectCost.value < 0,
           columnStyle: {
             width: '200px',
           },
         },
-        displayValue: (indirectCost: IndirectCostType) => indirectCost.value,
+        displayValue: (indirectCost: IndirectCostType) => formatCurrency(indirectCost.value),
       },
       isActive: {
         label: 'Activo',
