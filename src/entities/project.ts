@@ -129,10 +129,10 @@ export class Project {
             width: '120px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.landArea),
@@ -147,10 +147,10 @@ export class Project {
             width: '130px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.implantationArea),
@@ -165,10 +165,10 @@ export class Project {
             width: '130px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.grossConstructionArea),
@@ -183,10 +183,10 @@ export class Project {
             width: '70px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.floorsCount),
@@ -201,10 +201,10 @@ export class Project {
             width: '120px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.ceilingHeight),
@@ -219,10 +219,10 @@ export class Project {
             width: '120px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatNumber(project.maxFacadeHeight),
@@ -237,10 +237,10 @@ export class Project {
             width: '70px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.roomsCount),
@@ -255,10 +255,10 @@ export class Project {
             width: '70px',
           },
           classes: {
-            'number-column': true,
+            'align-right': true,
           },
           headerClasses: {
-            'number-column': true,
+            'align-right': true,
           },
         },
         displayValue: (project: ProjectType) => formatIntNumber(project.wcCount),
@@ -294,6 +294,12 @@ export class ProjectWorkCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '40px',
+          },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
@@ -344,6 +350,12 @@ export class ProjectWorkCategory {
           columnStyle: {
             width: '90px',
           },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
       },
@@ -355,6 +367,12 @@ export class ProjectWorkCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '90px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.valueWithMargin),
@@ -378,6 +396,12 @@ export class ProjectIndirectCost {
           isInvalid: () => false,
           columnStyle: {
             width: '40px',
+          },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
           },
         },
         displayValue: (indirectCost: ProjectindirectCostType) => formatCode(indirectCost.code),

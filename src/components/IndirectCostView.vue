@@ -34,10 +34,12 @@
               <tr>
                 <!--reorder column-->
                 <th></th>
-                <th v-for="(config, index) in Object.values(indirectCostsConfigs)" :key="config.label">
-                  <div class="column-heading">
-                    {{ config.label }}
-                  </div>
+                <th
+                  v-for="config in Object.values(indirectCostsConfigs)"
+                  :key="config.label"
+                  :class="[config.styleConfig.headerClasses]"
+                >
+                  {{ config.label }}
                 </th>
                 <!--actions column-->
                 <th></th>

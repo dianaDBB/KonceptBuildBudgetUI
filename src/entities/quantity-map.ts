@@ -28,6 +28,12 @@ export class QuantityMapCategory {
             width: '50px',
             'font-weight': 600,
           },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
+          },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
       },
@@ -40,6 +46,9 @@ export class QuantityMapCategory {
           columnStyle: {
             width: '600px',
             'font-weight': 600,
+          },
+          classes: {
+            'align-left': true,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.description,
@@ -57,7 +66,7 @@ export class QuantityMapCategory {
         displayValue: () => '',
       },
       unitPrice: {
-        label: 'Preço Unidade',
+        label: 'Preço Unidade (€)',
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => true,
@@ -90,6 +99,12 @@ export class QuantityMapCategory {
             width: '120px',
             'font-weight': 600,
           },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
       },
@@ -101,6 +116,9 @@ export class QuantityMapCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '400px',
+          },
+          classes: {
+            'align-left': true,
           },
         },
         displayValue: () => '---',

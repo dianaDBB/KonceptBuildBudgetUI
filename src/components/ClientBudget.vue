@@ -25,10 +25,12 @@
                 <tr>
                   <!--expand column-->
                   <th></th>
-                  <th v-for="config in Object.values(clientBudgetCategoryConfigs)" :key="config.label">
-                    <div class="column-heading">
-                      {{ config.label }}
-                    </div>
+                  <th
+                    v-for="config in Object.values(clientBudgetCategoryConfigs)"
+                    :key="config.label"
+                    :class="[config.styleConfig.headerClasses]"
+                  >
+                    {{ config.label }}
                   </th>
                   <!--actions column-->
                   <th></th>
@@ -45,20 +47,20 @@
                 <tr class="subtotal-row">
                   <td />
                   <td />
-                  <td class="number-column">SUBTOTAL (sem IVA)</td>
-                  <td class="number-column">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                  <td class="align-right">SUBTOTAL (sem IVA)</td>
+                  <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                 </tr>
                 <tr class="subtotal-row">
                   <td />
                   <td />
-                  <td class="number-column">IVA (23%)</td>
-                  <td class="number-column">{{ formatCurrency(project.totalTax) }}</td>
+                  <td class="align-right">IVA (23%)</td>
+                  <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
                 </tr>
                 <tr class="total-row">
                   <td />
                   <td />
-                  <td class="number-column">TOTAL DA EMPREITADA (c/ IVA)</td>
-                  <td class="number-column">{{ formatCurrency(project.totalWithTax) }}</td>
+                  <td class="align-right">TOTAL DA EMPREITADA (c/ IVA)</td>
+                  <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
                 </tr>
               </tbody>
             </table>

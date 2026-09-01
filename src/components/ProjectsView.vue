@@ -26,10 +26,12 @@
             </colgroup>
             <thead>
               <tr>
-                <th v-for="[_fieldKey, config] in Object.entries(projectConfigs)" :key="config.label">
-                  <div :class="['column-heading', config.styleConfig.headerClasses]">
-                    {{ config.label }}
-                  </div>
+                <th
+                  v-for="[_fieldKey, config] in Object.entries(projectConfigs)"
+                  :key="config.label"
+                  :class="[config.styleConfig.headerClasses]"
+                >
+                  {{ config.label }}
                 </th>
                 <!--actions column-->
                 <th></th>

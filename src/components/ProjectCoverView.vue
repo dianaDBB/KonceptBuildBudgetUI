@@ -180,19 +180,25 @@
                   <tr>
                     <!--reorder column-->
                     <th></th>
-                    <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
-                      <div class="column-heading">
-                        {{ config.label }}
-                      </div>
+                    <th
+                      v-for="config in Object.values(workCategoryConfigs)"
+                      :key="config.label"
+                      :class="[config.styleConfig.headerClasses]"
+                    >
+                      {{ config.label }}
                     </th>
                   </tr>
                 </thead>
                 <tbody ref="tableBody">
                   <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
                   <tr class="total-row">
-                    <td colspan="5" class="number-column">TOTAL</td>
-                    <td>{{ formatCurrency(project.totalDirectCost) }}</td>
-                    <td>{{ formatCurrency(project.totalWithoutTax) }}</td>
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td class="align-right">TOTAL</td>
+                    <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
+                    <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -211,48 +217,51 @@
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Rubrica</th>
-                    <th>Valor</th>
-                    <th>%</th>
+                    <th class="align-left">Rubrica</th>
+                    <th class="align-right">Valor (€)</th>
+                    <th class="align-right">%</th>
                   </tr>
                 </thead>
                 <tbody ref="tableBody">
                   <tr>
-                    <td>Custo Direto das Especialidades</td>
-                    <td>{{ formatCurrency(project.totalDirectCost) }}</td>
-                    <td>{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
+                    <td class="align-left">Custo Direto das Especialidades</td>
+                    <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
+                    <td class="align-right">{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
                   </tr>
                   <tr>
-                    <td>Custos Indiretos</td>
-                    <td>{{ formatCurrency(project.totalIndirectCost) }}</td>
-                    <td>{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
+                    <td class="align-left">Custos Indiretos</td>
+                    <td class="align-right">{{ formatCurrency(project.totalIndirectCost) }}</td>
+                    <td class="align-right">{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
                   </tr>
                   <tr>
-                    <td>Margem de Lucro</td>
-                    <td>{{ formatCurrency(project.totalMarginProfit) }}</td>
-                    <td>{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
+                    <td class="align-left">Margem de Lucro</td>
+                    <td class="align-right">{{ formatCurrency(project.totalMarginProfit) }}</td>
+                    <td class="align-right">{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
                   </tr>
                   <tr class="subtotal-row">
-                    <td>SUBTOTAL SEM IVA</td>
-                    <td>{{ formatCurrency(project.totalWithoutTax) }}</td>
-                    <td>{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
+                    <td class="align-left">SUBTOTAL SEM IVA</td>
+                    <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                    <td class="align-right">{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
                   </tr>
                   <tr>
-                    <td>IVA</td>
-                    <td>{{ formatCurrency(project.totalTax) }}</td>
-                    <td>{{ formatPercentage(project.tax) }}</td>
+                    <td class="align-left">IVA</td>
+                    <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
+                    <td class="align-right">{{ formatPercentage(project.tax) }}</td>
                   </tr>
                   <tr class="total-row">
-                    <td>TOTAL DA EMPREITADA (c/ IVA)</td>
-                    <td colspan="2" class="number-column">{{ formatCurrency(project.totalWithTax) }}</td>
+                    <td class="align-left">TOTAL DA EMPREITADA (c/ IVA)</td>
+                    <td />
+                    <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
                   </tr>
                   <tr>
-                    <td>Custo por m² (s/ IVA)</td>
-                    <td colspan="2" class="number-column">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
+                    <td class="align-left">Custo por m² (s/ IVA)</td>
+                    <td />
+                    <td class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
                   </tr>
                   <tr>
-                    <td>Custo por m² (c/ IVA)</td>
-                    <td colspan="2" class="number-column">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
+                    <td class="align-left">Custo por m² (c/ IVA)</td>
+                    <td />
+                    <td class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -278,18 +287,23 @@
                     <tr>
                       <!--reorder column-->
                       <th></th>
-                      <th v-for="config in Object.values(indirectCostsConfigs)" :key="config.label">
-                        <div class="column-heading">
-                          {{ config.label }}
-                        </div>
+                      <th
+                        v-for="config in Object.values(indirectCostsConfigs)"
+                        :key="config.label"
+                        :class="[config.styleConfig.headerClasses]"
+                      >
+                        {{ config.label }}
                       </th>
                     </tr>
                   </thead>
                   <tbody ref="tableBody">
                     <EntityTableBody :rows="indirectCostsTable"> </EntityTableBody>
                     <tr class="total-row">
-                      <td colspan="4" class="number-column">TOTAL</td>
-                      <td>{{ formatCurrency(project.totalIndirectCost) }}</td>
+                      <td />
+                      <td />
+                      <td />
+                      <td class="align-right">TOTAL</td>
+                      <td class="align-right">{{ formatCurrency(project.totalIndirectCost) }}</td>
                     </tr>
                   </tbody>
                 </table>

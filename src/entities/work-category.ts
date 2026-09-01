@@ -23,6 +23,12 @@ export class WorkCategory {
           columnStyle: {
             width: '50px',
           },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
+          },
         },
         displayValue: (workCategory: WorkCategoryType) => formatCode(workCategory.code),
       },
@@ -34,6 +40,9 @@ export class WorkCategory {
           isInvalid: (workCategory: WorkCategoryType) => !workCategory.description,
           columnStyle: {
             width: '200px',
+          },
+          classes: {
+            'align-left': true,
           },
         },
         displayValue: (workCategory: WorkCategoryType) => workCategory.description,
@@ -58,6 +67,12 @@ export class WorkCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '100px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
           },
         },
         displayValue: () => '---',

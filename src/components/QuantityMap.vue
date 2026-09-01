@@ -29,10 +29,12 @@
                   <th></th>
                   <!--expand column-->
                   <th></th>
-                  <th v-for="config in Object.values(workCategoryConfigs)" :key="config.label">
-                    <div class="column-heading">
-                      {{ config.label }}
-                    </div>
+                  <th
+                    v-for="config in Object.values(workCategoryConfigs)"
+                    :key="config.label"
+                    :class="[config.styleConfig.headerClasses]"
+                  >
+                    {{ config.label }}
                   </th>
                   <!--actions column-->
                   <th></th>
@@ -42,7 +44,7 @@
                 <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
                 <tr></tr>
                 <tr class="total-row">
-                  <td colspan="8" class="number-column">TOTAL CUSTO DIRETO (BRUTO)</td>
+                  <td colspan="8" class="align-right">TOTAL CUSTO DIRETO (BRUTO)</td>
                   <td>{{ formatCurrency(project.totalDirectCost) }}</td>
                   <td />
                 </tr>

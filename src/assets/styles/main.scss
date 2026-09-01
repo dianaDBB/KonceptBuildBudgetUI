@@ -232,6 +232,14 @@ body {
       background: var(--color-background);
       background-clip: padding-box;
       box-shadow: inset 0 -1px 0 var(--color-border-light);
+
+      &.align-right {
+        text-align: right;
+      }
+
+      &.align-left {
+        text-align: left;
+      }
     }
 
     td {
@@ -242,6 +250,15 @@ body {
       white-space: pre-line;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-align: center;
+
+      &.align-right {
+        text-align: right;
+      }
+
+      &.align-left {
+        text-align: left;
+      }
     }
 
     .highlight {
@@ -263,21 +280,6 @@ body {
       }
     }
   }
-}
-
-.column-heading {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.column-heading.number-column {
-  text-align: right;
-}
-
-td.number-column {
-  text-align: right;
 }
 
 .table-loading {

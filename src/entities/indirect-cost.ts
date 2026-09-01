@@ -22,6 +22,12 @@ export class IndirectCost {
           columnStyle: {
             width: '50px',
           },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
+          },
         },
         displayValue: (indirectCost: IndirectCostType) => formatCode(indirectCost.code),
       },
@@ -34,6 +40,9 @@ export class IndirectCost {
           columnStyle: {
             width: '200px',
           },
+          classes: {
+            'align-left': true,
+          },
         },
         displayValue: (indirectCost: IndirectCostType) => indirectCost.description,
       },
@@ -45,6 +54,12 @@ export class IndirectCost {
           isInvalid: (indirectCost: IndirectCostType) => indirectCost.value == undefined || indirectCost.value < 0,
           columnStyle: {
             width: '200px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
           },
         },
         displayValue: (indirectCost: IndirectCostType) => formatCurrency(indirectCost.value),

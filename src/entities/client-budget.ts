@@ -15,6 +15,12 @@ export class ClientBudgetCategory {
           columnStyle: {
             width: '50px',
           },
+          classes: {
+            'align-left': true,
+          },
+          headerClasses: {
+            'align-left': true,
+          },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
       },
@@ -27,6 +33,9 @@ export class ClientBudgetCategory {
           columnStyle: {
             width: '600px',
           },
+          classes: {
+            'align-left': true,
+          },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.description,
       },
@@ -38,6 +47,12 @@ export class ClientBudgetCategory {
           isInvalid: () => false,
           columnStyle: {
             width: '100px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),

@@ -38,10 +38,12 @@
                 <th></th>
                 <!--expand column-->
                 <th></th>
-                <th v-for="(config, index) in Object.values(workCategoryConfigs)" :key="config.label">
-                  <div class="column-heading">
-                    {{ config.label }}
-                  </div>
+                <th
+                  v-for="config in Object.values(workCategoryConfigs)"
+                  :key="config.label"
+                  :class="[config.styleConfig.headerClasses]"
+                >
+                  {{ config.label }}
                 </th>
                 <!--actions column-->
                 <th></th>
