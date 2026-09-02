@@ -190,7 +190,6 @@
                   </tr>
                 </thead>
                 <tbody ref="tableBody">
-                  <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
                   <tr class="total-row">
                     <td />
                     <td />
@@ -200,6 +199,7 @@
                     <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
                     <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                   </tr>
+                  <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
                 </tbody>
               </table>
             </div>
@@ -345,7 +345,13 @@
           Actualizar Custos Diretos
         </button>
 
-        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
+        <button
+          type="button"
+          class="btn"
+          :class="{ 'btn-highlight': !apiStatus.isLoading && props.hasUnsavedChanges }"
+          :disabled="apiStatus.isLoading || !props.hasUnsavedChanges"
+          @click="saveProject"
+        >
           <Save :size="18" />
           Guardar Alterações
         </button>
@@ -412,6 +418,7 @@ import PercentageInput from './inputs/PercentageInput.vue';
 import NewIndirectCostsDialog from './NewIndirectCostsDialog.vue';
 
 const project = defineModel<ProjectType>({ required: true });
+const props = defineProps<{ hasUnsavedChanges: boolean }>();
 const projectConfigs = computed(() => Project.getConfigs());
 const projectEntity = computed(() => project.value as Record<string, unknown>);
 
@@ -455,6 +462,7 @@ const showNewIndirectCostsDialog = ref(false);
 
 const emit = defineEmits<{
   reload: [];
+  saved: [];
 }>();
 
 /*************************************************************************************************************** LOAD */
@@ -673,6 +681,7 @@ async function saveProject() {
   try {
     await projectApi.updateProject(project.value.id, project.value);
 
+    emit('saved');
     emit('reload');
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto guardado com sucesso.' };

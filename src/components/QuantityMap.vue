@@ -45,7 +45,7 @@
                 <tr></tr>
                 <tr class="total-row">
                   <td colspan="8" class="align-right">TOTAL CUSTO DIRETO (BRUTO)</td>
-                  <td>{{ formatCurrency(project.totalDirectCost) }}</td>
+                  <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
                   <td />
                 </tr>
               </tbody>
@@ -55,7 +55,12 @@
       </div>
 
       <div class="tab-actions">
-        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="saveProject">
+        <button
+          type="button"
+          class="btn"
+          :disabled="apiStatus.isLoading || !props.hasUnsavedChanges"
+          @click="saveProject"
+        >
           <Save :size="18" />
           Guardar Alterações
         </button>
@@ -80,11 +85,13 @@ import EntityTableBody from './EntityTableBody.vue';
 import { formatCurrency } from '@/utils/validation.ts';
 
 const project = defineModel<ProjectType>({ required: true });
+const props = defineProps<{ hasUnsavedChanges: boolean }>();
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
 const emit = defineEmits<{
   reload: [];
+  saved: [];
 }>();
 
 const workCategories = ref<WorkCategoryRow[]>([]);
@@ -197,6 +204,7 @@ async function saveProject() {
   try {
     await projectApi.updateProject(project.value.id, project.value);
 
+    emit('saved');
     emit('reload');
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto guardado com sucesso.' };

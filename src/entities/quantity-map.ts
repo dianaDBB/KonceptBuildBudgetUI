@@ -25,7 +25,7 @@ export class QuantityMapCategory {
           isInvalid: () => false,
           isHighlight: false,
           columnStyle: {
-            width: '50px',
+            width: '60px',
             'font-weight': 600,
           },
           classes: {

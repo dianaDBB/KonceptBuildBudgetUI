@@ -39,27 +39,18 @@
               <tbody ref="tableBody">
                 <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
                 <tr>
-                  <td />
-                  <td />
-                  <td />
-                  <td />
+                  <td colspan="6" />
                 </tr>
                 <tr class="subtotal-row">
-                  <td />
-                  <td />
-                  <td class="align-right">SUBTOTAL (sem IVA)</td>
+                  <td colspan="5" class="align-right">SUBTOTAL (sem IVA)</td>
                   <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                 </tr>
                 <tr class="subtotal-row">
-                  <td />
-                  <td />
-                  <td class="align-right">IVA (23%)</td>
+                  <td colspan="5" class="align-right">IVA (23%)</td>
                   <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
                 </tr>
                 <tr class="total-row">
-                  <td />
-                  <td />
-                  <td class="align-right">TOTAL DA EMPREITADA (c/ IVA)</td>
+                  <td colspan="5" class="align-right">TOTAL DA EMPREITADA (c/ IVA)</td>
                   <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
                 </tr>
               </tbody>
@@ -153,15 +144,17 @@ function getWorkItems(workCategory: ProjectWorkCategoryType): WorkItemRow[] {
   if (!(workCategory as ProjectWorkCategoryType & { _workItemRows?: WorkItemRow[] })._workItemRows) {
     (workCategory as ProjectWorkCategoryType & { _workItemRows?: WorkItemRow[] })._workItemRows = (
       workCategory.workItems ?? []
-    ).map((workItem, index) => {
-      return {
-        entity: workItem,
-        _key: workItem.id ?? `${workCategory.id}-${index}`,
-        _isNew: false,
-        _isEdited: true,
-        _parentId: workCategory.id!,
-      };
-    });
+    )
+      .filter((workItem) => workItem.isIncluded)
+      .map((workItem, index) => {
+        return {
+          entity: workItem,
+          _key: workItem.id ?? `${workCategory.id}-${index}`,
+          _isNew: false,
+          _isEdited: true,
+          _parentId: workCategory.id!,
+        };
+      });
   }
 
   return (workCategory as ProjectWorkCategoryType & { _workItemRows: WorkItemRow[] })._workItemRows;

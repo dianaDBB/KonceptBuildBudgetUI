@@ -1,5 +1,5 @@
 import { ColumnType, Configs } from '@/types/entity-configs';
-import { formatCode, formatCurrency, formatSubCode } from '@/utils/validation';
+import { formatCode, formatCurrency, formatNumber, formatSubCode } from '@/utils/validation';
 import { ProjectWorkCategoryType, ProjectWorkItemType } from './project';
 
 export class ClientBudgetCategory {
@@ -13,7 +13,7 @@ export class ClientBudgetCategory {
           isInvalid: () => false,
           isHighlight: false,
           columnStyle: {
-            width: '50px',
+            width: '60px',
           },
           classes: {
             'align-left': true,
@@ -38,6 +38,36 @@ export class ClientBudgetCategory {
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.description,
+      },
+      units: {
+        label: 'Un.',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '50px',
+          },
+        },
+        displayValue: () => '',
+      },
+      quantity: {
+        label: 'Qtd.',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: () => '',
       },
       total: {
         label: 'TOTAL',
@@ -98,6 +128,24 @@ export class ClientBudgetItem {
           isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.description : false),
         },
         displayValue: (workItem: ProjectWorkItemType) => workItem.description,
+      },
+      units: {
+        ...workItemConfigs.units,
+        styleConfig: {
+          ...workItemConfigs.units.styleConfig,
+          showDisabled: () => true,
+          isInvalid: () => false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => workItem.units,
+      },
+      quantity: {
+        ...workItemConfigs.quantity,
+        styleConfig: {
+          ...workItemConfigs.quantity.styleConfig,
+          showDisabled: () => true,
+          isInvalid: () => false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => (workItem.quantity ? formatNumber(workItem.quantity) : '-'),
       },
       total: {
         ...workItemConfigs.total,
