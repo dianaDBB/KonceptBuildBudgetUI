@@ -175,12 +175,12 @@ onUnmounted(() => {
 
 .select-button {
   width: 100%;
-  min-height: 34px;
+  min-height: 28px;
 
   display: flex;
   align-items: center;
 
-  padding: 6px 10px;
+  padding: 4px 8px;
 
   border: 1px solid var(--color-border);
   border-radius: 4px;
@@ -188,7 +188,7 @@ onUnmounted(() => {
   background: var(--color-background);
 
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 11px;
   text-align: left;
 
   cursor: pointer;
@@ -241,7 +241,7 @@ onUnmounted(() => {
   width: 100%;
   box-sizing: border-box;
 
-  padding: 8px 10px;
+  padding: 6px 8px;
 
   border: none;
   border-bottom: 1px solid var(--color-border);
@@ -249,7 +249,7 @@ onUnmounted(() => {
   background: var(--color-background);
 
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 11px;
 
   outline: none;
 }
@@ -260,10 +260,10 @@ onUnmounted(() => {
   gap: 4px;
 
   width: 100%;
-  padding: 6px 8px;
+  padding: 5px 8px;
 
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .option:hover {
@@ -289,10 +289,10 @@ onUnmounted(() => {
 }
 
 .no-results {
-  padding: 12px;
+  padding: 8px;
 
   text-align: center;
   color: var(--color-text-secondary);
-  font-size: 12px;
+  font-size: 11px;
 }
 </style>

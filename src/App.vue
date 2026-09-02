@@ -3,7 +3,7 @@
     <header class="header">
       <div class="header-content">
         <div>
-          <h1>KonceptBuild Budget</h1>
+          <h1>{{ projectHeader }}</h1>
         </div>
       </div>
 
@@ -90,9 +90,11 @@ import { useRoute, useRouter } from 'vue-router';
 import { Euro, LogOut, Settings, User2Icon } from 'lucide-vue-next';
 import authApi from '@/services/auth-api';
 import { RoutePaths } from './router/routes';
+import { useProjectHeader } from '@/composables/useProjectHeader';
 
 const route = useRoute();
 const router = useRouter();
+const { projectHeader } = useProjectHeader();
 
 const showLogout = computed(() => route.name !== 'login' && authApi.isAuthenticated());
 
@@ -195,9 +197,10 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 
 .header {
   position: relative;
+  z-index: 100;
   background: var(--color-main-background);
   border-bottom: 1px solid var(--color-border-light);
-  padding: 10px 20px;
+  padding: 4px 16px;
   text-align: center;
 }
 
@@ -210,15 +213,15 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
   position: relative;
 
   h1 {
-    margin: 0 0 6px;
-    font-size: 45px;
+    margin: 0 0 3px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--color-text);
   }
 
   p {
     margin: 0;
-    font-size: 15px;
+    font-size: 13px;
     color: var(--color-text-muted);
   }
 }
@@ -229,7 +232,7 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .menu {
@@ -249,8 +252,8 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 
 .trigger-span {
   display: inline-flex;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   align-items: center;
   justify-content: center;
   border: none;
@@ -264,11 +267,11 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 
 .trigger-dropdown {
   position: absolute;
-  z-index: 10;
+  z-index: 1000;
   top: calc(100% + 10px);
   right: 0;
-  width: 180px;
-  padding: 8px;
+  width: 240px;
+  padding: 6px;
   border: 1px solid var(--color-border-light);
   border-radius: 10px;
   background: var(--color-background);
@@ -280,8 +283,8 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 9px;
-  padding: 9px 8px;
+  gap: 7px;
+  padding: 7px 8px;
   border: 0;
   border-radius: 7px;
   background: transparent;
@@ -298,8 +301,8 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 9px;
-  padding: 9px 8px;
+  gap: 7px;
+  padding: 7px 8px;
   border: 0;
   border-radius: 7px;
   background: transparent;
@@ -320,8 +323,8 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 .profile-details {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px;
+  gap: 8px;
+  padding: 6px;
 
   strong,
   span:not(.profile-avatar) {
@@ -330,19 +333,19 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 
   strong {
     color: var(--color-text);
-    font-size: 16px;
+    font-size: 14px;
   }
 
   span:not(.profile-avatar) {
     margin-top: 3px;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
 .main {
   flex: 1;
-  padding: 20px 20px;
+  padding: 12px 16px;
   overflow: hidden;
   min-height: 0;
 }
@@ -356,7 +359,7 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
 }
 
 .footer {
-  padding: 10px;
+  padding: 8px;
   text-align: center;
   background: var(--color-main-background);
   border-top: 1px solid var(--color-border-light);

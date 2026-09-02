@@ -1,19 +1,5 @@
 <template>
   <div class="main-section">
-    <div class="section-header">
-      <span><FileInput :size="24" /></span>
-      <template v-if="apiStatus.isLoading">
-        <h3>A carregar projeto...</h3>
-      </template>
-      <template v-else>
-        <h3>{{ `${project?.description!} • ${project?.client!}` }}</h3>
-      </template>
-
-      <div class="page-nav">
-        <RouterLink :to="RoutePaths.projects.list" class="link">Voltar para Lista de Projetos</RouterLink>
-      </div>
-    </div>
-
     <div class="section">
       <div v-if="apiStatus.isLoading" class="loading-overlay">
         <div>
@@ -23,17 +9,23 @@
       </div>
 
       <div v-if="project" class="section-body">
-        <div class="project-tabs">
-          <button
-            v-for="tab in projectTabs"
-            :key="tab.id"
-            type="button"
-            class="project-tab"
-            :class="{ active: selectedTab === tab.id }"
-            @click="selectTab(tab.id)"
-          >
-            {{ tab.label }}
-          </button>
+        <div class="project-navigation">
+          <div class="project-tabs">
+            <button
+              v-for="tab in projectTabs"
+              :key="tab.id"
+              type="button"
+              class="project-tab"
+              :class="{ active: selectedTab === tab.id }"
+              @click="selectTab(tab.id)"
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <RouterLink :to="RoutePaths.projects.list" class="link project-back-link">
+            Voltar para Lista de Projetos
+          </RouterLink>
         </div>
 
         <div class="project-view">
@@ -72,6 +64,7 @@
     </div>
   </div>
 
+  <!-- unsaved changes dialog -->
   <ConfirmDialog
     v-model="showDiscardChangesDialog"
     title="Sair sem guardar?"
@@ -86,7 +79,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { ApiResponseStatus } from '@/types/api-response-status';
-import { FileInput, LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 import Toast from '@/components/Toast.vue';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
@@ -98,6 +91,7 @@ import ProjectCoverView from './ProjectCoverView.vue';
 import QuantityMapView from './QuantityMapView.vue';
 import ClientBudget from './ClientBudget.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
+import { useProjectHeader } from '@/composables/useProjectHeader';
 
 const route = useRoute();
 const router = useRouter();
@@ -110,6 +104,7 @@ const projectRefreshKey = ref(0);
 const initialProjectSnapshot = ref('');
 const showDiscardChangesDialog = ref(false);
 const pendingNavigation = ref<((value?: unknown) => void) | null>(null);
+const { projectHeader, resetProjectHeader } = useProjectHeader();
 
 function sanitizeProjectForComparison(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -214,6 +209,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload);
+  resetProjectHeader();
 });
 
 onBeforeRouteLeave((_to, _from, next) => {
@@ -295,6 +291,7 @@ async function getProject(projectId: UUID) {
 
   try {
     project.value = await projectApi.getProject(projectId);
+    projectHeader.value = `${project.value.description ?? ''} • ${project.value.client ?? ''}`;
     initialProjectSnapshot.value = getProjectSnapshot(project.value ?? null);
 
     projectRefreshKey.value++;
@@ -306,31 +303,54 @@ async function getProject(projectId: UUID) {
 }
 </script>
 <style lang="scss">
-.project-tabs {
+.project-navigation {
   display: flex;
-  gap: 6px;
-  margin-bottom: 6px;
+  align-items: center;
+  min-width: 0;
+  height: 28px;
   border-bottom: 1px solid var(--color-border-light);
 }
 
+.project-tabs {
+  display: flex;
+  align-self: stretch;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.project-back-link {
+  flex-shrink: 0;
+  padding: 2px 8px;
+
+  white-space: nowrap;
+}
+
 .project-tab {
-  padding: 5px 20px;
+  padding: 2px 14px;
   border: none;
+  border-radius: 4px 4px 0 0;
   background: transparent;
   cursor: pointer;
 
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-muted);
+  line-height: 1.2;
+  white-space: nowrap;
 
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   transition: 0.2s;
 
   &:hover {
     color: var(--color-primary);
+    background: var(--color-primary-light);
   }
 
   &.active {
     color: var(--color-primary);
+    background: var(--color-primary-light);
     border-bottom-color: var(--color-primary);
   }
 }

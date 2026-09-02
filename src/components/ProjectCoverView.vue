@@ -268,6 +268,22 @@
 
           <div class="form-column">
             <section class="form-section">
+              <h3>Taxa IVA</h3>
+
+              <div class="form-grid">
+                <div class="form-group" :class="{ changed: isFieldChanged('tax') }">
+                  <label>IVA (%)</label>
+                  <PercentageInput
+                    :value="project.tax"
+                    :is-invalid="!project.tax"
+                    :is-disabled="false"
+                    @update:value="project.tax = $event"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
               <h3>Custos Indiretos</h3>
 
               <div class="table">
@@ -308,22 +324,6 @@
                 </table>
               </div>
             </section>
-
-            <section class="form-section">
-              <h3>Taxa IVA</h3>
-
-              <div class="form-grid">
-                <div class="form-group" :class="{ changed: isFieldChanged('tax') }">
-                  <label>IVA (%)</label>
-                  <PercentageInput
-                    :value="project.tax"
-                    :is-invalid="!project.tax"
-                    :is-disabled="false"
-                    @update:value="project.tax = $event"
-                  />
-                </div>
-              </div>
-            </section>
           </div>
         </div>
       </div>
@@ -360,11 +360,12 @@
 
   <Toast v-if="apiStatus.message" :message="apiStatus.message" :type="apiStatus.isSuccess ? 'success' : 'error'" />
 
+  <!-- delete dialog-->
   <ConfirmDialog
     v-model="showDeleteDialog"
     title="Eliminar projeto"
     :message="[
-      `${project.description} | ${project.client}`,
+      `${project.description} • ${project.client}`,
       'Tem a certeza que quer eliminar definitivamente este projeto?',
     ]"
     confirm-text="Apagar"
