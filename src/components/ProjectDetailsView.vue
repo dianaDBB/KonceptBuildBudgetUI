@@ -45,7 +45,7 @@
             @reload="getProject(projectId)"
             @saved="markProjectSaved"
           />
-          <QuantityMap
+          <QuantityMapView
             v-if="selectedTab === 'quantity-map'"
             :key="projectRefreshKey"
             v-model="project"
@@ -93,7 +93,7 @@ import { RoutePaths } from '@/router/routes.ts';
 import { ProjectType } from '@/entities/project';
 import { UUID } from 'node:crypto';
 import ProjectCoverView from './ProjectCoverView.vue';
-import QuantityMap from './QuantityMap.vue';
+import QuantityMapView from './QuantityMapView.vue';
 import ClientBudget from './ClientBudget.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 
