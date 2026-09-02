@@ -58,6 +58,7 @@
         <button
           type="button"
           class="btn"
+          :class="{ 'btn-highlight': !apiStatus.isLoading && props.hasUnsavedChanges }"
           :disabled="apiStatus.isLoading || !props.hasUnsavedChanges"
           @click="saveProject"
         >
