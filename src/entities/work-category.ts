@@ -14,7 +14,7 @@ export class WorkCategory {
   static getConfigs(): Configs<WorkCategoryType> {
     return {
       code: {
-        label: 'Index',
+        label: 'Cod.',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => true,

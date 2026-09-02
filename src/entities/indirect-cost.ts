@@ -13,7 +13,7 @@ export class IndirectCost {
   static getConfigs(): Configs<IndirectCostType> {
     return {
       code: {
-        label: 'Index',
+        label: 'Cod.',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => true,
