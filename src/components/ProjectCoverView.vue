@@ -14,7 +14,7 @@
             <h3>Dados da Obra</h3>
 
             <div class="form-grid">
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('description') }">
                 <label>{{ projectConfigs.description.label }}</label>
                 <TextInput
                   :value="project.description"
@@ -24,7 +24,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('address') }">
                 <label>{{ projectConfigs.address.label }}</label>
                 <TextInput
                   :value="project.address"
@@ -34,7 +34,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('client') }">
                 <label>{{ projectConfigs.client.label }}</label>
                 <TextInput
                   :value="project.client"
@@ -44,7 +44,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('contact') }">
                 <label>{{ projectConfigs.contact.label }}</label>
                 <TextInput
                   :value="project.contact"
@@ -54,7 +54,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('landArea') }">
                 <label>{{ projectConfigs.landArea.label }}</label>
                 <NumberInput
                   :entity="projectEntity"
@@ -66,7 +66,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('implantationArea') }">
                 <label>{{ projectConfigs.implantationArea.label }}</label>
                 <NumberInput
                   :entity="projectEntity"
@@ -78,7 +78,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('grossConstructionArea') }">
                 <label>{{ projectConfigs.grossConstructionArea.label }}</label>
                 <NumberInput
                   :entity="projectEntity"
@@ -90,7 +90,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('floorsCount') }">
                 <label>{{ projectConfigs.floorsCount.label }}</label>
                 <IntInput
                   :entity="projectEntity"
@@ -102,7 +102,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('ceilingHeight') }">
                 <label>{{ projectConfigs.ceilingHeight.label }}</label>
                 <NumberInput
                   :entity="projectEntity"
@@ -114,7 +114,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('maxFacadeHeight') }">
                 <label>{{ projectConfigs.maxFacadeHeight.label }}</label>
                 <NumberInput
                   :entity="projectEntity"
@@ -126,7 +126,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('roomsCount') }">
                 <label>{{ projectConfigs.roomsCount.label }}</label>
                 <IntInput
                   :entity="projectEntity"
@@ -138,7 +138,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('wcCount') }">
                 <label>{{ projectConfigs.wcCount.label }}</label>
                 <IntInput
                   :entity="projectEntity"
@@ -150,7 +150,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group" :class="{ changed: isFieldChanged('isActive') }">
                 <label>{{ projectConfigs.isActive.label }}</label>
                 <CheckBox
                   :value="project.isActive"
@@ -199,7 +199,8 @@
                     <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
                     <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                   </tr>
-                  <EntityTableBody :rows="workCategoryTable"> </EntityTableBody>
+                  <EntityTableBody :rows="workCategoryTable" :is-field-changed="isWorkCategoryFieldChanged">
+                  </EntityTableBody>
                 </tbody>
               </table>
             </div>
@@ -297,7 +298,8 @@
                     </tr>
                   </thead>
                   <tbody ref="tableBody">
-                    <EntityTableBody :rows="indirectCostsTable"> </EntityTableBody>
+                    <EntityTableBody :rows="indirectCostsTable" :is-field-changed="isIndirectCostFieldChanged">
+                    </EntityTableBody>
                     <tr class="total-row">
                       <td />
                       <td />
@@ -314,7 +316,7 @@
               <h3>Taxa IVA</h3>
 
               <div class="form-grid">
-                <div class="form-group">
+                <div class="form-group" :class="{ changed: isFieldChanged('tax') }">
                   <label>IVA (%)</label>
                   <PercentageInput
                     :value="project.tax"
@@ -387,7 +389,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { LoaderCircle, RefreshCcw, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
@@ -418,7 +420,7 @@ import PercentageInput from './inputs/PercentageInput.vue';
 import NewIndirectCostsDialog from './NewIndirectCostsDialog.vue';
 
 const project = defineModel<ProjectType>({ required: true });
-const props = defineProps<{ hasUnsavedChanges: boolean }>();
+const props = defineProps<{ hasUnsavedChanges: boolean; changedFields: Set<string> }>();
 const projectConfigs = computed(() => Project.getConfigs());
 const projectEntity = computed(() => project.value as Record<string, unknown>);
 
@@ -471,6 +473,36 @@ onMounted(async () => {
   await getWorkCategories();
   await getIndirectCosts();
 });
+
+watch(
+  workCategories,
+  (rows) => {
+    project.value.workCategories = rows.map((row) => row.entity);
+  },
+  { deep: true },
+);
+
+watch(
+  indirectCosts,
+  (rows) => {
+    project.value.indirectCosts = rows.map((row) => row.entity);
+  },
+  { deep: true },
+);
+
+function isFieldChanged(field: string): boolean {
+  return props.changedFields.has(field);
+}
+
+function isWorkCategoryFieldChanged(row: WorkCategoryRow, field: string): boolean {
+  const index = project.value.workCategories?.findIndex((item) => item === row.entity) ?? -1;
+  return index >= 0 && props.changedFields.has(`workCategories[${index}].${field}`);
+}
+
+function isIndirectCostFieldChanged(row: IndirectCostRow, field: string): boolean {
+  const index = project.value.indirectCosts?.findIndex((item) => item === row.entity) ?? -1;
+  return index >= 0 && props.changedFields.has(`indirectCosts[${index}].${field}`);
+}
 
 async function getWorkCategories() {
   workCategories.value = project.value.workCategories!.map((workCategory) => ({

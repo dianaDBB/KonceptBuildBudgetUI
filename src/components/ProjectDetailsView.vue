@@ -42,6 +42,7 @@
             :key="projectRefreshKey"
             v-model="project"
             :has-unsaved-changes="hasUnsavedChanges"
+            :changed-fields="changedFields"
             @reload="getProject(projectId)"
             @saved="markProjectSaved"
           />
@@ -50,6 +51,7 @@
             :key="projectRefreshKey"
             v-model="project"
             :has-unsaved-changes="hasUnsavedChanges"
+            :changed-fields="changedFields"
             @reload="getProject(projectId)"
             @saved="markProjectSaved"
           />
@@ -128,6 +130,47 @@ function sanitizeProjectForComparison(value: unknown): unknown {
 function getProjectSnapshot(projectValue: ProjectType | null) {
   return JSON.stringify(sanitizeProjectForComparison(projectValue ?? null));
 }
+
+function getChangedFields(currentValue: unknown, initialValue: unknown, path = '', fields = new Set<string>()) {
+  if (JSON.stringify(currentValue) === JSON.stringify(initialValue)) {
+    return fields;
+  }
+
+  if (Array.isArray(currentValue) && Array.isArray(initialValue)) {
+    const length = Math.max(currentValue.length, initialValue.length);
+    for (let index = 0; index < length; index++) {
+      getChangedFields(currentValue[index], initialValue[index], `${path}[${index}]`, fields);
+    }
+    return fields;
+  }
+
+  if (currentValue && typeof currentValue === 'object' && initialValue && typeof initialValue === 'object') {
+    const keys = new Set([...Object.keys(currentValue), ...Object.keys(initialValue)]);
+    keys.forEach((key) => {
+      getChangedFields(
+        (currentValue as Record<string, unknown>)[key],
+        (initialValue as Record<string, unknown>)[key],
+        path ? `${path}.${key}` : key,
+        fields,
+      );
+    });
+    return fields;
+  }
+
+  if (path) {
+    fields.add(path);
+  }
+
+  return fields;
+}
+
+const changedFields = computed(() => {
+  if (!project.value || !initialProjectSnapshot.value) {
+    return new Set<string>();
+  }
+
+  return getChangedFields(project.value, JSON.parse(initialProjectSnapshot.value));
+});
 
 const hasUnsavedChanges = computed(() => {
   if (!project.value) {

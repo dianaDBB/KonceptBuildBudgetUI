@@ -47,7 +47,10 @@
         v-for="(config, fieldKey) in props.rows.configs"
         :key="fieldKey"
         :style="config.styleConfig.columnStyle"
-        :class="[getColumnClasses(fieldKey, row.entity), { editing: rowHasChanges(row) }]"
+        :class="[
+          getColumnClasses(fieldKey, row.entity),
+          { editing: rowHasChanges(row), changed: props.isFieldChanged?.(row, String(fieldKey)) },
+        ]"
       >
         <!-- EDITING -->
         <template v-if="rowHasChanges(row)">
@@ -168,6 +171,11 @@
           isEditing: props.subrows.isEditing,
           isChild: true,
         }"
+        :is-field-changed="
+          props.isFieldChanged
+            ? (childRow, fieldKey) => props.isFieldChanged?.(childRow as unknown as TableRow<TEntity>, fieldKey) ?? false
+            : undefined
+        "
       >
         <!-- @vue-ignore -->
         <template #row-actions="{ row: subrow }: { row: TableRow<TParentEntity>, isSubrow: boolean | undefined }">
@@ -207,6 +215,7 @@ import TextArea from './inputs/TextArea.vue';
 interface Props {
   rows: EntityTableBodyProps<TEntity>;
   subrows?: EntityTableBodySubrowProps<TParentEntity, TEntity>;
+  isFieldChanged?: (row: TableRow<TEntity>, fieldKey: string) => boolean;
 }
 
 const props = defineProps<Props>();

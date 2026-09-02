@@ -537,6 +537,42 @@ select {
   }
 }
 
+.form-group.changed {
+  > input,
+  > textarea,
+  > select,
+  input,
+  textarea,
+  select {
+    border-color: var(--color-success);
+    background: var(--color-success-bg);
+  }
+}
+
+.table td.changed input,
+.table td.changed textarea,
+.table td.changed select {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.form-group.changed input[type='checkbox'],
+.table td.changed input[type='checkbox'] {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+
+.form-group.changed input[type='checkbox']:checked,
+.table td.changed input[type='checkbox']:checked {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+}
+
+.form-group.changed input[type='checkbox']:checked::before,
+.table td.changed input[type='checkbox']:checked::before {
+  border-color: var(--color-success);
+}
+
 .phone-input {
   display: flex;
 }

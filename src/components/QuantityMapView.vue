@@ -41,7 +41,12 @@
                 </tr>
               </thead>
               <tbody ref="tableBody">
-                <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
+                <EntityTableBody
+                  :rows="workCategoryTable"
+                  :subrows="workItemTable"
+                  :is-field-changed="isWorkCategoryFieldChanged"
+                >
+                </EntityTableBody>
                 <tr></tr>
                 <tr class="total-row">
                   <td colspan="8" class="align-right">TOTAL CUSTO DIRETO (BRUTO)</td>
@@ -73,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { LoaderCircle, Save } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
@@ -86,7 +91,7 @@ import EntityTableBody from './EntityTableBody.vue';
 import { formatCurrency } from '@/utils/validation.ts';
 
 const project = defineModel<ProjectType>({ required: true });
-const props = defineProps<{ hasUnsavedChanges: boolean }>();
+const props = defineProps<{ hasUnsavedChanges: boolean; changedFields: Set<string> }>();
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
@@ -129,6 +134,37 @@ const workItemTable = computed(() => ({
 onMounted(async () => {
   await getWorkCategories();
 });
+
+watch(
+  workCategories,
+  (rows) => {
+    project.value.workCategories = project.value.workCategories?.map(
+      (category) => rows.find((row) => row.entity.workCategoryId === category.workCategoryId)?.entity ?? category,
+    );
+  },
+  { deep: true },
+);
+
+function isWorkCategoryFieldChanged(row: WorkCategoryRow | WorkItemRow, field: string): boolean {
+  const categoryIndex = project.value.workCategories?.findIndex(
+    (category) => category.workCategoryId === row.entity.id,
+  );
+
+  if (categoryIndex !== undefined && categoryIndex >= 0) {
+    return props.changedFields.has(`workCategories[${categoryIndex}].${field}`);
+  }
+
+  const workItem = row.entity as ProjectWorkItemType;
+  const parentCategory = project.value.workCategories?.find((category) =>
+    category.workItems?.some((item) => item.workItemId === workItem.workItemId),
+  );
+  const workItemIndex = parentCategory?.workItems?.findIndex((item) => item.workItemId === workItem.workItemId) ?? -1;
+  const parentIndex = project.value.workCategories?.findIndex((category) => category === parentCategory) ?? -1;
+
+  return parentIndex >= 0 && workItemIndex >= 0
+    ? props.changedFields.has(`workCategories[${parentIndex}].workItems[${workItemIndex}].${field}`)
+    : false;
+}
 
 async function getWorkCategories() {
   workCategories.value = project.value
