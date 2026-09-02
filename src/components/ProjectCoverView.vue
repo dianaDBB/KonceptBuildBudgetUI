@@ -10,156 +10,174 @@
     <div class="tab-content">
       <div class="tab-body">
         <div class="forms-container">
-          <div class="form-section">
-            <h3>Dados da Obra</h3>
+          <div class="form-column">
+            <div class="form-section">
+              <h3>Dados da Obra</h3>
 
-            <div class="form-grid">
-              <div class="form-group" :class="{ changed: isFieldChanged('description') }">
-                <label>{{ projectConfigs.description.label }}</label>
-                <TextInput
-                  :value="project.description"
-                  :is-invalid="!project.description"
-                  :is-disabled="false"
-                  @update:value="project.description = $event"
-                />
-              </div>
+              <div class="form-grid">
+                <div class="form-group" :class="{ changed: isFieldChanged('description') }">
+                  <label>{{ projectConfigs.description.label }}</label>
+                  <TextInput
+                    :value="project.description"
+                    :is-invalid="!project.description"
+                    :is-disabled="false"
+                    @update:value="project.description = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('address') }">
-                <label>{{ projectConfigs.address.label }}</label>
-                <TextInput
-                  :value="project.address"
-                  :is-invalid="!project.address"
-                  :is-disabled="false"
-                  @update:value="project.address = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('address') }">
+                  <label>{{ projectConfigs.address.label }}</label>
+                  <TextInput
+                    :value="project.address"
+                    :is-invalid="!project.address"
+                    :is-disabled="false"
+                    @update:value="project.address = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('client') }">
-                <label>{{ projectConfigs.client.label }}</label>
-                <TextInput
-                  :value="project.client"
-                  :is-invalid="!project.client"
-                  :is-disabled="false"
-                  @update:value="project.client = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('client') }">
+                  <label>{{ projectConfigs.client.label }}</label>
+                  <TextInput
+                    :value="project.client"
+                    :is-invalid="!project.client"
+                    :is-disabled="false"
+                    @update:value="project.client = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('contact') }">
-                <label>{{ projectConfigs.contact.label }}</label>
-                <TextInput
-                  :value="project.contact"
-                  :is-invalid="false"
-                  :is-disabled="false"
-                  @update:value="project.contact = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('contact') }">
+                  <label>{{ projectConfigs.contact.label }}</label>
+                  <TextInput
+                    :value="project.contact"
+                    :is-invalid="false"
+                    :is-disabled="false"
+                    @update:value="project.contact = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('landArea') }">
-                <label>{{ projectConfigs.landArea.label }}</label>
-                <NumberInput
-                  :entity="projectEntity"
-                  :value="project.landArea"
-                  field-key="landArea"
-                  :is-invalid="!project.landArea"
-                  :is-disabled="false"
-                  @update:value="project.landArea = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('landArea') }">
+                  <label>{{ projectConfigs.landArea.label }}</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.landArea"
+                    field-key="landArea"
+                    :is-invalid="!project.landArea"
+                    :is-disabled="false"
+                    @update:value="project.landArea = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('implantationArea') }">
-                <label>{{ projectConfigs.implantationArea.label }}</label>
-                <NumberInput
-                  :entity="projectEntity"
-                  :value="project.implantationArea"
-                  field-key="implantationArea"
-                  :is-invalid="!project.implantationArea"
-                  :is-disabled="false"
-                  @update:value="project.implantationArea = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('implantationArea') }">
+                  <label>{{ projectConfigs.implantationArea.label }}</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.implantationArea"
+                    field-key="implantationArea"
+                    :is-invalid="!project.implantationArea"
+                    :is-disabled="false"
+                    @update:value="project.implantationArea = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('grossConstructionArea') }">
-                <label>{{ projectConfigs.grossConstructionArea.label }}</label>
-                <NumberInput
-                  :entity="projectEntity"
-                  :value="project.grossConstructionArea"
-                  field-key="grossConstructionArea"
-                  :is-invalid="!project.grossConstructionArea"
-                  :is-disabled="false"
-                  @update:value="project.grossConstructionArea = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('grossConstructionArea') }">
+                  <label>{{ projectConfigs.grossConstructionArea.label }}</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.grossConstructionArea"
+                    field-key="grossConstructionArea"
+                    :is-invalid="!project.grossConstructionArea"
+                    :is-disabled="false"
+                    @update:value="project.grossConstructionArea = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('floorsCount') }">
-                <label>{{ projectConfigs.floorsCount.label }}</label>
-                <IntInput
-                  :entity="projectEntity"
-                  :value="project.floorsCount"
-                  field-key="floorsCount"
-                  :is-invalid="!project.floorsCount"
-                  :is-disabled="false"
-                  @update:value="project.floorsCount = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('floorsCount') }">
+                  <label>{{ projectConfigs.floorsCount.label }}</label>
+                  <IntInput
+                    :entity="projectEntity"
+                    :value="project.floorsCount"
+                    field-key="floorsCount"
+                    :is-invalid="!project.floorsCount"
+                    :is-disabled="false"
+                    @update:value="project.floorsCount = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('ceilingHeight') }">
-                <label>{{ projectConfigs.ceilingHeight.label }}</label>
-                <NumberInput
-                  :entity="projectEntity"
-                  :value="project.ceilingHeight"
-                  field-key="ceilingHeight"
-                  :is-invalid="!project.ceilingHeight"
-                  :is-disabled="false"
-                  @update:value="project.ceilingHeight = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('ceilingHeight') }">
+                  <label>{{ projectConfigs.ceilingHeight.label }}</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.ceilingHeight"
+                    field-key="ceilingHeight"
+                    :is-invalid="!project.ceilingHeight"
+                    :is-disabled="false"
+                    @update:value="project.ceilingHeight = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('maxFacadeHeight') }">
-                <label>{{ projectConfigs.maxFacadeHeight.label }}</label>
-                <NumberInput
-                  :entity="projectEntity"
-                  :value="project.maxFacadeHeight"
-                  field-key="maxFacadeHeight"
-                  :is-invalid="!project.maxFacadeHeight"
-                  :is-disabled="false"
-                  @update:value="project.maxFacadeHeight = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('maxFacadeHeight') }">
+                  <label>{{ projectConfigs.maxFacadeHeight.label }}</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.maxFacadeHeight"
+                    field-key="maxFacadeHeight"
+                    :is-invalid="!project.maxFacadeHeight"
+                    :is-disabled="false"
+                    @update:value="project.maxFacadeHeight = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('roomsCount') }">
-                <label>{{ projectConfigs.roomsCount.label }}</label>
-                <IntInput
-                  :entity="projectEntity"
-                  :value="project.roomsCount"
-                  field-key="roomsCount"
-                  :is-invalid="!project.roomsCount"
-                  :is-disabled="false"
-                  @update:value="project.roomsCount = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('roomsCount') }">
+                  <label>{{ projectConfigs.roomsCount.label }}</label>
+                  <IntInput
+                    :entity="projectEntity"
+                    :value="project.roomsCount"
+                    field-key="roomsCount"
+                    :is-invalid="!project.roomsCount"
+                    :is-disabled="false"
+                    @update:value="project.roomsCount = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('wcCount') }">
-                <label>{{ projectConfigs.wcCount.label }}</label>
-                <IntInput
-                  :entity="projectEntity"
-                  :value="project.wcCount"
-                  field-key="wcCount"
-                  :is-invalid="!project.wcCount"
-                  :is-disabled="false"
-                  @update:value="project.wcCount = $event"
-                />
-              </div>
+                <div class="form-group" :class="{ changed: isFieldChanged('wcCount') }">
+                  <label>{{ projectConfigs.wcCount.label }}</label>
+                  <IntInput
+                    :entity="projectEntity"
+                    :value="project.wcCount"
+                    field-key="wcCount"
+                    :is-invalid="!project.wcCount"
+                    :is-disabled="false"
+                    @update:value="project.wcCount = $event"
+                  />
+                </div>
 
-              <div class="form-group" :class="{ changed: isFieldChanged('isActive') }">
-                <label>{{ projectConfigs.isActive.label }}</label>
-                <CheckBox
-                  :value="project.isActive"
-                  :is-invalid="false"
-                  :is-disabled="false"
-                  @update:value="project.isActive = $event"
-                />
+                <div class="form-group" :class="{ changed: isFieldChanged('isActive') }">
+                  <label>{{ projectConfigs.isActive.label }}</label>
+                  <CheckBox
+                    :value="project.isActive"
+                    :is-invalid="false"
+                    :is-disabled="false"
+                    @update:value="project.isActive = $event"
+                  />
+                </div>
               </div>
             </div>
+
+            <section class="form-section">
+              <h3>Taxa IVA</h3>
+
+              <div class="form-grid">
+                <div class="form-group" :class="{ changed: isFieldChanged('tax') }">
+                  <label>IVA (%)</label>
+                  <PercentageInput
+                    :value="project.tax"
+                    :is-invalid="!project.tax"
+                    :is-disabled="false"
+                    @update:value="project.tax = $event"
+                  />
+                </div>
+              </div>
+            </section>
           </div>
 
           <section class="form-section work-categories-section">
@@ -206,80 +224,64 @@
             </div>
           </section>
 
-          <section class="form-section financial-summary-section">
-            <h3>Resumo Financeiro</h3>
-
-            <div class="table">
-              <table>
-                <colgroup>
-                  <col style="width: 140px" />
-                  <col style="width: 80px" />
-                  <col style="width: 65px" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th class="align-left">Rubrica</th>
-                    <th class="align-right">Valor (€)</th>
-                    <th class="align-right">%</th>
-                  </tr>
-                </thead>
-                <tbody ref="tableBody">
-                  <tr>
-                    <td class="align-left">Custo Direto das Especialidades</td>
-                    <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
-                    <td class="align-right">{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="align-left">Custos Indiretos</td>
-                    <td class="align-right">{{ formatCurrency(project.totalIndirectCost) }}</td>
-                    <td class="align-right">{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="align-left">Margem de Lucro</td>
-                    <td class="align-right">{{ formatCurrency(project.totalMarginProfit) }}</td>
-                    <td class="align-right">{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
-                  </tr>
-                  <tr class="subtotal-row">
-                    <td class="align-left">SUBTOTAL (S/ IVA)</td>
-                    <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
-                    <td class="align-right">{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="align-left">IVA</td>
-                    <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
-                    <td class="align-right">{{ formatPercentage(project.tax) }}</td>
-                  </tr>
-                  <tr class="total-row">
-                    <td class="align-left">TOTAL EMPREITADA (c/ IVA)</td>
-                    <td colspan="2" class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="align-left">Custo por m² (s/ IVA)</td>
-                    <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="align-left">Custo por m² (c/ IVA)</td>
-                    <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
           <div class="form-column">
-            <section class="form-section">
-              <h3>Taxa IVA</h3>
+            <section class="form-section financial-summary-section">
+              <h3>Resumo Financeiro</h3>
 
-              <div class="form-grid">
-                <div class="form-group" :class="{ changed: isFieldChanged('tax') }">
-                  <label>IVA (%)</label>
-                  <PercentageInput
-                    :value="project.tax"
-                    :is-invalid="!project.tax"
-                    :is-disabled="false"
-                    @update:value="project.tax = $event"
-                  />
-                </div>
+              <div class="table">
+                <table>
+                  <colgroup>
+                    <col style="width: 140px" />
+                    <col style="width: 80px" />
+                    <col style="width: 65px" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th class="align-left">Rubrica</th>
+                      <th class="align-right">Valor (€)</th>
+                      <th class="align-right">%</th>
+                    </tr>
+                  </thead>
+                  <tbody ref="tableBody">
+                    <tr>
+                      <td class="align-left">Custo Direto das Especialidades</td>
+                      <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
+                      <td class="align-right">{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="align-left">Custos Indiretos</td>
+                      <td class="align-right">{{ formatCurrency(project.totalIndirectCost) }}</td>
+                      <td class="align-right">{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="align-left">Margem de Lucro</td>
+                      <td class="align-right">{{ formatCurrency(project.totalMarginProfit) }}</td>
+                      <td class="align-right">{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                      <td class="align-left">SUBTOTAL (S/ IVA)</td>
+                      <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                      <td class="align-right">{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="align-left">IVA</td>
+                      <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
+                      <td class="align-right">{{ formatPercentage(project.tax) }}</td>
+                    </tr>
+                    <tr class="total-row">
+                      <td class="align-left">TOTAL EMPREITADA (c/ IVA)</td>
+                      <td colspan="2" class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="align-left">Custo por m² (s/ IVA)</td>
+                      <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="align-left">Custo por m² (c/ IVA)</td>
+                      <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </section>
 

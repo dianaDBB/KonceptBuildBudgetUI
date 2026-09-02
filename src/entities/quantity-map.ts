@@ -66,7 +66,7 @@ export class QuantityMapCategory {
         displayValue: () => '',
       },
       unitPrice: {
-        label: 'Preço Unidade (€)',
+        label: 'Preço Un. (€)',
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => true,
