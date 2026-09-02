@@ -76,7 +76,7 @@ export class ClientBudgetCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '120px',
           },
           classes: {
             'align-right': true,

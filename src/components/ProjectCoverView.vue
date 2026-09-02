@@ -162,7 +162,7 @@
             </div>
           </div>
 
-          <section class="form-section">
+          <section class="form-section work-categories-section">
             <h3>Desagregação por Especialidades</h3>
 
             <div class="table">
@@ -206,15 +206,15 @@
             </div>
           </section>
 
-          <section class="form-section">
+          <section class="form-section financial-summary-section">
             <h3>Resumo Financeiro</h3>
 
             <div class="table">
               <table>
                 <colgroup>
-                  <col style="width: 150px" />
+                  <col style="width: 140px" />
                   <col style="width: 80px" />
-                  <col style="width: 60px" />
+                  <col style="width: 65px" />
                 </colgroup>
                 <thead>
                   <tr>
@@ -240,7 +240,7 @@
                     <td class="align-right">{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
                   </tr>
                   <tr class="subtotal-row">
-                    <td class="align-left">SUBTOTAL SEM IVA</td>
+                    <td class="align-left">SUBTOTAL (S/ IVA)</td>
                     <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                     <td class="align-right">{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
                   </tr>
@@ -250,19 +250,16 @@
                     <td class="align-right">{{ formatPercentage(project.tax) }}</td>
                   </tr>
                   <tr class="total-row">
-                    <td class="align-left">TOTAL DA EMPREITADA (c/ IVA)</td>
-                    <td />
-                    <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
+                    <td class="align-left">TOTAL EMPREITADA (c/ IVA)</td>
+                    <td colspan="2" class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
                   </tr>
                   <tr>
                     <td class="align-left">Custo por m² (s/ IVA)</td>
-                    <td />
-                    <td class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
+                    <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
                   </tr>
                   <tr>
                     <td class="align-left">Custo por m² (c/ IVA)</td>
-                    <td />
-                    <td class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
+                    <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -756,4 +753,36 @@ function goToProjectsList() {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.work-categories-section {
+  grid-column: 2;
+}
+
+.financial-summary-section {
+  grid-column: 3;
+}
+
+.work-categories-section,
+.financial-summary-section {
+  grid-row: 1 / span 2;
+
+  .table table {
+    th {
+      padding: 5px 6px;
+      font-size: 12px;
+    }
+
+    td {
+      padding: 5px 6px;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    input,
+    textarea,
+    select {
+      padding: 3px 4px;
+    }
+  }
+}
+</style>
