@@ -135,7 +135,6 @@ async function getWorkCategories() {
     .map((workCategory) => ({
       entity: {
         ...workCategory,
-        _workItemRows: getWorkItems(workCategory),
       },
       _key: workCategory.id ?? nextKey(),
       _isNew: false,
@@ -145,26 +144,18 @@ async function getWorkCategories() {
 }
 
 function getWorkItems(workCategory: ProjectWorkCategoryType): WorkItemRow[] {
-  if (!(workCategory as ProjectWorkCategoryType & { _workItemRows?: WorkItemRow[] })._workItemRows) {
-    (workCategory as ProjectWorkCategoryType & { _workItemRows?: WorkItemRow[] })._workItemRows = (
-      workCategory.workItems ?? []
-    ).map((workItem, index) => {
-      return {
-        entity: workItem,
-        _key: workItem.id ?? `${workCategory.id}-${index}`,
-        _isNew: false,
-        _isEdited: true,
-        _parentId: workCategory.id!,
-      };
-    });
-  }
-
-  return (workCategory as ProjectWorkCategoryType & { _workItemRows: WorkItemRow[] })._workItemRows;
+  return (workCategory.workItems ?? []).map((workItem, index) => ({
+    entity: workItem,
+    _key: workItem.id ?? `${workCategory.id}-${index}`,
+    _isNew: false,
+    _isEdited: true,
+    _parentId: workCategory.id!,
+  }));
 }
 
 /******************************************************************************************************** ROW ACTIONS */
 
-interface WorkCategoryRow extends TableRow<ProjectWorkCategoryType & { _workItemRows: WorkItemRow[] }> {}
+interface WorkCategoryRow extends TableRow<ProjectWorkCategoryType> {}
 interface WorkItemRow extends TableRow<ProjectWorkItemType> {}
 
 let _keyCounter = 0;
