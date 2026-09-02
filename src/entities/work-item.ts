@@ -1,6 +1,6 @@
 import { Configs, EntityType } from '@/types/entity-configs';
 import { WorkCategory } from './work-category';
-import { formatCurrency, formatSubCode } from '@/utils/validation';
+import { formatCurrency } from '@/utils/validation';
 
 export interface WorkItemType extends EntityType {
   index?: number;
@@ -39,7 +39,7 @@ export class WorkItem {
           showDisabled: () => true,
           isInvalid: () => false,
         },
-        displayValue: (workItem: WorkItemType) => formatSubCode(workItem.code),
+        displayValue: (workItem: WorkItemType) => workItem.code,
       },
       description: {
         ...workItemConfigs.description,

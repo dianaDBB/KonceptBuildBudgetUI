@@ -1,10 +1,9 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
 import { WorkItemType } from './work-item';
-import { formatCode } from '@/utils/validation';
 
 export interface WorkCategoryType extends EntityType {
   index?: number;
-  code?: number;
+  code?: string;
   description?: string;
   isActive?: boolean;
   workItems?: WorkItemType[];
@@ -30,7 +29,7 @@ export class WorkCategory {
             'align-left': true,
           },
         },
-        displayValue: (workCategory: WorkCategoryType) => formatCode(workCategory.code),
+        displayValue: (workCategory: WorkCategoryType) => workCategory.code,
       },
       description: {
         label: 'Descrição',

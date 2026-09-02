@@ -1,5 +1,5 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatCode, formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
+import { formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
@@ -38,7 +38,7 @@ export interface ProjectWorkCategoryType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
-  code?: number;
+  code?: string;
   margin?: number;
   directCost?: number;
   valueWithMargin?: number;
@@ -50,7 +50,7 @@ export interface ProjectWorkItemType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
-  code?: number;
+  code?: string;
   units?: string;
   unitPrice?: number;
   quantity?: number;
@@ -64,7 +64,7 @@ export interface ProjectindirectCostType extends EntityType {
   isIncluded?: boolean;
   description?: string;
   index?: number;
-  code?: number;
+  code?: string;
   value?: number;
 }
 
@@ -302,7 +302,7 @@ export class ProjectWorkCategory {
             'align-left': true,
           },
         },
-        displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
+        displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.code,
       },
       isIncluded: {
         label: 'Inc.?',
@@ -404,7 +404,7 @@ export class ProjectIndirectCost {
             'align-left': true,
           },
         },
-        displayValue: (indirectCost: ProjectindirectCostType) => formatCode(indirectCost.code),
+        displayValue: (indirectCost: ProjectindirectCostType) => indirectCost.code,
       },
       isIncluded: {
         label: 'Inc?',

@@ -1,5 +1,5 @@
 import { ColumnType, Configs } from '@/types/entity-configs';
-import { formatCode, formatCurrency, formatNumber, formatSubCode } from '@/utils/validation';
+import { formatCurrency, formatNumber } from '@/utils/validation';
 import { ProjectWorkCategoryType, ProjectWorkItemType } from './project';
 
 export class ClientBudgetCategory {
@@ -22,7 +22,7 @@ export class ClientBudgetCategory {
             'align-left': true,
           },
         },
-        displayValue: (workCategory: ProjectWorkCategoryType) => formatCode(workCategory.code),
+        displayValue: (workCategory: ProjectWorkCategoryType) => workCategory.code,
       },
       description: {
         label: 'Descrição',
@@ -118,7 +118,7 @@ export class ClientBudgetItem {
       ...workItemConfigs,
       code: {
         ...workItemConfigs.code,
-        displayValue: (workItem: ProjectWorkItemType) => formatSubCode(workItem.code),
+        displayValue: (workItem: ProjectWorkItemType) => workItem.code,
       },
       description: {
         ...workItemConfigs.description,

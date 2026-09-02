@@ -1,9 +1,9 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatCode, formatCurrency } from '@/utils/validation';
+import { formatCurrency } from '@/utils/validation';
 
 export interface IndirectCostType extends EntityType {
   index?: number;
-  code?: number;
+  code?: string;
   description?: string;
   value?: number;
   isActive?: boolean;
@@ -29,7 +29,7 @@ export class IndirectCost {
             'align-left': true,
           },
         },
-        displayValue: (indirectCost: IndirectCostType) => formatCode(indirectCost.code),
+        displayValue: (indirectCost: IndirectCostType) => indirectCost.code,
       },
       description: {
         label: 'Descrição',
