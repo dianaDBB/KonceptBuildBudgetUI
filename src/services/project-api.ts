@@ -21,7 +21,7 @@ class ProjectApi {
     return response.data;
   }
 
-  async createProject(project: ProjectType): Promise<void> {
+  async createProject(project: ProjectType): Promise<UUID> {
     const payload = {
       type: project.type,
       description: project.description,
@@ -41,9 +41,11 @@ class ProjectApi {
       workCategories: [],
     };
 
-    await axiosClient.post('/project', payload, {
+    const response = await axiosClient.post('/project', payload, {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     });
+
+    return response.data;
   }
 
   async updateProject(projectId: UUID, project: ProjectType): Promise<void> {

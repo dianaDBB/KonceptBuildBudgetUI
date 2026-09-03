@@ -71,6 +71,7 @@ import { Project, ProjectType } from '@/entities/project.ts';
 import projectApi from '@/services/project-api.ts';
 import router from '@/router/index.ts';
 import { RouteNames } from '@/router/routes.ts';
+import { UUID } from 'crypto';
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 const tableBody = ref<HTMLTableSectionElement | null>(null);
@@ -140,6 +141,15 @@ function openProject(row: ProjectRow) {
   });
 }
 
+function openProjectById(projectId: UUID) {
+  router.push({
+    name: RouteNames.projectDetails,
+    params: {
+      id: projectId,
+    },
+  });
+}
+
 function discardProjectRow(row: ProjectRow) {
   if (row._isNew) {
     projects.value = projects.value.filter((w) => w._key !== row._key);
@@ -184,11 +194,7 @@ async function saveProject(row: ProjectRow): Promise<void> {
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
   try {
-    if (row._isNew) {
-      await projectApi.createProject(row.entity);
-    } else if (row._isEdited) {
-      await projectApi.updateProject(row.entity.id!, row.entity);
-    }
+    const newProjectId = await projectApi.createProject(row.entity);
 
     await getProjects();
     isEditing.value = false;
@@ -199,6 +205,8 @@ async function saveProject(row: ProjectRow): Promise<void> {
       isError: false,
       message: 'Alterações guardadas com sucesso.',
     };
+
+    openProjectById(newProjectId);
   } catch (error: unknown) {
     await getProjects();
     isEditing.value = false;
