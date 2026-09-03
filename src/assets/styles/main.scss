@@ -240,6 +240,19 @@ body {
       &.align-left {
         text-align: left;
       }
+
+      .btn-icon-sm {
+        cursor: pointer;
+        width: 15px;
+        height: 15px;
+        padding: 0;
+        border: none;
+        background: transparent;
+
+        &:hover {
+          background: var(--color-primary-light);
+        }
+      }
     }
 
     td {
@@ -439,6 +452,13 @@ tr.disabled span {
 .table table .sub-row.disabled td button {
   color: var(--color-text-disabled);
   background: var(--color-background-disabled);
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 
 /************************************************************************************************ TBALE - DRAG & DROP */

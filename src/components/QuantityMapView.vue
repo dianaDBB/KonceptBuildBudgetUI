@@ -16,7 +16,7 @@
                 <!--reorder column-->
                 <col style="width: 20px" />
                 <!--expand column-->
-                <col style="width: 20px" />
+                <col style="width: 40px" />
                 <col
                   v-for="config in Object.values(workCategoryConfigs)"
                   :key="config.label"
@@ -28,7 +28,10 @@
                   <!--reorder column-->
                   <th></th>
                   <!--expand column-->
-                  <th></th>
+                  <th class="actions-cell">
+                    <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
+                    <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
+                  </th>
                   <th
                     v-for="config in Object.values(workCategoryConfigs)"
                     :key="config.label"
@@ -60,8 +63,6 @@
       </div>
 
       <div class="tab-actions">
-        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="expandAll">Expandir tudo</button>
-        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="collapseAll">Colapsar tudo</button>
         <button
           type="button"
           class="btn"
@@ -81,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { LoaderCircle, Save } from 'lucide-vue-next';
+import { LoaderCircle, Minus, Plus, Save } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';

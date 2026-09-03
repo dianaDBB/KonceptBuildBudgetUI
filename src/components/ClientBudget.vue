@@ -14,7 +14,7 @@
             <table>
               <colgroup>
                 <!--expand column-->
-                <col style="width: 20px" />
+                <col style="width: 40px" />
                 <col
                   v-for="config in Object.values(clientBudgetCategoryConfigs)"
                   :key="config.label"
@@ -24,7 +24,10 @@
               <thead>
                 <tr>
                   <!--expand column-->
-                  <th></th>
+                  <th class="actions-cell">
+                    <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
+                    <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
+                  </th>
                   <th
                     v-for="config in Object.values(clientBudgetCategoryConfigs)"
                     :key="config.label"
@@ -73,7 +76,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { LoaderCircle, Sheet } from 'lucide-vue-next';
+import { LoaderCircle, Minus, Plus, Sheet } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import { ProjectType, ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
@@ -172,6 +175,22 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
 
   row._expanded = !row._expanded;
   row.entity._expanded = row._expanded;
+  updateExpandedCategoryIds();
+}
+
+function expandAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = true;
+    row.entity._expanded = true;
+  });
+  updateExpandedCategoryIds();
+}
+
+function collapseAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = false;
+    row.entity._expanded = false;
+  });
   updateExpandedCategoryIds();
 }
 
