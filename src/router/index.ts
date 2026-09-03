@@ -48,7 +48,7 @@ router.beforeEach((to) => {
   const isAuthenticated = authApi.isAuthenticated();
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    void authApi.logout();
+    authApi.clearAccessToken();
     return { name: RouteNames.login, query: { redirect: to.fullPath } };
   }
 

@@ -14,7 +14,8 @@ class AuthApi {
   }
 
   isAuthenticated(): boolean {
-    return Boolean(this.getAccessToken());
+    const token = this.getAccessToken();
+    return Boolean(token) && !this.isTokenExpired(token);
   }
 
   async login(credentials: LoginCredentials): Promise<void> {
@@ -37,19 +38,23 @@ class AuthApi {
   }
 
   async logout(): Promise<void> {
-    try {
-      await axiosClient.post('/auth/logout', undefined, {
-        headers: { Accept: 'application/json' },
-      });
-    } catch {
-      this.clearAccessToken();
-    } finally {
-      this.clearAccessToken();
+    const token = this.getAccessToken();
+
+    if (token && !this.isTokenExpired(token)) {
+      try {
+        await axiosClient.post('/auth/logout', undefined, {
+          headers: { Accept: 'application/json' },
+        });
+      } catch {
+        // Ignore API failures on logout
+      }
     }
+
+    this.clearAccessToken();
   }
 
   isTokenExpired(token: string | null): boolean {
-    if (token == null) {
+    if (!token) {
       return true;
     }
 
@@ -61,11 +66,11 @@ class AuthApi {
     }
   }
 
-  async checkAuthentication() {
+  async checkAuthentication(): Promise<void> {
     const token = this.getAccessToken();
 
     if (this.isTokenExpired(token)) {
-      await this.logout();
+      this.clearAccessToken();
     }
   }
 }

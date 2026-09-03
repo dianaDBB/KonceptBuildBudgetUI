@@ -28,7 +28,12 @@ axiosClient.interceptors.response.use(
     const isAuthFailure = status === 401 || status === 403;
     const isNetworkFailure = !error.response || error.code === 'ERR_NETWORK' || error.message === 'Network Error';
 
-    if ((isAuthFailure || isNetworkFailure) && window.location.pathname !== RoutePaths.login) {
+    const isAuthEndpoint = error.config?.url?.includes('/auth/');
+
+    const isAlreadyOnLoginPage =
+      window.location.pathname === RoutePaths.login || window.location.pathname.endsWith('/login');
+
+    if (!isAuthEndpoint && (isAuthFailure || isNetworkFailure) && !isAlreadyOnLoginPage) {
       AuthApi.clearAccessToken();
       window.location.assign(RoutePaths.login);
     }
