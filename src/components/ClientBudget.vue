@@ -86,11 +86,15 @@ import { formatCurrency } from '@/utils/validation.ts';
 import projectApi from '@/services/project-api.ts';
 
 const project = defineModel<ProjectType>({ required: true });
+const props = defineProps<{
+  expandedCategoryIds: string[];
+}>();
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
 const emit = defineEmits<{
   reload: [];
+  'update:expanded-category-ids': [ids: string[]];
 }>();
 
 const workCategories = ref<WorkCategoryRow[]>([]);
@@ -135,7 +139,7 @@ async function getWorkCategories() {
       _key: workCategory.id ?? nextKey(),
       _isNew: false,
       _isEdited: false,
-      _expanded: true,
+      _expanded: workCategory.workCategoryId ? props.expandedCategoryIds.includes(workCategory.workCategoryId) : true,
     }));
 }
 
@@ -167,6 +171,17 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
   }
 
   row._expanded = !row._expanded;
+  row.entity._expanded = row._expanded;
+  updateExpandedCategoryIds();
+}
+
+function updateExpandedCategoryIds() {
+  emit(
+    'update:expanded-category-ids',
+    workCategories.value.flatMap((row) =>
+      row._expanded && row.entity.workCategoryId ? [row.entity.workCategoryId] : [],
+    ),
+  );
 }
 
 function isActive(workItem: WorkItemRow) {

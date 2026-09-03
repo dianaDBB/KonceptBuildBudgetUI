@@ -60,6 +60,8 @@
       </div>
 
       <div class="tab-actions">
+        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="expandAll">Expandir tudo</button>
+        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="collapseAll">Colapsar tudo</button>
         <button
           type="button"
           class="btn"
@@ -91,13 +93,18 @@ import EntityTableBody from './EntityTableBody.vue';
 import { formatCurrency } from '@/utils/validation.ts';
 
 const project = defineModel<ProjectType>({ required: true });
-const props = defineProps<{ hasUnsavedChanges: boolean; changedFields: Set<string> }>();
+const props = defineProps<{
+  hasUnsavedChanges: boolean;
+  changedFields: Set<string>;
+  expandedCategoryIds: string[];
+}>();
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
 const emit = defineEmits<{
   reload: [];
   saved: [];
+  'update:expanded-category-ids': [ids: string[]];
 }>();
 
 const workCategories = ref<WorkCategoryRow[]>([]);
@@ -167,8 +174,8 @@ function isWorkCategoryFieldChanged(row: WorkCategoryRow | WorkItemRow, field: s
 }
 
 async function getWorkCategories() {
-  workCategories.value = project.value
-    .workCategories!.filter((workCategory) => workCategory.isIncluded)
+  workCategories.value = (project.value.workCategories ?? [])
+    .filter((workCategory) => workCategory.isIncluded)
     .map((workCategory) => ({
       entity: {
         ...workCategory,
@@ -176,7 +183,7 @@ async function getWorkCategories() {
       _key: workCategory.id ?? nextKey(),
       _isNew: false,
       _isEdited: false,
-      _expanded: true,
+      _expanded: workCategory.workCategoryId ? props.expandedCategoryIds.includes(workCategory.workCategoryId) : true,
     }));
 }
 
@@ -206,6 +213,33 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
   }
 
   row._expanded = !row._expanded;
+  row.entity._expanded = row._expanded;
+  updateExpandedCategoryIds();
+}
+
+function expandAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = true;
+    row.entity._expanded = true;
+  });
+  updateExpandedCategoryIds();
+}
+
+function collapseAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = false;
+    row.entity._expanded = false;
+  });
+  updateExpandedCategoryIds();
+}
+
+function updateExpandedCategoryIds() {
+  emit(
+    'update:expanded-category-ids',
+    workCategories.value.flatMap((row) =>
+      row._expanded && row.entity.workCategoryId ? [row.entity.workCategoryId] : [],
+    ),
+  );
 }
 
 function isActive(workItem: WorkItemRow) {

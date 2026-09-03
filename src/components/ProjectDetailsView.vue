@@ -44,14 +44,18 @@
             v-model="project"
             :has-unsaved-changes="hasUnsavedChanges"
             :changed-fields="changedFields"
+            :expanded-category-ids="expandedQuantityMapCategoryIds"
             @reload="getProject(projectId)"
             @saved="markProjectSaved"
+            @update:expanded-category-ids="updateQuantityMapExpansion"
           />
           <ClientBudget
             v-if="selectedTab === 'client-budget'"
             :key="projectRefreshKey"
             v-model="project"
+            :expanded-category-ids="expandedClientBudgetCategoryIds"
             @reload="getProject(projectId)"
+            @update:expanded-category-ids="updateClientBudgetExpansion"
           />
         </div>
 
@@ -102,9 +106,23 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 const project = ref<ProjectType | null>(null);
 const projectRefreshKey = ref(0);
 const initialProjectSnapshot = ref('');
+const expandedQuantityMapCategoryIds = ref<string[]>([]);
+const hasInitializedQuantityMapExpansion = ref(false);
+const expandedClientBudgetCategoryIds = ref<string[]>([]);
+const hasInitializedClientBudgetExpansion = ref(false);
 const showDiscardChangesDialog = ref(false);
 const pendingNavigation = ref<((value?: unknown) => void) | null>(null);
 const { projectHeader, resetProjectHeader } = useProjectHeader();
+
+function updateQuantityMapExpansion(expandedCategoryIds: string[]) {
+  expandedQuantityMapCategoryIds.value = [...expandedCategoryIds];
+  sessionStorage.setItem(`quantity-map-expansion:${projectId}`, JSON.stringify(expandedQuantityMapCategoryIds.value));
+}
+
+function updateClientBudgetExpansion(expandedCategoryIds: string[]) {
+  expandedClientBudgetCategoryIds.value = [...expandedCategoryIds];
+  sessionStorage.setItem(`client-budget-expansion:${projectId}`, JSON.stringify(expandedCategoryIds));
+}
 
 function sanitizeProjectForComparison(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -292,6 +310,31 @@ async function getProject(projectId: UUID) {
   try {
     project.value = await projectApi.getProject(projectId);
     projectHeader.value = `${project.value.description ?? ''} • ${project.value.client ?? ''}`;
+
+    if (!hasInitializedQuantityMapExpansion.value) {
+      const storedExpansion = sessionStorage.getItem(`quantity-map-expansion:${projectId}`);
+      const storedCategoryIds = storedExpansion ? (JSON.parse(storedExpansion) as string[]) : null;
+
+      expandedQuantityMapCategoryIds.value =
+        storedCategoryIds ??
+        (project.value.workCategories ?? [])
+          .filter((category) => category.isIncluded && category.workCategoryId)
+          .map((category) => category.workCategoryId!);
+      hasInitializedQuantityMapExpansion.value = true;
+    }
+
+    if (!hasInitializedClientBudgetExpansion.value) {
+      const storedExpansion = sessionStorage.getItem(`client-budget-expansion:${projectId}`);
+      const storedCategoryIds = storedExpansion ? (JSON.parse(storedExpansion) as string[]) : null;
+
+      expandedClientBudgetCategoryIds.value =
+        storedCategoryIds ??
+        (project.value.workCategories ?? [])
+          .filter((category) => category.isIncluded && category.workCategoryId)
+          .map((category) => category.workCategoryId!);
+      hasInitializedClientBudgetExpansion.value = true;
+    }
+
     initialProjectSnapshot.value = getProjectSnapshot(project.value ?? null);
 
     projectRefreshKey.value++;
