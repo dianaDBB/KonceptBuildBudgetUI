@@ -4,8 +4,8 @@ import { UUID } from 'crypto';
 import { WorkItemType } from '@/entities/work-item';
 
 class WorkCategoryApi {
-  async getWorkCategories(): Promise<WorkCategoryType[]> {
-    const response = await axiosClient.get('/work-category', {
+  async getWorkCategories(type: string): Promise<WorkCategoryType[]> {
+    const response = await axiosClient.get(`/work-category?type=${type}`, {
       headers: { Accept: 'application/json' },
     });
 
@@ -14,6 +14,7 @@ class WorkCategoryApi {
 
   async createWorkCategory(workCategory: WorkCategoryType): Promise<void> {
     const payload = {
+      type: workCategory.type,
       index: workCategory.index,
       description: workCategory.description,
       isActive: workCategory.isActive,
@@ -26,6 +27,7 @@ class WorkCategoryApi {
 
   async updateWorkCategory(workCategoryId: UUID, workCategory: WorkCategoryType): Promise<void> {
     const payload = {
+      type: workCategory.type,
       index: workCategory.index,
       description: workCategory.description,
       isActive: workCategory.isActive,

@@ -161,6 +161,10 @@ import workCategoryApi from '@/services/work-category-api.ts';
 import EntityTableBody from './EntityTableBody.vue';
 import { RoutePaths } from '@/router/routes.ts';
 import { UUID } from 'node:crypto';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const type = route.params.type as string;
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 const tableBody = ref<HTMLTableSectionElement | null>(null);
@@ -212,7 +216,7 @@ async function getWorkCategories() {
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
   try {
-    const gotWorkCategies = await workCategoryApi.getWorkCategories();
+    const gotWorkCategies = await workCategoryApi.getWorkCategories(type);
 
     workCategories.value = gotWorkCategies.map((workCategory) => ({
       entity: {
@@ -263,7 +267,7 @@ function nextKeySubRow(): string {
   return `subrow-${++_keySubRowCounter}`;
 }
 
-function isActive(row: WorkCategoryRow) {
+function isActive(row: TableRow<WorkCategoryType>) {
   return row.entity.isActive!;
 }
 
@@ -338,6 +342,7 @@ async function addWorkCategory(): Promise<void> {
 
   workCategories.value.push({
     entity: {
+      type: type,
       index: workCategories.value.length + 1,
       isActive: true,
       _workItemRows: [],

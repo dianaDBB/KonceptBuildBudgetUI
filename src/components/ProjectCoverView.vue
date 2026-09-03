@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('landArea') }">
-                  <label>{{ projectConfigs.landArea.label }}</label>
+                  <label>Área Total Terreno (m²)</label>
                   <NumberInput
                     :entity="projectEntity"
                     :value="project.landArea"
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('implantationArea') }">
-                  <label>{{ projectConfigs.implantationArea.label }}</label>
+                  <label>Área Implantação (m²)</label>
                   <NumberInput
                     :entity="projectEntity"
                     :value="project.implantationArea"
@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('grossConstructionArea') }">
-                  <label>{{ projectConfigs.grossConstructionArea.label }}</label>
+                  <label>Área Bruta Construção (m²)</label>
                   <NumberInput
                     :entity="projectEntity"
                     :value="project.grossConstructionArea"
@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('floorsCount') }">
-                  <label>{{ projectConfigs.floorsCount.label }}</label>
+                  <label>Nº de Pisos</label>
                   <IntInput
                     :entity="projectEntity"
                     :value="project.floorsCount"
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('ceilingHeight') }">
-                  <label>{{ projectConfigs.ceilingHeight.label }}</label>
+                  <label>Pé-direito Interior (m)</label>
                   <NumberInput
                     :entity="projectEntity"
                     :value="project.ceilingHeight"
@@ -116,7 +116,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('maxFacadeHeight') }">
-                  <label>{{ projectConfigs.maxFacadeHeight.label }}</label>
+                  <label>Altura Máx. Fachada (m)</label>
                   <NumberInput
                     :entity="projectEntity"
                     :value="project.maxFacadeHeight"
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('roomsCount') }">
-                  <label>{{ projectConfigs.roomsCount.label }}</label>
+                  <label>Nº de Quartos</label>
                   <IntInput
                     :entity="projectEntity"
                     :value="project.roomsCount"
@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="form-group" :class="{ changed: isFieldChanged('wcCount') }">
-                  <label>{{ projectConfigs.wcCount.label }}</label>
+                  <label>Nº de WCs</label>
                   <IntInput
                     :entity="projectEntity"
                     :value="project.wcCount"

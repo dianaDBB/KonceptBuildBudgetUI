@@ -1,8 +1,10 @@
+import { useConfigs } from '@/composables/useConfigs';
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { formatCurrency, formatIntNumber, formatNumber, formatPercentage } from '@/utils/validation';
+import { formatCurrency, formatPercentage } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
+  type?: string;
   description?: string;
   address?: string;
   client?: string;
@@ -70,7 +72,24 @@ export interface ProjectindirectCostType extends EntityType {
 
 export class Project {
   static getConfigs(): Configs<ProjectType> {
+    const typeOptions = useConfigs().typeOptions.value;
+
     return {
+      type: {
+        label: 'Tipo',
+        type: ColumnType.SELECT,
+        selectConfig: {
+          options: Object.values(typeOptions),
+        },
+        styleConfig: {
+          showDisabled: () => false,
+          isInvalid: (project: ProjectType) => !project.type,
+          columnStyle: {
+            width: '135px',
+          },
+        },
+        displayValue: (project: ProjectType) => (project.type ? typeOptions[project.type].label : undefined),
+      },
       description: {
         label: 'Designação da Obra',
         type: ColumnType.TEXT,
@@ -102,7 +121,7 @@ export class Project {
           showDisabled: () => false,
           isInvalid: (project: ProjectType) => !project.client,
           columnStyle: {
-            width: '150px',
+            width: '200px',
           },
         },
         displayValue: (project: ProjectType) => project.client,
@@ -114,154 +133,10 @@ export class Project {
           showDisabled: () => false,
           isInvalid: () => false,
           columnStyle: {
-            width: '80px',
+            width: '200px',
           },
         },
         displayValue: (project: ProjectType) => project.contact,
-      },
-      landArea: {
-        label: 'Área Total Terreno (m²)',
-        type: ColumnType.NUMBER,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '120px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatNumber(project.landArea),
-      },
-      implantationArea: {
-        label: 'Área Implantação (m²)',
-        type: ColumnType.NUMBER,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '130px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatNumber(project.implantationArea),
-      },
-      grossConstructionArea: {
-        label: 'Área Bruta Construção (m²)',
-        type: ColumnType.NUMBER,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '130px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatNumber(project.grossConstructionArea),
-      },
-      floorsCount: {
-        label: 'Nº de Pisos',
-        type: ColumnType.INT,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '70px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatIntNumber(project.floorsCount),
-      },
-      ceilingHeight: {
-        label: 'Pé-direito Interior (m)',
-        type: ColumnType.NUMBER,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '120px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatNumber(project.ceilingHeight),
-      },
-      maxFacadeHeight: {
-        label: 'Altura Máx. Fachada (m)',
-        type: ColumnType.NUMBER,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '120px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatNumber(project.maxFacadeHeight),
-      },
-      roomsCount: {
-        label: 'Nº de Quartos',
-        type: ColumnType.INT,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '70px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatIntNumber(project.roomsCount),
-      },
-      wcCount: {
-        label: 'Nº de WCs',
-        type: ColumnType.INT,
-        styleConfig: {
-          showDisabled: () => false,
-          isInvalid: () => false,
-          columnStyle: {
-            width: '70px',
-          },
-          classes: {
-            'align-right': true,
-          },
-          headerClasses: {
-            'align-right': true,
-          },
-        },
-        displayValue: (project: ProjectType) => formatIntNumber(project.wcCount),
       },
       isActive: {
         label: 'Activo',

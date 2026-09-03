@@ -26,7 +26,7 @@ const routes = [
 
   // CONFIGS
   {
-    path: RoutePaths.configs.workCategories,
+    path: `${RoutePaths.configs.workCategories}/:type`,
     name: RouteNames.workCategories,
     component: () => import('@/components/WorkCategoryView.vue'),
     meta: { requiresAuth: true },

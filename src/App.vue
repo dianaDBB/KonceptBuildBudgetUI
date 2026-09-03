@@ -24,11 +24,22 @@
               type="button"
               class="menu-btn"
               role="menuitem"
-              @click="goToWorkCategories"
-              @mousedown="settingsMiddleClick($event, RoutePaths.configs.workCategories)"
+              @click="goToWorkCategoriesNew"
+              @auxclick.middle.prevent="openInNewTab(RoutePaths.configs.workCategories + '/NEW')"
             >
               <Settings :size="16" />
-              Especialidades
+              Especialidades - Nova Construção
+            </button>
+
+            <button
+              type="button"
+              class="menu-btn"
+              role="menuitem"
+              @click="goToWorkCategoriesRenovation"
+              @auxclick.middle.prevent="openInNewTab(RoutePaths.configs.workCategories + '/RENOVATION')"
+            >
+              <Settings :size="16" />
+              Especialidades - Reabilitação
             </button>
 
             <button
@@ -36,7 +47,7 @@
               class="menu-btn"
               role="menuitem"
               @click="goToIndirectCosts"
-              @mousedown="settingsMiddleClick($event, RoutePaths.configs.indirectCosts)"
+              @auxclick.middle.prevent="openInNewTab(RoutePaths.configs.indirectCosts)"
             >
               <Euro :size="16" />
               Custos Indiretos
@@ -74,7 +85,7 @@
 
     <main class="main">
       <div class="container">
-        <RouterView />
+        <RouterView :key="$route.fullPath" />
       </div>
     </main>
 
@@ -89,12 +100,15 @@ import { computed, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Euro, LogOut, Settings, User2Icon } from 'lucide-vue-next';
 import authApi from '@/services/auth-api';
-import { RoutePaths } from './router/routes';
+import { RouteNames, RoutePaths } from './router/routes';
 import { useProjectHeader } from '@/composables/useProjectHeader';
+import { useConfigs } from './composables/useConfigs';
 
 const route = useRoute();
 const router = useRouter();
 const { projectHeader } = useProjectHeader();
+
+const type = useConfigs().typeOptions;
 
 const showLogout = computed(() => route.name !== 'login' && authApi.isAuthenticated());
 
@@ -167,22 +181,30 @@ async function logout(): Promise<void> {
   }
 }
 
-async function goToWorkCategories(): Promise<void> {
-  router.push(RoutePaths.configs.workCategories);
+async function goToWorkCategoriesNew(): Promise<void> {
+  await router.push({
+    name: RouteNames.workCategories,
+    params: { type: type.value.NEW.code },
+  });
+  isSettingsMenuOpen.value = false;
+}
+
+async function goToWorkCategoriesRenovation(): Promise<void> {
+  await router.push({
+    name: RouteNames.workCategories,
+    params: { type: type.value.RENOVATION.code },
+  });
   isSettingsMenuOpen.value = false;
 }
 
 async function goToIndirectCosts(): Promise<void> {
-  router.push(RoutePaths.configs.indirectCosts);
+  await router.push(RoutePaths.configs.indirectCosts);
   isSettingsMenuOpen.value = false;
 }
 
-function settingsMiddleClick(event: MouseEvent, route: string): void {
-  if (event.button === 1) {
-    event.preventDefault();
-    const url = router.resolve(route).href;
-    window.open(url, '_blank');
-  }
+function openInNewTab(route: string): void {
+  const url = router.resolve(route).href;
+  window.open(url, '_blank');
 }
 </script>
 
@@ -270,7 +292,7 @@ function settingsMiddleClick(event: MouseEvent, route: string): void {
   z-index: 1000;
   top: calc(100% + 10px);
   right: 0;
-  width: 240px;
+  width: 280px;
   padding: 6px;
   border: 1px solid var(--color-border-light);
   border-radius: 10px;

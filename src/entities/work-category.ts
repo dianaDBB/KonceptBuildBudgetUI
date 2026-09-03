@@ -2,6 +2,7 @@ import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
 import { WorkItemType } from './work-item';
 
 export interface WorkCategoryType extends EntityType {
+  type?: string;
   index?: number;
   code?: string;
   description?: string;

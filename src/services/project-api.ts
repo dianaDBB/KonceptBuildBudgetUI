@@ -23,6 +23,7 @@ class ProjectApi {
 
   async createProject(project: ProjectType): Promise<void> {
     const payload = {
+      type: project.type,
       description: project.description,
       address: project.address,
       client: project.client,
@@ -47,6 +48,7 @@ class ProjectApi {
 
   async updateProject(projectId: UUID, project: ProjectType): Promise<void> {
     const payload = {
+      type: project.type,
       description: project.description,
       address: project.address,
       client: project.client,
