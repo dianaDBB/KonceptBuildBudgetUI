@@ -6,6 +6,7 @@ import { TooltipItem } from './tootltip';
 
 export interface EntityType {
   id?: UUID;
+  _expanded?: boolean;
 }
 
 export interface TableRow<TEntity extends EntityType> {

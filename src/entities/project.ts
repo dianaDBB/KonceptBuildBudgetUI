@@ -36,7 +36,6 @@ export interface ProjectType extends EntityType {
 }
 
 export interface ProjectWorkCategoryType extends EntityType {
-  _expanded?: boolean;
   workCategoryId?: UUID;
   isIncluded?: boolean;
   description?: string;

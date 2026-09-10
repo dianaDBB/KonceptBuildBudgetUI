@@ -14,7 +14,7 @@
             <table>
               <colgroup>
                 <!--expand column-->
-                <col style="width: 40px" />
+                <col style="width: 50px" />
                 <col
                   v-for="config in Object.values(clientBudgetCategoryConfigs)"
                   :key="config.label"
@@ -24,7 +24,7 @@
               <thead>
                 <tr>
                   <!--expand column-->
-                  <th class="actions-cell">
+                  <th>
                     <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
                     <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
                   </th>

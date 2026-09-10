@@ -44,7 +44,7 @@ export class QuantityMapCategory {
           showDisabled: () => false,
           isInvalid: (workCategory: ProjectWorkCategoryType) => !workCategory.description,
           columnStyle: {
-            width: '940px',
+            width: '930px',
             'font-weight': 800,
           },
           classes: {

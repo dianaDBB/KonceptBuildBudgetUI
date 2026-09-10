@@ -454,13 +454,6 @@ tr.disabled span {
   background: var(--color-background-disabled);
 }
 
-.actions-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
 /************************************************************************************************ TBALE - DRAG & DROP */
 
 tr.dragging {

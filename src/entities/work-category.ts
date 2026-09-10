@@ -39,7 +39,7 @@ export class WorkCategory {
           showDisabled: () => false,
           isInvalid: (workCategory: WorkCategoryType) => !workCategory.description,
           columnStyle: {
-            width: '200px',
+            width: '1060px',
           },
           classes: {
             'align-left': true,

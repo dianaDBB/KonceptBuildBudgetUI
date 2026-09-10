@@ -23,7 +23,7 @@
               <!--reorder column-->
               <col style="width: 20px" />
               <!--expand column-->
-              <col style="width: 20px" />
+              <col style="width: 50px" />
               <col
                 v-for="config in Object.values(workCategoryConfigs)"
                 :key="config.label"
@@ -37,7 +37,10 @@
                 <!--reorder column-->
                 <th></th>
                 <!--expand column-->
-                <th></th>
+                <th>
+                  <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
+                  <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
+                </th>
                 <th
                   v-for="config in Object.values(workCategoryConfigs)"
                   :key="config.label"
@@ -150,7 +153,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue';
 import { ApiResponseStatus } from '@/types/api-response-status';
-import { Plus, LoaderCircle, Trash2, Pencil, Settings } from 'lucide-vue-next';
+import { Plus, LoaderCircle, Trash2, Pencil, Settings, Minus } from 'lucide-vue-next';
 import Toast from '@/components/Toast.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
@@ -289,6 +292,20 @@ function expandCollapseWorkCategoryRow(row: WorkCategoryRow) {
   }
 
   row._expanded = !row._expanded;
+}
+
+function expandAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = true;
+    row.entity._expanded = true;
+  });
+}
+
+function collapseAll() {
+  workCategories.value.forEach((row) => {
+    row._expanded = false;
+    row.entity._expanded = false;
+  });
 }
 
 /********************************************************************************************** ROW ACTIONS - SUBROWS */

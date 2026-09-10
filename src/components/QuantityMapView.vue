@@ -16,7 +16,7 @@
                 <!--reorder column-->
                 <col style="width: 20px" />
                 <!--expand column-->
-                <col style="width: 40px" />
+                <col style="width: 50px" />
                 <col
                   v-for="config in Object.values(workCategoryConfigs)"
                   :key="config.label"
@@ -28,7 +28,7 @@
                   <!--reorder column-->
                   <th></th>
                   <!--expand column-->
-                  <th class="actions-cell">
+                  <th>
                     <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
                     <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
                   </th>
