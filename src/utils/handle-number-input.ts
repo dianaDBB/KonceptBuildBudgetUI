@@ -1,21 +1,33 @@
-type NumericKeys<T> = {
-  [K in keyof T]-?: T[K] extends number | null | undefined ? K : never;
-}[keyof T];
+export function parseNumberInput(value: string): number {
+  const normalizedValue = value.replace(/\s/g, '');
+  const separatorIndex = normalizedValue.search(/[.,]/);
 
-const formatter = new Intl.NumberFormat('pt-PT', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+  if (separatorIndex === -1) {
+    return Number(normalizedValue.replace(/\D/g, '')) || 0;
+  }
 
-export function handleNumberInput<T extends Record<string, unknown>, K extends NumericKeys<T>>(
-  event: Event,
-  obj: T,
-  field: K,
-) {
-  const input = event.target as HTMLInputElement;
-  const digits = input.value.replace(/\D/g, '');
-  const value = Number(digits) / 100;
+  const integerPart = normalizedValue.slice(0, separatorIndex).replace(/\D/g, '') || '0';
+  const decimalPart = normalizedValue
+    .slice(separatorIndex + 1)
+    .replace(/\D/g, '')
+    .slice(0, 2);
 
-  obj[field] = value as T[K];
-  input.value = formatter.format(value);
+  return Number(`${integerPart}.${decimalPart.padEnd(2, '0')}`);
+}
+
+export function limitDecimals(value: string): string {
+  const separatorIndex = value.search(/[.,]/);
+
+  if (separatorIndex === -1) {
+    return value;
+  }
+
+  const integerPart = value.slice(0, separatorIndex);
+  const separator = value[separatorIndex];
+  const decimalPart = value
+    .slice(separatorIndex + 1)
+    .replace(/\D/g, '')
+    .slice(0, 2);
+
+  return `${integerPart}${separator}${decimalPart}`;
 }
