@@ -133,10 +133,16 @@ function reset(): void {
 <style scoped lang="scss">
 .dialog {
   width: min(700px, calc(100vw - 40px));
+  height: min(80vh, calc(100vh - 40px));
   max-height: 80vh;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .categories {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 
   display: flex;
