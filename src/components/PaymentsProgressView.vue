@@ -64,19 +64,34 @@
                       />
                     </td>
 
-                    <td class="align-right highlight">
+                    <td
+                      class="align-right highlight"
+                      :class="{
+                        'calculated-changed': isCalculatedFieldChanged(row, 'cumulativeProgressPercentage'),
+                      }"
+                    >
                       <template v-if="!row.isCategory && row.workItem">
                         {{ formatPercentage(row.cumulativeProgressPercentage) }}
                       </template>
                     </td>
 
-                    <td class="align-right highlight">
+                    <td
+                      class="align-right highlight"
+                      :class="{
+                        'calculated-changed': isCalculatedFieldChanged(row, 'cumulativeProgressValue'),
+                      }"
+                    >
                       <template v-if="!row.isCategory && row.workItem">
                         {{ formatCurrency(row.cumulativeProgressValue) }}
                       </template>
                     </td>
 
-                    <td class="align-right highlight">
+                    <td
+                      class="align-right highlight"
+                      :class="{
+                        'calculated-changed': isCalculatedFieldChanged(row, 'remainingToInvoice'),
+                      }"
+                    >
                       <template v-if="!row.isCategory && row.workItem">
                         {{ formatCurrency(row.remainingToInvoice) }}
                       </template>
@@ -360,6 +375,8 @@ function updatePaymentPercentage(workItem: ProjectWorkItemType, paymentIndex: nu
   }
 
   payment.percentage = value ?? 0;
+
+  recalculatePaymentTotals(workItem);
 }
 
 /*************************************************************************************************************** SAVE */
@@ -381,6 +398,74 @@ async function saveProject() {
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível guardar o projeto.');
   }
+}
+
+/********************************************************************************************************* CALCULATED */
+
+const calculatedChangedFields = ref<Set<string>>(new Set());
+
+function recalculatePaymentTotals(workItem: ProjectWorkItemType): void {
+  const payments = workItem.progressPayments ?? [];
+
+  const cumulativeProgressPercentage = payments.reduce((total, payment) => total + (payment.percentage ?? 0), 0);
+
+  const totalValue = workItem.clientTotal ?? 0;
+
+  const cumulativeProgressValue = totalValue * (cumulativeProgressPercentage / 100);
+
+  const remainingToInvoice = totalValue - cumulativeProgressValue;
+
+  workItem.cumulativeProgressPercentage = cumulativeProgressPercentage;
+  workItem.cumulativeProgressValue = cumulativeProgressValue;
+  workItem.remainingToInvoice = remainingToInvoice;
+
+  const categoryIndex =
+    project.value.workCategories?.findIndex((category) => category.workItems?.some((item) => item === workItem)) ?? -1;
+
+  if (categoryIndex < 0) {
+    return;
+  }
+
+  const workItemIndex =
+    project.value.workCategories?.[categoryIndex].workItems?.findIndex((item) => item === workItem) ?? -1;
+
+  if (workItemIndex < 0) {
+    return;
+  }
+
+  const basePath = `workCategories[${categoryIndex}].workItems[${workItemIndex}]`;
+
+  calculatedChangedFields.value.add(`${basePath}.cumulativeProgressPercentage`);
+
+  calculatedChangedFields.value.add(`${basePath}.cumulativeProgressValue`);
+
+  calculatedChangedFields.value.add(`${basePath}.remainingToInvoice`);
+
+  calculatedChangedFields.value = new Set(calculatedChangedFields.value);
+}
+
+function isCalculatedFieldChanged(row: ProgressRow, field: string): boolean {
+  if (row.isCategory || !row.workItem) {
+    return false;
+  }
+
+  const workItem = row.workItem;
+
+  const categoryIndex =
+    project.value.workCategories?.findIndex((category) => category.workItems?.some((item) => item === workItem)) ?? -1;
+
+  if (categoryIndex < 0) {
+    return false;
+  }
+
+  const workItemIndex =
+    project.value.workCategories?.[categoryIndex].workItems?.findIndex((item) => item === workItem) ?? -1;
+
+  if (workItemIndex < 0) {
+    return false;
+  }
+
+  return calculatedChangedFields.value.has(`workCategories[${categoryIndex}].workItems[${workItemIndex}].${field}`);
 }
 </script>
 
