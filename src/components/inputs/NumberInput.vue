@@ -33,10 +33,12 @@ const emit = defineEmits<{
 
 const isEditing = ref(false);
 const inputValue = ref('');
+const originalValue = ref<number | null>(null);
 
 function handleFocus(event: Event) {
   isEditing.value = true;
   inputValue.value = (event.target as HTMLInputElement).value;
+  originalValue.value = props.value ?? null;
 }
 
 function handleInput(event: Event) {
@@ -51,16 +53,21 @@ function handleInput(event: Event) {
 
   const numericValue = parseNumberInput(limitedValue);
 
-  emit('update:value', numericValue);
+  if (numericValue !== originalValue.value) {
+    emit('update:value', numericValue);
+  }
 }
 
 function handleBlur(event: Event) {
   const input = event.target as HTMLInputElement;
   const numericValue = parseNumberInput(input.value);
 
-  emit('update:value', numericValue);
+  if (numericValue !== originalValue.value) {
+    emit('update:value', numericValue);
+  }
 
   inputValue.value = formatNumber(numericValue);
   isEditing.value = false;
+  originalValue.value = null;
 }
 </script>

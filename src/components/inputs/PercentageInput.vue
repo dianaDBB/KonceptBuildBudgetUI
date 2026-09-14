@@ -23,7 +23,7 @@ interface Props {
   isDisabled: boolean;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   'update:value': [number | undefined];
@@ -31,10 +31,12 @@ const emit = defineEmits<{
 
 const isEditing = ref(false);
 const inputValue = ref('');
+const originalValue = ref<number | null>(null);
 
 function handleFocus(event: Event) {
   isEditing.value = true;
   inputValue.value = (event.target as HTMLInputElement).value;
+  originalValue.value = props.value ?? null;
 }
 
 function handleInput(event: Event): void {
@@ -48,7 +50,11 @@ function handleInput(event: Event): void {
   inputValue.value = limitedValue;
   const digits = limitedValue.replace(/\D/g, '');
 
-  emit('update:value', digits ? parseNumberInput(limitedValue) : undefined);
+  const numericValue = digits ? parseNumberInput(limitedValue) : undefined;
+
+  if (numericValue !== originalValue.value) {
+    emit('update:value', numericValue);
+  }
 }
 
 function handleBlur(event: Event): void {
@@ -58,12 +64,18 @@ function handleBlur(event: Event): void {
 
   if (!digits) {
     emit('update:value', undefined);
+
     inputValue.value = '';
+    originalValue.value = null;
   } else {
     const numericValue = parseNumberInput(limitedValue);
 
-    emit('update:value', numericValue);
+    if (numericValue !== originalValue.value) {
+      emit('update:value', numericValue);
+    }
+
     inputValue.value = formatNumber(numericValue);
+    originalValue.value = null;
   }
 
   isEditing.value = false;
