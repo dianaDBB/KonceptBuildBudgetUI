@@ -27,6 +27,10 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  'update:value': [value: number | undefined];
+}>();
+
 const isEditing = ref(false);
 const inputValue = ref('');
 
@@ -44,16 +48,18 @@ function handleInput(event: Event) {
   }
 
   inputValue.value = limitedValue;
+
   const numericValue = parseNumberInput(limitedValue);
 
-  (props.entity as Record<string, number | null | undefined>)[props.fieldKey] = numericValue;
+  emit('update:value', numericValue);
 }
 
 function handleBlur(event: Event) {
   const input = event.target as HTMLInputElement;
   const numericValue = parseNumberInput(input.value);
 
-  (props.entity as Record<string, number | null | undefined>)[props.fieldKey] = numericValue;
+  emit('update:value', numericValue);
+
   inputValue.value = formatNumber(numericValue);
   isEditing.value = false;
 }

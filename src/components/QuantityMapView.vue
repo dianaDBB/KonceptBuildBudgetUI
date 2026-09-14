@@ -48,12 +48,20 @@
                   :rows="workCategoryTable"
                   :subrows="workItemTable"
                   :is-field-changed="isWorkCategoryFieldChanged"
+                  :is-calculated-field-changed="isCalculatedFieldChanged"
                 >
                 </EntityTableBody>
                 <tr></tr>
                 <tr class="total-row">
                   <td colspan="8" class="align-right">TOTAL CUSTO DIRETO (BRUTO)</td>
-                  <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
+                  <td
+                    class="align-right"
+                    :class="{
+                      'calculated-changed': calculatedChangedFields.has('project.totalDirectCost'),
+                    }"
+                  >
+                    {{ formatCurrency(project.totalDirectCost) }}
+                  </td>
                   <td />
                 </tr>
               </tbody>
@@ -89,7 +97,7 @@ import projectApi from '@/services/project-api.ts';
 import { ProjectType, ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
 import Toast from '@/components/Toast.vue';
 import { QuantityMapCategory, QuantityMapItem } from '@/entities/quantity-map';
-import { EntityTableBodyProps, TableRow } from '@/types/entity-configs';
+import { Configs, EntityTableBodyProps, TableRow } from '@/types/entity-configs';
 import EntityTableBody from './EntityTableBody.vue';
 import { formatCurrency } from '@/utils/validation.ts';
 
@@ -110,7 +118,34 @@ const emit = defineEmits<{
 
 const workCategories = ref<WorkCategoryRow[]>([]);
 const workCategoryConfigs = computed(() => QuantityMapCategory.getConfigs());
-const workItemConfigs = computed(() => QuantityMapItem.getConfigs());
+const workItemConfigs = computed<Configs<ProjectWorkItemType>>(() => {
+  const configs = QuantityMapItem.getConfigs();
+
+  return {
+    ...configs,
+
+    isIncluded: {
+      ...configs.isIncluded,
+      onValueChanged: (row) => {
+        recalculateTotals(row);
+      },
+    },
+
+    quantity: {
+      ...configs.quantity,
+      onValueChanged: (row) => {
+        recalculateTotals(row);
+      },
+    },
+
+    unitPrice: {
+      ...configs.unitPrice,
+      onValueChanged: (row) => {
+        recalculateTotals(row);
+      },
+    },
+  };
+});
 
 const isEditing = ref(false);
 
@@ -274,6 +309,84 @@ async function saveProject() {
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível guardar o projeto.');
   }
+}
+
+/************************************************************************************************* RECALCULATE TOTALS */
+
+const calculatedChangedFields = ref<Set<string>>(new Set());
+
+function recalculateTotals(changedRow?: WorkItemRow): void {
+  let totalDirectCost = 0;
+
+  let changedCategoryIndex = -1;
+  let changedWorkItemIndex = -1;
+
+  if (changedRow) {
+    for (let categoryIndex = 0; categoryIndex < workCategories.value.length; categoryIndex++) {
+      const workItems = workCategories.value[categoryIndex].entity.workItems ?? [];
+
+      const workItemIndex = workItems.findIndex((workItem) => workItem === changedRow.entity);
+
+      if (workItemIndex >= 0) {
+        changedCategoryIndex = categoryIndex;
+        changedWorkItemIndex = workItemIndex;
+        break;
+      }
+    }
+  }
+
+  workCategories.value.forEach((categoryRow) => {
+    const category = categoryRow.entity;
+    let categoryTotal = 0;
+
+    category.workItems?.forEach((workItem) => {
+      const total =
+        workItem.isIncluded && workItem.quantity != null && workItem.unitPrice != null
+          ? workItem.quantity * workItem.unitPrice
+          : 0;
+
+      workItem.total = total;
+      categoryTotal += total;
+    });
+
+    category.directCost = categoryTotal;
+    totalDirectCost += categoryTotal;
+  });
+
+  project.value.totalDirectCost = totalDirectCost;
+
+  if (changedCategoryIndex >= 0 && changedWorkItemIndex >= 0) {
+    calculatedChangedFields.value.add(
+      `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].total`,
+    );
+
+    calculatedChangedFields.value.add(`workCategories[${changedCategoryIndex}].total`);
+  }
+
+  calculatedChangedFields.value.add('project.totalDirectCost');
+  calculatedChangedFields.value = new Set(calculatedChangedFields.value);
+}
+
+function isCalculatedFieldChanged(row: WorkCategoryRow | WorkItemRow, field: string): boolean {
+  const categoryIndex = workCategories.value.findIndex((categoryRow) => categoryRow === row);
+
+  if (categoryIndex >= 0) {
+    return calculatedChangedFields.value.has(`workCategories[${categoryIndex}].${field}`);
+  }
+
+  const workItem = row.entity as ProjectWorkItemType;
+
+  for (let categoryIndex = 0; categoryIndex < workCategories.value.length; categoryIndex++) {
+    const workItems = workCategories.value[categoryIndex].entity.workItems ?? [];
+
+    const workItemIndex = workItems.findIndex((item) => item === workItem);
+
+    if (workItemIndex >= 0) {
+      return calculatedChangedFields.value.has(`workCategories[${categoryIndex}].workItems[${workItemIndex}].${field}`);
+    }
+  }
+
+  return false;
 }
 </script>
 

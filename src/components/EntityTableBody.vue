@@ -182,6 +182,11 @@
             ? (childRow, fieldKey) => props.isFieldChanged?.(childRow as unknown as TableRow<TEntity>, fieldKey) ?? false
             : undefined
         "
+        :is-calculated-field-changed="
+          props.isCalculatedFieldChanged
+            ? (childRow, fieldKey) => props.isCalculatedFieldChanged?.(childRow as unknown as TableRow<TEntity>, fieldKey) ?? false
+            : undefined
+        "
       >
         <!-- @vue-ignore -->
         <template #row-actions="{ row: subrow }: { row: TableRow<TParentEntity>, isSubrow: boolean | undefined }">
@@ -409,76 +414,6 @@ function handleKeyboardNavigation(fieldKey: string, event: KeyboardEvent) {
     targetInput.select();
   }
 }
-
-/* SOLUTION 1
-function handleKeyboardNavigation(
-  rowIndex: number,
-  fieldKey: string,
-  config: EntityConfig<TEntity>,
-  event: KeyboardEvent,
-) {
-  if (!config.keyboardNavigation?.nextRow) {
-    return;
-  }
-
-  const isPrevious =
-    event.key === 'ArrowUp' ||
-    (event.key === 'Tab' && event.shiftKey);
-
-  const isNext =
-    event.key === 'ArrowDown' ||
-    (event.key === 'Enter') ||
-    (event.key === 'Tab' && !event.shiftKey);
-
-  if (!isPrevious && !isNext) {
-    return;
-  }
-
-  event.preventDefault();
-  event.stopPropagation();
-
-  const currentRow = (event.target as HTMLElement).closest('tr');
-
-  if (!currentRow) {
-    return;
-  }
-
-  let targetRow = isPrevious
-    ? currentRow.previousElementSibling
-    : currentRow.nextElementSibling;
-
-  while (targetRow) {
-    if (targetRow instanceof HTMLTableRowElement) {
-      const targetCell = targetRow.querySelector<HTMLElement>(
-        `[data-field-key="${CSS.escape(fieldKey)}"]`,
-      );
-
-      if (targetCell) {
-        const targetInput = targetCell.querySelector<HTMLElement>(
-          'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])',
-        );
-
-        if (targetInput) {
-          targetInput.focus();
-
-          if (
-            targetInput instanceof HTMLInputElement ||
-            targetInput instanceof HTMLTextAreaElement
-          ) {
-            targetInput.select();
-          }
-
-          return;
-        }
-      }
-    }
-
-    targetRow = isPrevious
-      ? targetRow.previousElementSibling
-      : targetRow.nextElementSibling;
-  }
-}
-*/
 
 /******************************************************************************************************** DRAG & DROP */
 
