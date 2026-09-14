@@ -50,7 +50,11 @@
         :style="config.styleConfig.columnStyle"
         :class="[
           getColumnClasses(fieldKey, row.entity),
-          { editing: rowHasChanges(row), changed: props.isFieldChanged?.(row, String(fieldKey)) },
+          {
+            editing: rowHasChanges(row),
+            changed: props.isFieldChanged?.(row, String(fieldKey)),
+            'calculated-changed': props.isCalculatedFieldChanged?.(row, String(fieldKey)),
+          },
         ]"
         @keydown.capture="handleKeyboardNavigation(String(fieldKey), $event)"
       >
@@ -218,6 +222,7 @@ interface Props {
   rows: EntityTableBodyProps<TEntity>;
   subrows?: EntityTableBodySubrowProps<TParentEntity, TEntity>;
   isFieldChanged?: (row: TableRow<TEntity>, fieldKey: string) => boolean;
+  isCalculatedFieldChanged?: (row: TableRow<TEntity>, fieldKey: string) => boolean;
 }
 
 const props = defineProps<Props>();

@@ -13,6 +13,7 @@
   --color-primary-light: #eff6ff;
   --color-primary-light-hover: #dbeafe;
   --color-primary-focus: rgba(59, 130, 246, 0.15);
+  --color-changed: #b45309;
 
   /* Tables */
   --color-table-row-hover: #f8fbff;
@@ -26,6 +27,7 @@
   --color-background-disabled: #f7f8f9;
   --color-background-muted: rgba(255, 255, 255, 0.72);
   --color-background-dilaog-muted: rgba(0, 0, 0, 0.45);
+  --color-background-changed: #fef3c7;
 
   /* Text */
   --color-text: #111827;
@@ -598,6 +600,12 @@ select {
 
 .phone-number {
   border-radius: 0 4px 4px 0;
+}
+
+.table td.calculated-changed {
+  color: var(--color-changed);
+  background-color: var(--color-background-changed);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /************************************************************************************************************ ACTIONS */

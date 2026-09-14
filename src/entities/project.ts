@@ -265,8 +265,8 @@ export class ProjectWorkCategory {
     };
   }
 
-  static isValid(project: ProjectType, configs: Configs<ProjectType>): boolean {
-    return Object.values(configs).every((config) => !config.styleConfig.isInvalid(project));
+  static isValid(workCategory: ProjectWorkCategoryType, configs: Configs<ProjectWorkCategoryType>): boolean {
+    return Object.values(configs).every((config) => !config.styleConfig.isInvalid(workCategory));
   }
 }
 

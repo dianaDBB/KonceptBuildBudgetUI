@@ -226,7 +226,11 @@
                   </tr>
                 </thead>
                 <tbody ref="tableBody">
-                  <EntityTableBody :rows="workCategoryTable" :is-field-changed="isWorkCategoryFieldChanged">
+                  <EntityTableBody
+                    :rows="workCategoryTable"
+                    :is-field-changed="isWorkCategoryFieldChanged"
+                    :is-calculated-field-changed="isWorkCategoryCalculatedFieldChanged"
+                  >
                   </EntityTableBody>
                   <tr class="total-row">
                     <td />
@@ -263,40 +267,115 @@
                   <tbody ref="tableBody">
                     <tr>
                       <td class="align-left">Custo Direto das Especialidades</td>
-                      <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
-                      <td class="align-right">{{ formatPercentage(project.totalDirectCostPercentage) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalDirectCost') }"
+                      >
+                        {{ formatCurrency(project.totalDirectCost) }}
+                      </td>
+                      <td
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalDirectCostPercentage'),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalDirectCostPercentage) }}
+                      </td>
                     </tr>
                     <tr>
                       <td class="align-left">Custos Indiretos</td>
-                      <td class="align-right">{{ formatCurrency(project.totalIndirectCost) }}</td>
-                      <td class="align-right">{{ formatPercentage(project.totalIndirectCostPercentage) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalIndirectCost') }"
+                      >
+                        {{ formatCurrency(project.totalIndirectCost) }}
+                      </td>
+                      <td
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalIndirectCostPercentage'),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalIndirectCostPercentage) }}
+                      </td>
                     </tr>
                     <tr>
                       <td class="align-left">Margem de Lucro</td>
-                      <td class="align-right">{{ formatCurrency(project.totalMarginProfit) }}</td>
-                      <td class="align-right">{{ formatPercentage(project.totalMarginProfitPercentage) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalMarginProfit') }"
+                      >
+                        {{ formatCurrency(project.totalMarginProfit) }}
+                      </td>
+                      <td
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalMarginProfitPercentage'),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalMarginProfitPercentage) }}
+                      </td>
                     </tr>
                     <tr class="subtotal-row">
                       <td class="align-left">SUBTOTAL (S/ IVA)</td>
-                      <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
-                      <td class="align-right">{{ formatPercentage(project.totalWithoutTaxPercentage) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalWithoutTax') }"
+                      >
+                        {{ formatCurrency(project.totalWithoutTax) }}
+                      </td>
+                      <td
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalWithoutTaxPercentage'),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalWithoutTaxPercentage) }}
+                      </td>
                     </tr>
                     <tr>
                       <td class="align-left">IVA</td>
-                      <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalTax') }"
+                      >
+                        {{ formatCurrency(project.totalTax) }}
+                      </td>
                       <td class="align-right">{{ formatPercentage(project.tax) }}</td>
                     </tr>
                     <tr class="total-row">
                       <td class="align-left">TOTAL EMPREITADA (c/ IVA)</td>
-                      <td colspan="2" class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
+                      <td
+                        colspan="2"
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalWithTax') }"
+                      >
+                        {{ formatCurrency(project.totalWithTax) }}
+                      </td>
                     </tr>
                     <tr>
                       <td class="align-left">Custo por m² (s/ IVA)</td>
-                      <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithoutTax) }}</td>
+                      <td
+                        colspan="2"
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('costPerSquareWithoutTax'),
+                        }"
+                      >
+                        {{ formatCurrency(project.costPerSquareWithoutTax) }}
+                      </td>
                     </tr>
                     <tr>
                       <td class="align-left">Custo por m² (c/ IVA)</td>
-                      <td colspan="2" class="align-right">{{ formatCurrency(project.costPerSquareWithTax) }}</td>
+                      <td
+                        colspan="2"
+                        class="align-right"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('costPerSquareWithTax'),
+                        }"
+                      >
+                        {{ formatCurrency(project.costPerSquareWithTax) }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -429,7 +508,7 @@ import IntInput from './inputs/IntInput.vue';
 import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import EntityTableBody from './EntityTableBody.vue';
-import { EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
+import { Configs, EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
 import { WorkCategoryType } from '@/entities/work-category.ts';
 import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
 import { formatCurrency, formatPercentage } from '@/utils/validation.ts';
@@ -447,7 +526,42 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 const isEditing = ref(false);
 
 const workCategories = ref<WorkCategoryRow[]>([]);
-const workCategoryConfigs = computed(() => ProjectWorkCategory.getConfigs());
+const workCategoryConfigs = computed<Configs<ProjectWorkCategoryType>>(() => {
+  const configs = ProjectWorkCategory.getConfigs();
+
+  return {
+    ...configs,
+    margin: {
+      ...configs.margin,
+      onValueChanged: (row, value) => {
+        const workCategory = row.entity;
+
+        workCategory.margin = typeof value === 'number' ? value : 0;
+
+        workCategory.valueWithMargin = (workCategory.directCost ?? 0) * (1 + workCategory.margin / 100);
+
+        const index = workCategories.value.findIndex((item) => item === row);
+
+        if (index >= 0) {
+          calculatedChangedFields.value.add(`workCategories[${index}].valueWithMargin`);
+        }
+
+        recalculateProjectTotals();
+
+        calculatedChangedFields.value.add('project.totalDirectCost');
+        calculatedChangedFields.value.add('project.totalMarginProfit');
+        calculatedChangedFields.value.add('project.totalWithoutTax');
+        calculatedChangedFields.value.add('project.totalTax');
+        calculatedChangedFields.value.add('project.totalWithTax');
+        calculatedChangedFields.value.add('project.costPerSquareWithoutTax');
+        calculatedChangedFields.value.add('project.costPerSquareWithTax');
+
+        // Force Vue to react to the Set mutation
+        calculatedChangedFields.value = new Set(calculatedChangedFields.value);
+      },
+    },
+  };
+});
 
 const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>>(() => ({
   rows: workCategories.value,
@@ -767,10 +881,70 @@ async function confirmDelete(): Promise<void> {
   }
 }
 
-/************************************************************************************************************* NAVIGATION */
+/********************************************************************************************************* NAVIGATION */
 
 function goToProjectsList() {
   router.push({ name: RouteNames.projectsList });
+}
+
+/************************************************************************************************* RECALCULATE TOTALS */
+
+const calculatedChangedFields = ref<Set<string>>(new Set());
+
+function recalculateProjectTotals(): void {
+  const categories = workCategories.value.map((row) => row.entity);
+
+  const totalDirectCost = categories.reduce((total, category) => total + (category.directCost ?? 0), 0);
+
+  const totalWithoutIndirectCosts = categories.reduce((total, category) => total + (category.valueWithMargin ?? 0), 0);
+
+  const totalMarginProfit = totalWithoutIndirectCosts - totalDirectCost;
+
+  const totalIndirectCost = project.value.totalIndirectCost ?? 0;
+
+  const totalWithoutTax = totalWithoutIndirectCosts + totalIndirectCost;
+
+  const tax = project.value.tax ?? 0;
+
+  const totalTax = totalWithoutTax * (tax / 100);
+
+  const totalWithTax = totalWithoutTax + totalTax;
+
+  project.value.totalDirectCost = totalDirectCost;
+
+  project.value.totalDirectCostPercentage = totalWithoutTax > 0 ? (totalDirectCost / totalWithoutTax) * 100 : 0;
+
+  project.value.totalMarginProfit = totalMarginProfit;
+
+  project.value.totalMarginProfitPercentage = totalWithoutTax > 0 ? (totalMarginProfit / totalWithoutTax) * 100 : 0;
+
+  project.value.totalWithoutTax = totalWithoutTax;
+
+  project.value.totalWithoutTaxPercentage = totalWithoutTax > 0 ? 100 : 0;
+
+  project.value.totalTax = totalTax;
+
+  project.value.totalWithTax = totalWithTax;
+
+  project.value.costPerSquareWithoutTax =
+    project.value.grossConstructionArea && project.value.grossConstructionArea > 0
+      ? totalWithoutTax / project.value.grossConstructionArea
+      : 0;
+
+  project.value.costPerSquareWithTax =
+    project.value.grossConstructionArea && project.value.grossConstructionArea > 0
+      ? totalWithTax / project.value.grossConstructionArea
+      : 0;
+}
+
+function isWorkCategoryCalculatedFieldChanged(row: WorkCategoryRow, field: string): boolean {
+  const index = workCategories.value.findIndex((item) => item === row);
+
+  return index >= 0 && calculatedChangedFields.value.has(`workCategories[${index}].${field}`);
+}
+
+function isFinancialSummaryCalculatedFieldChanged(field: string): boolean {
+  return calculatedChangedFields.value.has(`project.${field}`);
 }
 </script>
 
