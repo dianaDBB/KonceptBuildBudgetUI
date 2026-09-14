@@ -37,7 +37,7 @@
                 <th></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody ref="tableBody">
               <EntityTableBody :rows="projectTable" />
             </tbody>
           </table>
@@ -167,7 +167,7 @@ function discardProjectRow(row: ProjectRow) {
 async function addProject(): Promise<void> {
   isEditing.value = true;
 
-  projects.value.push({
+  projects.value.unshift({
     entity: {
       isActive: true,
       tax: 23,
@@ -180,7 +180,7 @@ async function addProject(): Promise<void> {
 
   await nextTick();
 
-  const lastRow = tableBody.value?.querySelector('tr:last-child');
+  const lastRow = tableBody.value?.querySelector('tr:first-child');
   lastRow?.scrollIntoView({
     behavior: 'smooth',
     block: 'nearest',
