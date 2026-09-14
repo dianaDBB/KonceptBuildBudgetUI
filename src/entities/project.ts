@@ -4,6 +4,7 @@ import { formatCurrency, formatPercentage } from '@/utils/validation';
 import { UUID } from 'node:crypto';
 
 export interface ProjectType extends EntityType {
+  generatedCode?: string;
   type?: string;
   description?: string;
   address?: string;
@@ -85,6 +86,18 @@ export class Project {
     const typeOptions = useConfigs().typeOptions.value;
 
     return {
+      generatedCode: {
+        label: 'Código',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
+          },
+        },
+        displayValue: (project: ProjectType) => project.generatedCode,
+      },
       type: {
         label: 'Tipo',
         type: ColumnType.SELECT,

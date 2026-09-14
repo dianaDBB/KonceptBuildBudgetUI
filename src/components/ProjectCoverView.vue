@@ -15,6 +15,16 @@
               <h3>Dados da Obra</h3>
 
               <div class="form-grid">
+                <div class="form-group" :class="{ changed: isFieldChanged('generatedCode') }">
+                  <label>{{ projectConfigs.generatedCode.label }}</label>
+                  <TextInput
+                    :value="project.generatedCode"
+                    :is-invalid="!project.generatedCode"
+                    :is-disabled="false"
+                    @update:value="project.generatedCode = $event"
+                  />
+                </div>
+
                 <div class="form-group" :class="{ changed: isFieldChanged('description') }">
                   <label>{{ projectConfigs.description.label }}</label>
                   <TextInput
@@ -198,53 +208,55 @@
             </section>
           </div>
 
-          <section class="form-section work-categories-section">
-            <h3>Desagregação por Especialidades</h3>
+          <div class="form-column">
+            <section class="form-section work-categories-section">
+              <h3>Desagregação por Especialidades</h3>
 
-            <div class="table">
-              <table>
-                <colgroup>
-                  <!--reorder column-->
-                  <col style="width: 20px" />
-                  <col
-                    v-for="config in Object.values(workCategoryConfigs)"
-                    :key="config.label"
-                    :style="config.styleConfig.columnStyle"
-                  />
-                </colgroup>
-                <thead>
-                  <tr>
+              <div class="table">
+                <table>
+                  <colgroup>
                     <!--reorder column-->
-                    <th></th>
-                    <th
+                    <col style="width: 20px" />
+                    <col
                       v-for="config in Object.values(workCategoryConfigs)"
                       :key="config.label"
-                      :class="[config.styleConfig.headerClasses]"
+                      :style="config.styleConfig.columnStyle"
+                    />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <!--reorder column-->
+                      <th></th>
+                      <th
+                        v-for="config in Object.values(workCategoryConfigs)"
+                        :key="config.label"
+                        :class="[config.styleConfig.headerClasses]"
+                      >
+                        {{ config.label }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody ref="tableBody">
+                    <EntityTableBody
+                      :rows="workCategoryTable"
+                      :is-field-changed="isWorkCategoryFieldChanged"
+                      :is-calculated-field-changed="isWorkCategoryCalculatedFieldChanged"
                     >
-                      {{ config.label }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody ref="tableBody">
-                  <EntityTableBody
-                    :rows="workCategoryTable"
-                    :is-field-changed="isWorkCategoryFieldChanged"
-                    :is-calculated-field-changed="isWorkCategoryCalculatedFieldChanged"
-                  >
-                  </EntityTableBody>
-                  <tr class="total-row">
-                    <td />
-                    <td />
-                    <td />
-                    <td />
-                    <td class="align-right">TOTAL</td>
-                    <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
-                    <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+                    </EntityTableBody>
+                    <tr class="total-row">
+                      <td />
+                      <td />
+                      <td />
+                      <td />
+                      <td class="align-right">TOTAL</td>
+                      <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
+                      <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
 
           <div class="form-column">
             <section class="form-section financial-summary-section">
