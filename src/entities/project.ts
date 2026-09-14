@@ -18,6 +18,7 @@ export interface ProjectType extends EntityType {
   roomsCount?: number;
   wcCount?: number;
   tax?: number;
+  progressPaymentsCount?: number;
   isActive?: boolean;
   workCategories?: ProjectWorkCategoryType[];
   indirectCosts?: ProjectindirectCostType[];
@@ -59,6 +60,15 @@ export interface ProjectWorkItemType extends EntityType {
   total?: number;
   notes?: string;
   clientTotal?: number;
+  progressPayments?: ProjectPaymentProgressType[];
+  cumulativeProgressPercentage?: number;
+  cumulativeProgressValue?: number;
+  remainingToInvoice?: number;
+}
+
+export interface ProjectPaymentProgressType extends EntityType {
+  paymentIndex?: number;
+  percentage?: number;
 }
 
 export interface ProjectindirectCostType extends EntityType {

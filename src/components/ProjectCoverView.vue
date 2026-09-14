@@ -164,6 +164,24 @@
             </div>
 
             <section class="form-section">
+              <h3>Autos de Medição</h3>
+
+              <div class="form-grid">
+                <div class="form-group" :class="{ changed: isFieldChanged('progressPaymentsCount') }">
+                  <label>Número de Autos de Medição</label>
+                  <NumberInput
+                    :entity="projectEntity"
+                    :value="project.progressPaymentsCount"
+                    field-key="progressPaymentsCount"
+                    :is-invalid="!project.progressPaymentsCount"
+                    :is-disabled="false"
+                    @update:value="project.progressPaymentsCount = $event"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section class="form-section">
               <h3>Taxa IVA</h3>
 
               <div class="form-grid">
@@ -208,6 +226,8 @@
                   </tr>
                 </thead>
                 <tbody ref="tableBody">
+                  <EntityTableBody :rows="workCategoryTable" :is-field-changed="isWorkCategoryFieldChanged">
+                  </EntityTableBody>
                   <tr class="total-row">
                     <td />
                     <td />
@@ -217,8 +237,6 @@
                     <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
                     <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
                   </tr>
-                  <EntityTableBody :rows="workCategoryTable" :is-field-changed="isWorkCategoryFieldChanged">
-                  </EntityTableBody>
                 </tbody>
               </table>
             </div>

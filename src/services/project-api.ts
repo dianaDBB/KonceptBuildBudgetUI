@@ -36,7 +36,8 @@ class ProjectApi {
       maxFacadeHeight: project.maxFacadeHeight,
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
-      tax: project.tax,
+      tax: project.tax ?? 23,
+      progressPaymentsCount: project.progressPaymentsCount ?? 10,
       isActive: project.isActive == undefined ? true : project.isActive,
       workCategories: [],
     };
@@ -64,13 +65,16 @@ class ProjectApi {
       roomsCount: project.roomsCount,
       wcCount: project.wcCount,
       tax: project.tax,
+      progressPaymentsCount: project.progressPaymentsCount,
       isActive: project.isActive ?? true,
+
       workCategories: project.workCategories?.map((category) => ({
         workCategoryId: category.workCategoryId,
         isIncluded: category.isIncluded,
         margin: category.margin,
         customDescription: category.description,
         customIndex: category.index,
+
         workItems: category.workItems?.map((item) => ({
           workItemId: item.workItemId,
           isIncluded: item.isIncluded,
@@ -79,8 +83,15 @@ class ProjectApi {
           customUnitPrice: item.unitPrice,
           quantity: item.quantity,
           notes: item.notes,
+
+          progressPayments: item.progressPayments?.map((payment) => ({
+            progressPaymentId: payment.id,
+            index: payment.paymentIndex,
+            percentage: payment.percentage ?? 0,
+          })),
         })),
       })),
+
       indirectCosts: project.indirectCosts?.map((indirectCost) => ({
         indirectCostId: indirectCost.indirectCostId,
         isIncluded: indirectCost.isIncluded,

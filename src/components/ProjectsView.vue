@@ -171,6 +171,7 @@ async function addProject(): Promise<void> {
     entity: {
       isActive: true,
       tax: 23,
+      progressPaymentsCount: 10,
     },
     _key: nextKey(),
     _isNew: true,

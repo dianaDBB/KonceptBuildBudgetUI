@@ -49,6 +49,16 @@
             @saved="markProjectSaved"
             @update:expanded-category-ids="updateQuantityMapExpansion"
           />
+          <PaymentsProgressView
+            v-if="selectedTab === 'payments-progress'"
+            :key="projectRefreshKey"
+            v-model="project"
+            :has-unsaved-changes="hasUnsavedChanges"
+            :changed-fields="changedFields"
+            @reload="getProject(projectId)"
+            @saved="markProjectSaved"
+            @update:has-unsaved-changes="updatePaymentsUnsavedChanges"
+          />
           <ClientBudget
             v-if="selectedTab === 'client-budget'"
             :key="projectRefreshKey"
@@ -95,6 +105,7 @@ import ProjectCoverView from './ProjectCoverView.vue';
 import QuantityMapView from './QuantityMapView.vue';
 import ClientBudget from './ClientBudget.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
+import PaymentsProgressView from './PaymentsProgressView.vue';
 import { useProjectHeader } from '@/composables/useProjectHeader';
 
 const route = useRoute();
@@ -105,14 +116,22 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 
 const project = ref<ProjectType | null>(null);
 const projectRefreshKey = ref(0);
+
 const initialProjectSnapshot = ref('');
+
 const expandedQuantityMapCategoryIds = ref<string[]>([]);
 const hasInitializedQuantityMapExpansion = ref(false);
+
 const expandedClientBudgetCategoryIds = ref<string[]>([]);
 const hasInitializedClientBudgetExpansion = ref(false);
+
 const showDiscardChangesDialog = ref(false);
+const hasUnsavedPaymentsChanges = ref(false);
+
 const pendingNavigation = ref<((value?: unknown) => void) | null>(null);
 const { projectHeader, resetProjectHeader } = useProjectHeader();
+
+/************************************************************************************************** COLLPASE / EXPAND */
 
 function updateQuantityMapExpansion(expandedCategoryIds: string[]) {
   expandedQuantityMapCategoryIds.value = [...expandedCategoryIds];
@@ -123,6 +142,8 @@ function updateClientBudgetExpansion(expandedCategoryIds: string[]) {
   expandedClientBudgetCategoryIds.value = [...expandedCategoryIds];
   sessionStorage.setItem(`client-budget-expansion:${projectId}`, JSON.stringify(expandedCategoryIds));
 }
+
+/********************************************************************************* SAFE NAVIGATION - UN-SAVED CHANGES */
 
 function sanitizeProjectForComparison(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -186,12 +207,14 @@ const changedFields = computed(() => {
 });
 
 const hasUnsavedChanges = computed(() => {
-  if (!project.value) {
-    return false;
-  }
+  const hasProjectChanges = project.value ? getProjectSnapshot(project.value) !== initialProjectSnapshot.value : false;
 
-  return getProjectSnapshot(project.value) !== initialProjectSnapshot.value;
+  return hasProjectChanges || hasUnsavedPaymentsChanges.value;
 });
+
+function updatePaymentsUnsavedChanges(value: boolean) {
+  hasUnsavedPaymentsChanges.value = value;
+}
 
 function handleDiscardDialogChange(value: boolean) {
   if (!value) {
@@ -204,6 +227,8 @@ function discardChangesAndContinue() {
   if (project.value && initialProjectSnapshot.value) {
     project.value = JSON.parse(initialProjectSnapshot.value) as ProjectType;
   }
+
+  hasUnsavedPaymentsChanges.value = false;
 
   showDiscardChangesDialog.value = false;
 
@@ -242,7 +267,13 @@ onBeforeRouteLeave((_to, _from, next) => {
 
 /**************************************************************************************************************** TABS*/
 
-type ProjectTab = 'cover' | 'general-parameters' | 'calculations' | 'quantity-map' | 'client-budget';
+type ProjectTab =
+  | 'cover'
+  | 'general-parameters'
+  | 'calculations'
+  | 'quantity-map'
+  | 'payments-progress'
+  | 'client-budget';
 
 const projectTabs: {
   id: ProjectTab;
@@ -255,6 +286,10 @@ const projectTabs: {
   {
     id: 'quantity-map',
     label: 'MAPA DE QUANTIDADES',
+  },
+  {
+    id: 'payments-progress',
+    label: 'AUTOS DE MEDIÇÃO',
   },
   {
     id: 'client-budget',
