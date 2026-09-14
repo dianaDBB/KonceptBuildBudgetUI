@@ -53,6 +53,7 @@
                       v-for="paymentIndex in payments"
                       :key="paymentIndex"
                       :class="{ changed: isPaymentChanged(row, paymentIndex) }"
+                      @keydown.capture="handleKeyboardNavigation(paymentIndex, $event)"
                     >
                       <PercentageInput
                         v-if="!row.isCategory && row.workItem"
@@ -204,6 +205,100 @@ const tableRows = computed<ProgressRow[]>(() => {
 
   return rows;
 });
+
+/************************************************************************************************** FIELDS NAVIGATION */
+
+function handleKeyboardNavigation(paymentIndex: number, event: KeyboardEvent) {
+  const isPrevious = event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey);
+
+  const isNext = event.key === 'ArrowRight' || (event.key === 'Tab' && !event.shiftKey);
+
+  const isPreviousRow = event.key === 'ArrowUp';
+
+  const isNextRow = event.key === 'ArrowDown' || event.key === 'Enter';
+
+  if (!isPrevious && !isNext && !isPreviousRow && !isNextRow) {
+    return;
+  }
+
+  const currentElement = event.target as HTMLElement;
+  const currentRow = currentElement.closest('tr');
+
+  if (!currentRow) {
+    return;
+  }
+
+  let targetInput: HTMLElement | null = null;
+
+  /*
+   * LEFT / RIGHT / TAB
+   *
+   * Find the previous/next PercentageInput in the same row.
+   */
+  if (isPrevious || isNext) {
+    const inputs = Array.from(
+      currentRow.querySelectorAll<HTMLElement>(
+        'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [contenteditable="true"], [tabindex]:not([tabindex="-1"]):not(:disabled)',
+      ),
+    );
+
+    const currentInputIndex = inputs.findIndex(
+      (input) => input === currentElement || input.contains(currentElement) || currentElement.contains(input),
+    );
+
+    if (currentInputIndex !== -1) {
+      const targetIndex = isPrevious ? currentInputIndex - 1 : currentInputIndex + 1;
+
+      if (targetIndex >= 0 && targetIndex < inputs.length) {
+        targetInput = inputs[targetIndex];
+      }
+    }
+  }
+
+  /*
+   * UP / DOWN / ENTER
+   *
+   * Find the same payment column in the previous/next work-item row.
+   * Category rows are automatically skipped.
+   */
+  if (isPreviousRow || isNextRow) {
+    let targetRow = isPreviousRow ? currentRow.previousElementSibling : currentRow.nextElementSibling;
+
+    while (targetRow) {
+      if (targetRow instanceof HTMLTableRowElement) {
+        const targetCells = Array.from(targetRow.children);
+        const paymentColumnIndex = 3 + (paymentIndex - 1);
+        const targetCell = targetCells[paymentColumnIndex];
+
+        if (targetCell) {
+          targetInput = targetCell.querySelector<HTMLElement>(
+            'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [contenteditable="true"], [tabindex]:not([tabindex="-1"]):not(:disabled)',
+          );
+
+          if (targetInput) {
+            break;
+          }
+        }
+      }
+
+      targetRow = isPreviousRow ? targetRow.previousElementSibling : targetRow.nextElementSibling;
+    }
+  }
+
+  // No target means this is the edge of the table.
+  if (!targetInput) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  targetInput.focus();
+
+  if (targetInput instanceof HTMLInputElement || targetInput instanceof HTMLTextAreaElement) {
+    targetInput.select();
+  }
+}
 
 /***************************************************************************************************** PAYMENT VALUES */
 

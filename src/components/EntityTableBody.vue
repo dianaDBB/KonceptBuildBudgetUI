@@ -46,11 +46,13 @@
       <td
         v-for="(config, fieldKey) in props.rows.configs"
         :key="fieldKey"
+        :data-field-key="String(fieldKey)"
         :style="config.styleConfig.columnStyle"
         :class="[
           getColumnClasses(fieldKey, row.entity),
           { editing: rowHasChanges(row), changed: props.isFieldChanged?.(row, String(fieldKey)) },
         ]"
+        @keydown.capture="handleKeyboardNavigation(String(fieldKey), $event)"
       >
         <!-- EDITING -->
         <template v-if="rowHasChanges(row)">
@@ -318,6 +320,160 @@ function updateFieldValue(row: TableRow<TEntity>, fieldKey: string, value: unkno
 
   props.rows.configs[fieldKey]?.onValueChanged?.(row, value);
 }
+
+function handleKeyboardNavigation(fieldKey: string, event: KeyboardEvent) {
+  const isHorizontalPrevious = event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey);
+  const isHorizontalNext = event.key === 'ArrowRight' || (event.key === 'Tab' && !event.shiftKey);
+  const isVerticalPrevious = event.key === 'ArrowUp';
+  const isVerticalNext = event.key === 'ArrowDown' || event.key === 'Enter';
+
+  if (!isHorizontalPrevious && !isHorizontalNext && !isVerticalPrevious && !isVerticalNext) {
+    return;
+  }
+
+  const currentElement = event.target as HTMLElement;
+  const currentRow = currentElement.closest('tr');
+
+  if (!currentRow) {
+    return;
+  }
+
+  let targetInput: HTMLElement | null = null;
+
+  /*
+   * LEFT / RIGHT
+   * Find the previous/next editable input in the same row.
+   */
+  if (isHorizontalPrevious || isHorizontalNext) {
+    const inputs = Array.from(
+      currentRow.querySelectorAll<HTMLElement>(
+        'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [contenteditable="true"], [tabindex]:not([tabindex="-1"]):not(:disabled)',
+      ),
+    );
+
+    const currentInputIndex = inputs.findIndex(
+      (input) => input === currentElement || input.contains(currentElement) || currentElement.contains(input),
+    );
+
+    if (currentInputIndex !== -1) {
+      const targetIndex = isHorizontalPrevious ? currentInputIndex - 1 : currentInputIndex + 1;
+
+      if (targetIndex >= 0 && targetIndex < inputs.length) {
+        targetInput = inputs[targetIndex];
+      }
+    }
+  }
+
+  /*
+   * UP / DOWN
+   * Find the same field in the previous/next row.
+   */
+  if (isVerticalPrevious || isVerticalNext) {
+    let targetRow = isVerticalPrevious ? currentRow.previousElementSibling : currentRow.nextElementSibling;
+
+    while (targetRow) {
+      if (targetRow instanceof HTMLTableRowElement) {
+        const targetCell = targetRow.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
+
+        if (targetCell) {
+          targetInput = targetCell.querySelector<HTMLElement>(
+            'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [contenteditable="true"], [tabindex]:not([tabindex="-1"]):not(:disabled)',
+          );
+
+          if (targetInput) {
+            break;
+          }
+        }
+      }
+
+      targetRow = isVerticalPrevious ? targetRow.previousElementSibling : targetRow.nextElementSibling;
+    }
+  }
+
+  // If there is no target, allow the browser's normal behaviour.
+  if (!targetInput) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  targetInput.focus();
+
+  if (targetInput instanceof HTMLInputElement || targetInput instanceof HTMLTextAreaElement) {
+    targetInput.select();
+  }
+}
+
+/* SOLUTION 1
+function handleKeyboardNavigation(
+  rowIndex: number,
+  fieldKey: string,
+  config: EntityConfig<TEntity>,
+  event: KeyboardEvent,
+) {
+  if (!config.keyboardNavigation?.nextRow) {
+    return;
+  }
+
+  const isPrevious =
+    event.key === 'ArrowUp' ||
+    (event.key === 'Tab' && event.shiftKey);
+
+  const isNext =
+    event.key === 'ArrowDown' ||
+    (event.key === 'Enter') ||
+    (event.key === 'Tab' && !event.shiftKey);
+
+  if (!isPrevious && !isNext) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const currentRow = (event.target as HTMLElement).closest('tr');
+
+  if (!currentRow) {
+    return;
+  }
+
+  let targetRow = isPrevious
+    ? currentRow.previousElementSibling
+    : currentRow.nextElementSibling;
+
+  while (targetRow) {
+    if (targetRow instanceof HTMLTableRowElement) {
+      const targetCell = targetRow.querySelector<HTMLElement>(
+        `[data-field-key="${CSS.escape(fieldKey)}"]`,
+      );
+
+      if (targetCell) {
+        const targetInput = targetCell.querySelector<HTMLElement>(
+          'input:not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])',
+        );
+
+        if (targetInput) {
+          targetInput.focus();
+
+          if (
+            targetInput instanceof HTMLInputElement ||
+            targetInput instanceof HTMLTextAreaElement
+          ) {
+            targetInput.select();
+          }
+
+          return;
+        }
+      }
+    }
+
+    targetRow = isPrevious
+      ? targetRow.previousElementSibling
+      : targetRow.nextElementSibling;
+  }
+}
+*/
 
 /******************************************************************************************************** DRAG & DROP */
 

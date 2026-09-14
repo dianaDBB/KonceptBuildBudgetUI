@@ -65,9 +65,9 @@ export class QuantityMapCategory {
         },
         displayValue: () => '',
       },
-      unitPrice: {
-        label: 'Preço Un. (€)',
-        type: ColumnType.MONEY,
+      quantity: {
+        label: 'Quantidade',
+        type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -77,9 +77,9 @@ export class QuantityMapCategory {
         },
         displayValue: () => '',
       },
-      quantity: {
-        label: 'Quantidade',
-        type: ColumnType.NUMBER,
+      unitPrice: {
+        label: 'Preço Un. (€)',
+        type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
@@ -183,15 +183,6 @@ export class QuantityMapItem {
         },
         displayValue: (workItem: ProjectWorkItemType) => workItem.units,
       },
-      unitPrice: {
-        ...workItemConfigs.unitPrice,
-        styleConfig: {
-          ...workItemConfigs.unitPrice.styleConfig,
-          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
-          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.unitPrice : false),
-        },
-        displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.unitPrice),
-      },
       quantity: {
         ...workItemConfigs.quantity,
         styleConfig: {
@@ -200,6 +191,15 @@ export class QuantityMapItem {
           isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.quantity : false),
         },
         displayValue: (workItem: ProjectWorkItemType) => formatNumber(workItem.quantity),
+      },
+      unitPrice: {
+        ...workItemConfigs.unitPrice,
+        styleConfig: {
+          ...workItemConfigs.unitPrice.styleConfig,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.unitPrice : false),
+        },
+        displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.unitPrice),
       },
       total: {
         ...workItemConfigs.total,
