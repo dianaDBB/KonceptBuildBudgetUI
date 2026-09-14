@@ -87,6 +87,7 @@ export interface ProjectPaymentStagesType extends EntityType {
   auto?: number;
   description?: string;
   percentage?: number;
+  value?: number;
   conditions?: string;
 }
 

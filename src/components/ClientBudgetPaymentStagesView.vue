@@ -76,7 +76,7 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { ProjectPaymentStagesType, ProjectType } from '@/entities/project';
-import { EntityTableBodyProps, TableRow } from '@/types/entity-configs';
+import { Configs, EntityTableBodyProps, TableRow } from '@/types/entity-configs';
 import EntityTableBody from './EntityTableBody.vue';
 import { ClientBudgetPaymentStages } from '@/entities/client-budget-payment-stages.ts';
 import { Pencil, Plus, Trash2 } from 'lucide-vue-next';
@@ -97,7 +97,19 @@ const emit = defineEmits<{
 }>();
 
 const paymentStages = ref<PaymentStageRow[]>([]);
-const paymentStagesConfigs = computed(() => ClientBudgetPaymentStages.getConfigs());
+const paymentStagesConfigs = computed<Configs<ProjectPaymentStagesType>>(() => {
+  const configs = ClientBudgetPaymentStages.getConfigs();
+
+  return {
+    ...configs,
+    percentage: {
+      ...configs.percentage,
+      onValueChanged: (row: PaymentStageRow) => {
+        recalculateStageValue(row);
+      },
+    },
+  };
+});
 
 const isEditing = ref(false);
 
@@ -138,6 +150,13 @@ async function getPaymentStages() {
     _isNew: false,
     _isEdited: false,
   }));
+}
+
+function recalculateStageValue(row: PaymentStageRow): void {
+  const baseTotal = project.value.totalWithTax ?? 0;
+  const percentage = row.entity.percentage ?? 0;
+
+  row.entity.value = (baseTotal * percentage) / 100;
 }
 
 /******************************************************************************************************** ROW ACTIONS */

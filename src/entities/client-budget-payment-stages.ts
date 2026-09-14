@@ -1,5 +1,5 @@
 import { ColumnType, Configs } from '@/types/entity-configs';
-import { formatIntNumber, formatPercentage } from '@/utils/validation';
+import { formatCurrency, formatIntNumber, formatPercentage } from '@/utils/validation';
 import { ProjectPaymentStagesType } from './project';
 
 export class ClientBudgetPaymentStages {
@@ -61,6 +61,25 @@ export class ClientBudgetPaymentStages {
           },
         },
         displayValue: (paymentStage: ProjectPaymentStagesType) => formatPercentage(paymentStage.percentage),
+      },
+      value: {
+        label: 'Valor (€)',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          isHighlight: false,
+          columnStyle: {
+            width: '120px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: (paymentStage: ProjectPaymentStagesType) => formatCurrency(paymentStage.value),
       },
       conditions: {
         label: 'Condições de Pagamento',
