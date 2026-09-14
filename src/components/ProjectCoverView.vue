@@ -508,7 +508,7 @@ import { RouteNames } from '@/router/routes.ts';
 import {
   Project,
   ProjectIndirectCost,
-  ProjectindirectCostType,
+  ProjectIndirectCostType,
   ProjectType,
   ProjectWorkCategory,
   ProjectWorkCategoryType,
@@ -592,7 +592,7 @@ const showNewWorkCategoriesDialog = ref(false);
 const indirectCosts = ref<IndirectCostRow[]>([]);
 const indirectCostsConfigs = computed(() => ProjectIndirectCost.getConfigs());
 
-const indirectCostsTable = computed<EntityTableBodyProps<ProjectindirectCostType>>(() => ({
+const indirectCostsTable = computed<EntityTableBodyProps<ProjectIndirectCostType>>(() => ({
   rows: indirectCosts.value,
   configs: indirectCostsConfigs.value,
   handlers: {
@@ -685,7 +685,7 @@ function isActiveWorkCategory(workCategory: WorkCategoryRow) {
   return workCategory.entity.isIncluded!;
 }
 
-interface IndirectCostRow extends TableRow<ProjectindirectCostType> {}
+interface IndirectCostRow extends TableRow<ProjectIndirectCostType> {}
 
 let _keyCounterIndirectCost = 0;
 function nextKeyIndirectCost(): string {

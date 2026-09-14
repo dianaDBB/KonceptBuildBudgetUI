@@ -22,7 +22,8 @@ export interface ProjectType extends EntityType {
   progressPaymentsCount?: number;
   isActive?: boolean;
   workCategories?: ProjectWorkCategoryType[];
-  indirectCosts?: ProjectindirectCostType[];
+  indirectCosts?: ProjectIndirectCostType[];
+  paymentStages?: ProjectPaymentStagesType[];
   totalDirectCost?: number;
   totalDirectCostPercentage?: number;
   totalWithoutTax?: number;
@@ -72,13 +73,21 @@ export interface ProjectPaymentProgressType extends EntityType {
   percentage?: number;
 }
 
-export interface ProjectindirectCostType extends EntityType {
+export interface ProjectIndirectCostType extends EntityType {
   indirectCostId?: UUID;
   isIncluded?: boolean;
   description?: string;
   index?: number;
   code?: string;
   value?: number;
+}
+
+export interface ProjectPaymentStagesType extends EntityType {
+  id?: UUID;
+  auto?: number;
+  description?: string;
+  percentage?: number;
+  conditions?: string;
 }
 
 export class Project {
@@ -284,7 +293,7 @@ export class ProjectWorkCategory {
 }
 
 export class ProjectIndirectCost {
-  static getConfigs(): Configs<ProjectindirectCostType> {
+  static getConfigs(): Configs<ProjectIndirectCostType> {
     return {
       code: {
         label: 'Cod.',
@@ -302,7 +311,7 @@ export class ProjectIndirectCost {
             'align-left': true,
           },
         },
-        displayValue: (indirectCost: ProjectindirectCostType) => indirectCost.code,
+        displayValue: (indirectCost: ProjectIndirectCostType) => indirectCost.code,
       },
       isIncluded: {
         label: 'Inc?',
@@ -314,32 +323,32 @@ export class ProjectIndirectCost {
             width: '40px',
           },
         },
-        displayValue: (indirectCost: ProjectindirectCostType) => (indirectCost.isIncluded ? 'Sim' : 'Não'),
+        displayValue: (indirectCost: ProjectIndirectCostType) => (indirectCost.isIncluded ? 'Sim' : 'Não'),
       },
       description: {
         label: 'Custo Indireto',
         type: ColumnType.TEXT,
         styleConfig: {
           showDisabled: () => false,
-          isInvalid: (indirectCost: ProjectindirectCostType) => !indirectCost.description,
+          isInvalid: (indirectCost: ProjectIndirectCostType) => !indirectCost.description,
           columnStyle: {
             width: '160px',
           },
         },
-        displayValue: (indirectCost: ProjectindirectCostType) => indirectCost.description,
+        displayValue: (indirectCost: ProjectIndirectCostType) => indirectCost.description,
       },
       value: {
         label: 'Valor (€)',
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => false,
-          isInvalid: (indirectCost: ProjectindirectCostType) =>
+          isInvalid: (indirectCost: ProjectIndirectCostType) =>
             indirectCost.isIncluded ? !(indirectCost.value != undefined && indirectCost.value >= 0) : false,
           columnStyle: {
             width: '80px',
           },
         },
-        displayValue: (indirectCost: ProjectindirectCostType) => formatCurrency(indirectCost.value),
+        displayValue: (indirectCost: ProjectIndirectCostType) => formatCurrency(indirectCost.value),
       },
     };
   }

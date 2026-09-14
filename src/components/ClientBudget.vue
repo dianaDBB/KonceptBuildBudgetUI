@@ -9,56 +9,67 @@
 
     <div class="tab-content">
       <div class="tab-body">
-        <div class="table-container">
-          <div class="table">
-            <table>
-              <colgroup>
-                <!--expand column-->
-                <col style="width: 50px" />
-                <col
-                  v-for="config in Object.values(clientBudgetCategoryConfigs)"
-                  :key="config.label"
-                  :style="config.styleConfig.columnStyle"
-                />
-              </colgroup>
-              <thead>
-                <tr>
+        <div class="form-column">
+          <section class="form-section">
+            <div class="table">
+              <table>
+                <colgroup>
                   <!--expand column-->
-                  <th>
-                    <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
-                    <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
-                  </th>
-                  <th
+                  <col style="width: 50px" />
+                  <col
                     v-for="config in Object.values(clientBudgetCategoryConfigs)"
                     :key="config.label"
-                    :class="[config.styleConfig.headerClasses]"
-                  >
-                    {{ config.label }}
-                  </th>
-                  <!--actions column-->
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody ref="tableBody">
-                <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
-                <tr>
-                  <td colspan="6" />
-                </tr>
-                <tr class="subtotal-row">
-                  <td colspan="5" class="align-right">SUBTOTAL (sem IVA)</td>
-                  <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
-                </tr>
-                <tr class="subtotal-row">
-                  <td colspan="5" class="align-right">IVA (23%)</td>
-                  <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
-                </tr>
-                <tr class="total-row">
-                  <td colspan="5" class="align-right">TOTAL DA EMPREITADA (c/ IVA)</td>
-                  <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                    :style="config.styleConfig.columnStyle"
+                  />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <!--expand column-->
+                    <th>
+                      <component class="btn-icon-sm" :is="Plus" :size="10" @click="expandAll" />
+                      <component class="btn-icon-sm" :is="Minus" :size="10" @click="collapseAll" />
+                    </th>
+                    <th
+                      v-for="config in Object.values(clientBudgetCategoryConfigs)"
+                      :key="config.label"
+                      :class="[config.styleConfig.headerClasses]"
+                    >
+                      {{ config.label }}
+                    </th>
+                    <!--actions column-->
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody ref="tableBody">
+                  <EntityTableBody :rows="workCategoryTable" :subrows="workItemTable"> </EntityTableBody>
+                  <tr>
+                    <td colspan="6" />
+                  </tr>
+                  <tr class="subtotal-row">
+                    <td colspan="5" class="align-right">SUBTOTAL (sem IVA)</td>
+                    <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                  </tr>
+                  <tr class="subtotal-row">
+                    <td colspan="5" class="align-right">IVA (23%)</td>
+                    <td class="align-right">{{ formatCurrency(project.totalTax) }}</td>
+                  </tr>
+                  <tr class="total-row">
+                    <td colspan="5" class="align-right">TOTAL DA EMPREITADA (c/ IVA)</td>
+                    <td class="align-right">{{ formatCurrency(project.totalWithTax) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <ClientBudgetPaymentStagesView
+              v-model="project"
+              @saved="(msg) => emit('saved', msg)"
+              @error="(msg) => emit('error', msg)"
+              @reload="emit('reload')"
+            />
+          </section>
         </div>
       </div>
 
@@ -87,6 +98,7 @@ import EntityTableBody from './EntityTableBody.vue';
 import { ClientBudgetCategory, ClientBudgetItem } from '@/entities/client-budget.ts';
 import { formatCurrency } from '@/utils/validation.ts';
 import projectApi from '@/services/project-api.ts';
+import ClientBudgetPaymentStagesView from './ClientBudgetPaymentStagesView.vue';
 
 const project = defineModel<ProjectType>({ required: true });
 const props = defineProps<{
@@ -97,6 +109,8 @@ const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, i
 
 const emit = defineEmits<{
   reload: [];
+  saved: [message?: string];
+  error: [message: string];
   'update:expanded-category-ids': [ids: string[]];
 }>();
 

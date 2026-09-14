@@ -99,6 +99,14 @@ class ProjectApi {
         customDescription: indirectCost.description,
         customIndex: indirectCost.index,
       })),
+
+      paymentStages: project.paymentStages?.map((paymentStage) => ({
+        paymentStageId: paymentStage.id,
+        auto: paymentStage.auto,
+        description: paymentStage.description,
+        percentage: paymentStage.percentage,
+        conditions: paymentStage.conditions,
+      })),
     };
 
     await axiosClient.put(`/project?projectId=${projectId}`, payload, {

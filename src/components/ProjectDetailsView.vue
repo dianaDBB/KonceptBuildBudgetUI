@@ -65,6 +65,8 @@
             v-model="project"
             :expanded-category-ids="expandedClientBudgetCategoryIds"
             @reload="getProject(projectId)"
+            @saved="handleChildSaved"
+            @error="handleChildError"
             @update:expanded-category-ids="updateClientBudgetExpansion"
           />
         </div>
@@ -87,6 +89,13 @@
     cancel-text="Cancelar"
     @confirm="discardChangesAndContinue"
     @update:model-value="handleDiscardDialogChange"
+  />
+
+  <Toast
+    v-if="toastStatus.message"
+    :message="toastStatus.message"
+    :type="toastStatus.type ?? 'success'"
+    @close="toastStatus.message = undefined"
   />
 </template>
 
@@ -113,6 +122,7 @@ const router = useRouter();
 
 const projectId = route.params.id as UUID;
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
+const toastStatus = ref<{ message?: string; type?: 'success' | 'error' }>({});
 
 const project = ref<ProjectType | null>(null);
 const projectRefreshKey = ref(0);
@@ -378,6 +388,23 @@ async function getProject(projectId: UUID) {
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível carregar o projecto.');
   }
+}
+
+/***************************************************************************************************** TOAST MESSAGES */
+
+function showToast(message: string, type: 'success' | 'error' = 'success') {
+  toastStatus.value = { message, type };
+}
+
+function handleChildSaved(message?: string) {
+  markProjectSaved();
+  if (message) {
+    showToast(message, 'success');
+  }
+}
+
+function handleChildError(message: string) {
+  showToast(message, 'error');
 }
 </script>
 <style lang="scss">
