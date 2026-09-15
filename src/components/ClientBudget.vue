@@ -234,7 +234,7 @@ async function exportToExcel() {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `Orçamento - ${project.value.client}.xlsx`);
+    link.setAttribute('download', `${project.value.generatedCode}.xlsx`);
     document.body.appendChild(link);
     link.click();
     link.remove();

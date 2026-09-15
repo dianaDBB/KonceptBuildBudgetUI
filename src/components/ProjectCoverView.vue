@@ -476,7 +476,7 @@
     v-model="showDeleteDialog"
     title="Eliminar projeto"
     :message="[
-      `${project.description} • ${project.client}`,
+      `${project.generatedCode} • ${project.description} • ${project.client}`,
       'Tem a certeza que quer eliminar definitivamente este projeto?',
     ]"
     confirm-text="Apagar"

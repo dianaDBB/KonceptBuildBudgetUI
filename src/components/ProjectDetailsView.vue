@@ -354,7 +354,9 @@ async function getProject(projectId: UUID) {
 
   try {
     project.value = await projectApi.getProject(projectId);
-    projectHeader.value = `${project.value.description ?? ''} • ${project.value.client ?? ''}`;
+    projectHeader.value = `${project.value.generatedCode ?? ''} • ${project.value.description ?? ''} • ${
+      project.value.client ?? ''
+    }`;
 
     if (!hasInitializedQuantityMapExpansion.value) {
       const storedExpansion = sessionStorage.getItem(`quantity-map-expansion:${projectId}`);
