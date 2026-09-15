@@ -71,7 +71,7 @@
                     :entity="projectEntity"
                     :value="project.landArea"
                     field-key="landArea"
-                    :is-invalid="!project.landArea"
+                    :is-invalid="project.landArea != undefined && project.landArea < 0"
                     :is-disabled="false"
                     @update:value="project.landArea = $event"
                   />
@@ -83,7 +83,7 @@
                     :entity="projectEntity"
                     :value="project.implantationArea"
                     field-key="implantationArea"
-                    :is-invalid="!project.implantationArea"
+                    :is-invalid="project.implantationArea != undefined && project.implantationArea < 0"
                     :is-disabled="false"
                     @update:value="project.implantationArea = $event"
                   />
@@ -95,7 +95,7 @@
                     :entity="projectEntity"
                     :value="project.grossConstructionArea"
                     field-key="grossConstructionArea"
-                    :is-invalid="!project.grossConstructionArea"
+                    :is-invalid="project.floorsCount != undefined && project.floorsCount < 0"
                     :is-disabled="false"
                     @update:value="project.grossConstructionArea = $event"
                   />
@@ -107,7 +107,7 @@
                     :entity="projectEntity"
                     :value="project.floorsCount"
                     field-key="floorsCount"
-                    :is-invalid="!project.floorsCount"
+                    :is-invalid="project.floorsCount != undefined && project.floorsCount < 0"
                     :is-disabled="false"
                     @update:value="project.floorsCount = $event"
                   />
@@ -119,7 +119,7 @@
                     :entity="projectEntity"
                     :value="project.ceilingHeight"
                     field-key="ceilingHeight"
-                    :is-invalid="!project.ceilingHeight"
+                    :is-invalid="project.ceilingHeight != undefined && project.ceilingHeight < 0"
                     :is-disabled="false"
                     @update:value="project.ceilingHeight = $event"
                   />
@@ -131,7 +131,7 @@
                     :entity="projectEntity"
                     :value="project.maxFacadeHeight"
                     field-key="maxFacadeHeight"
-                    :is-invalid="!project.maxFacadeHeight"
+                    :is-invalid="project.maxFacadeHeight != undefined && project.maxFacadeHeight < 0"
                     :is-disabled="false"
                     @update:value="project.maxFacadeHeight = $event"
                   />
@@ -143,7 +143,7 @@
                     :entity="projectEntity"
                     :value="project.roomsCount"
                     field-key="roomsCount"
-                    :is-invalid="!project.roomsCount"
+                    :is-invalid="project.roomsCount != undefined && project.roomsCount < 0"
                     :is-disabled="false"
                     @update:value="project.roomsCount = $event"
                   />
@@ -155,7 +155,7 @@
                     :entity="projectEntity"
                     :value="project.wcCount"
                     field-key="wcCount"
-                    :is-invalid="!project.wcCount"
+                    :is-invalid="project.wcCount != undefined && project.wcCount < 0"
                     :is-disabled="false"
                     @update:value="project.wcCount = $event"
                   />
@@ -183,7 +183,7 @@
                     :entity="projectEntity"
                     :value="project.progressPaymentsCount"
                     field-key="progressPaymentsCount"
-                    :is-invalid="!project.progressPaymentsCount"
+                    :is-invalid="project.progressPaymentsCount != undefined && project.progressPaymentsCount < 0"
                     :is-disabled="false"
                     @update:value="project.progressPaymentsCount = $event"
                   />
@@ -199,7 +199,7 @@
                   <label>IVA (%)</label>
                   <PercentageInput
                     :value="project.tax"
-                    :is-invalid="!project.tax"
+                    :is-invalid="project.tax != undefined && project.tax < 0"
                     :is-disabled="false"
                     @update:value="project.tax = $event"
                   />

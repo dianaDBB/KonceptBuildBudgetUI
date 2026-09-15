@@ -188,7 +188,8 @@ export class QuantityMapItem {
         styleConfig: {
           ...workItemConfigs.quantity.styleConfig,
           showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
-          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.quantity : false),
+          isInvalid: (workItem: ProjectWorkItemType) =>
+            workItem.isIncluded ? workItem.quantity == undefined || workItem.quantity < 0 : false,
         },
         displayValue: (workItem: ProjectWorkItemType) => formatNumber(workItem.quantity),
       },
@@ -197,7 +198,8 @@ export class QuantityMapItem {
         styleConfig: {
           ...workItemConfigs.unitPrice.styleConfig,
           showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
-          isInvalid: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? !workItem.unitPrice : false),
+          isInvalid: (workItem: ProjectWorkItemType) =>
+            workItem.isIncluded ? workItem.unitPrice == undefined || workItem.unitPrice < 0 : false,
         },
         displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.unitPrice),
       },
