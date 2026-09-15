@@ -63,7 +63,7 @@ export class ClientBudgetPaymentStages {
         displayValue: (paymentStage: ProjectPaymentStagesType) => formatPercentage(paymentStage.percentage),
       },
       value: {
-        label: 'Valor (€)',
+        label: 'Valor s/ IVA (€)',
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => true,

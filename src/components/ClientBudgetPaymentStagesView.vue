@@ -153,7 +153,7 @@ async function getPaymentStages() {
 }
 
 function recalculateStageValue(row: PaymentStageRow): void {
-  const baseTotal = project.value.totalWithTax ?? 0;
+  const baseTotal = project.value.totalWithoutTax ?? 0;
   const percentage = row.entity.percentage ?? 0;
 
   row.entity.value = (baseTotal * percentage) / 100;
