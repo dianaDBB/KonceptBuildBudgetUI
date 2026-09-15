@@ -46,8 +46,7 @@ export function apiError(error: unknown, defaultMessage: string): ApiResponseSta
   let message = defaultMessage;
 
   if (axios.isAxiosError(error)) {
-    console.log('Error saving project:', JSON.stringify(error.response));
-    message = error.response?.data?.errorMessage ?? error.response?.data?.error ?? error.message;
+    message = error.response?.data?.errorMessage ?? error.response?.data?.message ?? error.message;
   } else if (error instanceof Error) {
     message = error.message;
   }
