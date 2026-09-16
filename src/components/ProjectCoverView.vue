@@ -179,7 +179,7 @@
               <div class="form-grid">
                 <div class="form-group" :class="{ changed: isFieldChanged('progressPaymentsCount') }">
                   <label>Número de Autos de Medição</label>
-                  <NumberInput
+                  <IntInput
                     :entity="projectEntity"
                     :value="project.progressPaymentsCount"
                     field-key="progressPaymentsCount"
@@ -469,8 +469,6 @@
     </div>
   </div>
 
-  <Toast v-if="apiStatus.message" :message="apiStatus.message" :type="apiStatus.isSuccess ? 'success' : 'error'" />
-
   <!-- delete dialog-->
   <ConfirmDialog
     v-model="showDeleteDialog"
@@ -513,7 +511,6 @@ import {
   ProjectWorkCategory,
   ProjectWorkCategoryType,
 } from '@/entities/project';
-import Toast from '@/components/Toast.vue';
 import TextInput from './inputs/TextInput.vue';
 import NumberInput from './inputs/NumberInput.vue';
 import IntInput from './inputs/IntInput.vue';
@@ -608,7 +605,8 @@ const showNewIndirectCostsDialog = ref(false);
 
 const emit = defineEmits<{
   reload: [];
-  saved: [];
+  saved: [message: string];
+  error: [message: string];
 }>();
 
 /*************************************************************************************************************** LOAD */
@@ -849,20 +847,28 @@ async function saveProject() {
     return;
   }
 
-  project.value.workCategories = workCategories.value.map((row) => row.entity);
-  project.value.indirectCosts = indirectCosts.value.map((row) => row.entity);
-
   apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
 
+  const updatedWorkCategories = workCategories.value.map((row) => row.entity);
+  const updatedIndirectCosts = indirectCosts.value.map((row) => row.entity);
+  const projectToSave: ProjectType = {
+    ...project.value,
+    workCategories: updatedWorkCategories,
+    indirectCosts: updatedIndirectCosts,
+  };
+
   try {
-    await projectApi.updateProject(project.value.id, project.value);
+    await projectApi.updateProject(project.value.id, projectToSave);
 
-    emit('saved');
+    project.value = projectToSave;
+
+    emit('saved', 'Projecto alterado com sucesso.');
     emit('reload');
-
-    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto guardado com sucesso.' };
   } catch (error: unknown) {
-    apiStatus.value = apiError(error, 'Não foi possível guardar o projeto.');
+    const err = apiError(error, 'Não foi possível guardar as alterações no projecto.');
+    emit('error', err.message ?? 'Não foi possível guardar as alterações no projecto.');
+  } finally {
+    apiStatus.value.isLoading = false;
   }
 }
 

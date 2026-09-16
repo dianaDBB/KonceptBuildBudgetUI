@@ -36,7 +36,8 @@
             :has-unsaved-changes="hasUnsavedChanges"
             :changed-fields="changedFields"
             @reload="getProject(projectId)"
-            @saved="markProjectSaved"
+            @saved="handleChildSaved"
+            @error="handleChildError"
           />
           <QuantityMapView
             v-if="selectedTab === 'quantity-map'"
@@ -239,6 +240,7 @@ function discardChangesAndContinue() {
   }
 
   hasUnsavedPaymentsChanges.value = false;
+  projectRefreshKey.value++;
 
   showDiscardChangesDialog.value = false;
 
@@ -316,26 +318,14 @@ function selectTab(tab: ProjectTab) {
 
   if (!hasUnsavedChanges.value) {
     selectedTab.value = tab;
-
-    router.replace({
-      query: {
-        ...route.query,
-        tab,
-      },
-    });
-
+    router.replace({ query: { ...route.query, tab } });
     return;
   }
 
   pendingNavigation.value = () => {
     selectedTab.value = tab;
-
-    void router.replace({
-      query: {
-        ...route.query,
-        tab,
-      },
-    });
+    projectRefreshKey.value++;
+    void router.replace({ query: { ...route.query, tab } });
   };
 
   showDiscardChangesDialog.value = true;
