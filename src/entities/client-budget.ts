@@ -85,7 +85,7 @@ export class ClientBudgetCategory {
             'align-right': true,
           },
         },
-        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCost),
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.valueWithMargin),
       },
     };
   }
