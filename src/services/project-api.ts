@@ -145,6 +145,15 @@ class ProjectApi {
 
     return response.data;
   }
+
+  async exportToWord(projectId: UUID): Promise<Blob> {
+    const response = await axiosClient.get(`/project/export-word?projectId=${projectId}`, {
+      headers: { Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+      responseType: 'blob',
+    });
+
+    return response.data;
+  }
 }
 
 export default new ProjectApi();

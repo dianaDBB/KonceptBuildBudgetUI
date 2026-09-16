@@ -78,6 +78,10 @@
           <Sheet :size="18" />
           Exportar para Excel
         </button>
+        <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="exportToWord">
+          <FilePen :size="18" />
+          Exportar para Word
+        </button>
       </div>
     </div>
   </div>
@@ -87,7 +91,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { LoaderCircle, Minus, Plus, Sheet } from 'lucide-vue-next';
+import { FilePen, LoaderCircle, Minus, Plus, Sheet } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import { ProjectType, ProjectWorkCategoryType, ProjectWorkItemType } from '@/entities/project';
@@ -241,6 +245,29 @@ async function exportToExcel() {
     window.URL.revokeObjectURL(url);
 
     apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Excel gerado com sucesso.' };
+  } catch (error: unknown) {
+    apiStatus.value = apiError(error, 'Não foi possível gerar o ficheiro.');
+  }
+}
+
+async function exportToWord() {
+  if (!project.value.id) return;
+
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    const blob = await projectApi.exportToWord(project.value.id);
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${project.value.generatedCode}.docx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Word gerado com sucesso.' };
   } catch (error: unknown) {
     apiStatus.value = apiError(error, 'Não foi possível gerar o ficheiro.');
   }
