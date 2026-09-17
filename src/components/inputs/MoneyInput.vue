@@ -18,9 +18,7 @@ import { limitDecimals, parseNumberInput } from '@/utils/handle-number-input';
 import { formatNumber } from '@/utils/validation';
 
 interface Props {
-  entity: Record<string, unknown>;
   value: number | null | undefined;
-  fieldKey: string;
   isInvalid: boolean;
   isDisabled: boolean;
 }
@@ -43,7 +41,23 @@ function handleFocus(event: Event) {
 
 function handleInput(event: Event) {
   const input = event.target as HTMLInputElement;
-  const limitedValue = limitDecimals(input.value);
+
+  // Only allow numbers and decimal separators
+  let sanitizedValue = input.value.replace(/[^\d.,]/g, '');
+
+  // Limit integer part to 8 digits
+  const separatorIndex = sanitizedValue.search(/[.,]/);
+
+  if (separatorIndex !== -1) {
+    const integerPart = sanitizedValue.slice(0, separatorIndex);
+    const decimalPart = sanitizedValue.slice(separatorIndex);
+
+    sanitizedValue = integerPart.slice(0, 8) + decimalPart;
+  } else {
+    sanitizedValue = sanitizedValue.slice(0, 8);
+  }
+
+  const limitedValue = limitDecimals(sanitizedValue);
 
   if (input.value !== limitedValue) {
     input.value = limitedValue;

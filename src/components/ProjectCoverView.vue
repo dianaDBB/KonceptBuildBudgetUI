@@ -68,9 +68,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('landArea') }">
                   <label>Área Total Terreno (m²)</label>
                   <NumberInput
-                    :entity="projectEntity"
                     :value="project.landArea"
-                    field-key="landArea"
                     :is-invalid="project.landArea != undefined && project.landArea < 0"
                     :is-disabled="false"
                     @update:value="project.landArea = $event"
@@ -80,9 +78,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('implantationArea') }">
                   <label>Área Implantação (m²)</label>
                   <NumberInput
-                    :entity="projectEntity"
                     :value="project.implantationArea"
-                    field-key="implantationArea"
                     :is-invalid="project.implantationArea != undefined && project.implantationArea < 0"
                     :is-disabled="false"
                     @update:value="project.implantationArea = $event"
@@ -92,9 +88,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('grossConstructionArea') }">
                   <label>Área Bruta Construção (m²)</label>
                   <NumberInput
-                    :entity="projectEntity"
                     :value="project.grossConstructionArea"
-                    field-key="grossConstructionArea"
                     :is-invalid="project.floorsCount != undefined && project.floorsCount < 0"
                     :is-disabled="false"
                     @update:value="project.grossConstructionArea = $event"
@@ -104,9 +98,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('floorsCount') }">
                   <label>Nº de Pisos</label>
                   <IntInput
-                    :entity="projectEntity"
                     :value="project.floorsCount"
-                    field-key="floorsCount"
                     :is-invalid="project.floorsCount != undefined && project.floorsCount < 0"
                     :is-disabled="false"
                     @update:value="project.floorsCount = $event"
@@ -116,9 +108,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('ceilingHeight') }">
                   <label>Pé-direito Interior (m)</label>
                   <NumberInput
-                    :entity="projectEntity"
                     :value="project.ceilingHeight"
-                    field-key="ceilingHeight"
                     :is-invalid="project.ceilingHeight != undefined && project.ceilingHeight < 0"
                     :is-disabled="false"
                     @update:value="project.ceilingHeight = $event"
@@ -128,9 +118,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('maxFacadeHeight') }">
                   <label>Altura Máx. Fachada (m)</label>
                   <NumberInput
-                    :entity="projectEntity"
                     :value="project.maxFacadeHeight"
-                    field-key="maxFacadeHeight"
                     :is-invalid="project.maxFacadeHeight != undefined && project.maxFacadeHeight < 0"
                     :is-disabled="false"
                     @update:value="project.maxFacadeHeight = $event"
@@ -140,9 +128,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('roomsCount') }">
                   <label>Nº de Quartos</label>
                   <IntInput
-                    :entity="projectEntity"
                     :value="project.roomsCount"
-                    field-key="roomsCount"
                     :is-invalid="project.roomsCount != undefined && project.roomsCount < 0"
                     :is-disabled="false"
                     @update:value="project.roomsCount = $event"
@@ -152,9 +138,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('wcCount') }">
                   <label>Nº de WCs</label>
                   <IntInput
-                    :entity="projectEntity"
                     :value="project.wcCount"
-                    field-key="wcCount"
                     :is-invalid="project.wcCount != undefined && project.wcCount < 0"
                     :is-disabled="false"
                     @update:value="project.wcCount = $event"
@@ -180,9 +164,7 @@
                 <div class="form-group" :class="{ changed: isFieldChanged('progressPaymentsCount') }">
                   <label>Número de Autos de Medição</label>
                   <IntInput
-                    :entity="projectEntity"
                     :value="project.progressPaymentsCount"
-                    field-key="progressPaymentsCount"
                     :is-invalid="project.progressPaymentsCount != undefined && project.progressPaymentsCount < 0"
                     :is-disabled="false"
                     @update:value="project.progressPaymentsCount = $event"

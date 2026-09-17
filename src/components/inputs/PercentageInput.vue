@@ -6,7 +6,7 @@
     :disabled="isDisabled"
     :class="{ required: isInvalid }"
     @focus="handleFocus($event)"
-    @input="handleInput"
+    @input="handleInput($event)"
     @blur="handleBlur($event)"
   />
 </template>
@@ -18,7 +18,7 @@ import { limitDecimals, parseNumberInput } from '@/utils/handle-number-input';
 import { formatNumber } from '@/utils/validation';
 
 interface Props {
-  value: number | undefined;
+  value: number | null | undefined;
   isInvalid: boolean;
   isDisabled: boolean;
 }
@@ -26,7 +26,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  'update:value': [number | undefined];
+  'update:value': [value: number | undefined];
 }>();
 
 const isEditing = ref(false);
@@ -39,45 +39,49 @@ function handleFocus(event: Event) {
   originalValue.value = props.value ?? null;
 }
 
-function handleInput(event: Event): void {
+function handleInput(event: Event) {
   const input = event.target as HTMLInputElement;
-  const limitedValue = limitDecimals(input.value);
+
+  // Only allow numbers and decimal separators
+  let sanitizedValue = input.value.replace(/[^\d.,]/g, '');
+
+  // Limit integer part to 3 digits
+  const separatorIndex = sanitizedValue.search(/[.,]/);
+
+  if (separatorIndex !== -1) {
+    const integerPart = sanitizedValue.slice(0, separatorIndex);
+    const decimalPart = sanitizedValue.slice(separatorIndex);
+
+    sanitizedValue = integerPart.slice(0, 3) + decimalPart;
+  } else {
+    sanitizedValue = sanitizedValue.slice(0, 3);
+  }
+
+  const limitedValue = limitDecimals(sanitizedValue);
 
   if (input.value !== limitedValue) {
     input.value = limitedValue;
   }
 
   inputValue.value = limitedValue;
-  const digits = limitedValue.replace(/\D/g, '');
 
-  const numericValue = digits ? parseNumberInput(limitedValue) : undefined;
+  const numericValue = parseNumberInput(limitedValue);
 
   if (numericValue !== originalValue.value) {
     emit('update:value', numericValue);
   }
 }
 
-function handleBlur(event: Event): void {
+function handleBlur(event: Event) {
   const input = event.target as HTMLInputElement;
-  const limitedValue = limitDecimals(input.value);
-  const digits = limitedValue.replace(/\D/g, '');
+  const numericValue = parseNumberInput(input.value);
 
-  if (!digits) {
-    emit('update:value', undefined);
-
-    inputValue.value = '';
-    originalValue.value = null;
-  } else {
-    const numericValue = parseNumberInput(limitedValue);
-
-    if (numericValue !== originalValue.value) {
-      emit('update:value', numericValue);
-    }
-
-    inputValue.value = formatNumber(numericValue);
-    originalValue.value = null;
+  if (numericValue !== originalValue.value) {
+    emit('update:value', numericValue);
   }
 
+  inputValue.value = formatNumber(numericValue);
   isEditing.value = false;
+  originalValue.value = null;
 }
 </script>
