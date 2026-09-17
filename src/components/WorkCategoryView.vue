@@ -395,7 +395,10 @@ async function addWorkItem(row: WorkCategoryRow): Promise<void> {
 
   const workItems = getWorkItems(row.entity);
   workItems.push({
-    entity,
+    entity: {
+      index: row.entity.workItems.length,
+      isActive: true,
+    },
     _key: nextKeySubRow(),
     _parentId: row.entity.id!,
     _isNew: true,

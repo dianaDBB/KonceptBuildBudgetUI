@@ -1,7 +1,7 @@
 import axiosClient from './api';
 import { UUID } from 'crypto';
 import { ProjectType } from '@/entities/project';
-import { WorkCategoryType } from '@/entities/work-category';
+import { NewWorkCategoryType } from '@/entities/work-category';
 import { IndirectCostType } from '@/entities/indirect-cost';
 
 class ProjectApi {
@@ -121,7 +121,7 @@ class ProjectApi {
     });
   }
 
-  async getNewWorkCategoriesAndItems(projectId: UUID): Promise<WorkCategoryType[]> {
+  async getNewWorkCategoriesAndItems(projectId: UUID): Promise<NewWorkCategoryType[]> {
     const response = await axiosClient.get(`/project/new-work-categories?projectId=${projectId}`, {
       headers: { Accept: 'application/json' },
     });

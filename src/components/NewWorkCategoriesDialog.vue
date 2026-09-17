@@ -4,12 +4,12 @@
       <h2>Novas Especialidades</h2>
 
       <div v-if="categories.length === 0" class="row">
-        <p>Não existem novas especialidades.</p>
+        <p>Não existem novas especialidades ou atualizações pendentes.</p>
       </div>
 
       <div v-else class="categories">
         <div class="row">
-          <p>Seleccione as especialidades e sub-especialidades que pretende adicionar ao projeto.</p>
+          <p>Seleccione as especialidades e sub-especialidades que pretende adicionar ou atualizar no projeto.</p>
         </div>
 
         <div v-for="category in categories" :key="category.id" class="category">
@@ -20,7 +20,22 @@
               :is-disabled="false"
               @change="toggleCategory(category)"
             />
-            <span>{{ category.description }}</span>
+
+            <div class="desc-container">
+              <div
+                v-if="category.status === 'UPDATED' && category.currentDescription !== category.newDescription"
+                class="diff-desc"
+              >
+                <span class="old-desc">{{ category.currentDescription }}</span>
+                <span class="arrow">→</span>
+                <span class="new-desc">{{ category.newDescription }}</span>
+              </div>
+              <span v-else class="new-desc">{{ category.newDescription }}</span>
+            </div>
+
+            <span v-if="category.status" :class="['badge', category.status.toLowerCase()]">
+              {{ category.status === 'NEW' ? 'NOVA' : 'ACTUALIZADA' }}
+            </span>
           </label>
 
           <div v-if="category.workItems?.length" class="work-items">
@@ -32,8 +47,21 @@
                 @change="toggleWorkItem(category, workItem)"
               />
 
-              <span class="work-item-description">{{ workItem.description }}</span>
-              <span class="work-item-details"> {{ workItem.units }} · {{ formatCurrency(workItem.unitPrice) }}</span>
+              <div class="desc-container work-item-description">
+                <div
+                  v-if="workItem.status === 'UPDATED' && workItem.currentDescription !== workItem.newDescription"
+                  class="diff-desc"
+                >
+                  <span class="old-desc">{{ workItem.currentDescription }}</span>
+                  <span class="arrow">→</span>
+                  <span class="new-desc">{{ workItem.newDescription }}</span>
+                </div>
+                <span v-else class="new-desc">{{ workItem.newDescription }}</span>
+              </div>
+
+              <span v-if="workItem.status" :class="['badge', 'small', workItem.status.toLowerCase()]">
+                {{ workItem.status === 'NEW' ? 'NOVA' : 'ACTUALIZADA' }}
+              </span>
             </label>
           </div>
         </div>
@@ -41,29 +69,28 @@
 
       <div class="actions">
         <button type="button" class="button" @click="cancel">Cancelar</button>
-        <button type="button" class="button confirm" :disabled="!hasSelection" @click="confirm">Adicionar</button>
+        <button type="button" class="button confirm" :disabled="!hasSelection" @click="confirm">Confirmar</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { WorkCategoryType } from '@/entities/work-category';
-import { WorkItemType } from '@/entities/work-item';
+import { NewWorkCategoryType } from '@/entities/work-category';
+import { NewWorkItemType } from '@/entities/work-item';
 import { computed, reactive } from 'vue';
 import CheckBox from './inputs/CheckBox.vue';
-import { formatCurrency } from '@/utils/validation';
 
 interface Props {
   modelValue: boolean;
-  categories: WorkCategoryType[];
+  categories: NewWorkCategoryType[];
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
-  (e: 'confirm', categories: WorkCategoryType[]): void;
+  (e: 'confirm', categories: NewWorkCategoryType[]): void;
 }>();
 
 const selectedCategoryIds = reactive(new Set<string>());
@@ -79,7 +106,7 @@ function isWorkItemSelected(workItemId: string): boolean {
   return selectedWorkItemIds.has(workItemId);
 }
 
-function toggleCategory(category: WorkCategoryType): void {
+function toggleCategory(category: NewWorkCategoryType): void {
   if (selectedCategoryIds.has(category.id!)) {
     selectedCategoryIds.delete(category.id!);
 
@@ -91,9 +118,12 @@ function toggleCategory(category: WorkCategoryType): void {
   }
 
   selectedCategoryIds.add(category.id!);
+  category.workItems?.forEach((workItem) => {
+    selectedWorkItemIds.add(workItem.id!);
+  });
 }
 
-function toggleWorkItem(category: WorkCategoryType, workItem: WorkItemType): void {
+function toggleWorkItem(category: NewWorkCategoryType, workItem: NewWorkItemType): void {
   if (selectedWorkItemIds.has(workItem.id!)) {
     selectedWorkItemIds.delete(workItem.id!);
     return;
@@ -183,12 +213,59 @@ function reset(): void {
   cursor: pointer;
 }
 
+.desc-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.diff-desc {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  .old-desc {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+  }
+
+  .arrow {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+
+  .new-desc {
+    color: var(--color-text);
+  }
+}
+
 .work-item-description {
   flex: 1;
 }
 
-.work-item-details {
-  color: var(--color-text-muted);
-  font-size: 12px;
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  &.new {
+    background-color: #dcfce7;
+    color: #15803d;
+  }
+
+  &.updated {
+    background-color: #fef3c7;
+    color: #b45309;
+  }
+
+  &.small {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
 }
 </style>

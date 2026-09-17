@@ -1,5 +1,5 @@
 import { ColumnType, Configs, EntityType } from '@/types/entity-configs';
-import { WorkItemType } from './work-item';
+import { NewWorkItemType, WorkItemType } from './work-item';
 
 export interface WorkCategoryType extends EntityType {
   type?: string;
@@ -8,6 +8,13 @@ export interface WorkCategoryType extends EntityType {
   description?: string;
   isActive?: boolean;
   workItems?: WorkItemType[];
+}
+
+export interface NewWorkCategoryType extends EntityType {
+  status?: string;
+  currentDescription?: string;
+  newDescription?: string;
+  workItems?: NewWorkItemType[];
 }
 
 export class WorkCategory {

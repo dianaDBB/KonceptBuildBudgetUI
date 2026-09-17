@@ -500,7 +500,7 @@ import CheckBox from './inputs/CheckBox.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import EntityTableBody from './EntityTableBody.vue';
 import { Configs, EntityTableBodyProps, TableRow } from '@/types/entity-configs.ts';
-import { WorkCategoryType } from '@/entities/work-category.ts';
+import { NewWorkCategoryType } from '@/entities/work-category.ts';
 import NewWorkCategoriesDialog from './NewWorkCategoriesDialog.vue';
 import { formatCurrency, formatPercentage } from '@/utils/validation.ts';
 import { IndirectCostType } from '@/entities/indirect-cost.ts';
@@ -510,7 +510,6 @@ import NewIndirectCostsDialog from './NewIndirectCostsDialog.vue';
 const project = defineModel<ProjectType>({ required: true });
 const props = defineProps<{ hasUnsavedChanges: boolean; changedFields: Set<string> }>();
 const projectConfigs = computed(() => Project.getConfigs());
-const projectEntity = computed(() => project.value as Record<string, unknown>);
 
 const apiStatus = ref<ApiResponseStatus>({ isLoading: false, isSuccess: false, isError: false });
 
@@ -565,7 +564,7 @@ const workCategoryTable = computed<EntityTableBodyProps<ProjectWorkCategoryType>
   isEditing: isEditing,
 }));
 
-const newWorkCategories = ref<WorkCategoryType[]>([]);
+const newWorkCategories = ref<NewWorkCategoryType[]>([]);
 const showNewWorkCategoriesDialog = ref(false);
 
 const indirectCosts = ref<IndirectCostRow[]>([]);
@@ -715,23 +714,23 @@ async function getNewWorkCategoriesAndItems() {
   }
 }
 
-function addSelectedWorkCategories(categories: WorkCategoryType[]) {
+function addSelectedWorkCategories(categories: NewWorkCategoryType[]) {
   categories.forEach((category) => {
     const existingRow = workCategories.value.find((row) => row.entity.workCategoryId === category.id);
+
+    const targetCategoryDescription = category.newDescription ?? category.newDescription;
 
     if (!existingRow) {
       workCategories.value.push({
         entity: {
           workCategoryId: category.id,
-          description: category.description,
+          description: targetCategoryDescription,
           index: workCategories.value.length + 1,
           isIncluded: true,
           margin: 15,
           workItems: (category.workItems ?? []).map((workItem, index) => ({
             workItemId: workItem.id,
-            description: workItem.description,
-            units: workItem.units,
-            unitPrice: workItem.unitPrice,
+            description: workItem.newDescription ?? workItem.newDescription,
             index: index + 1,
             isIncluded: true,
           })),
@@ -741,36 +740,38 @@ function addSelectedWorkCategories(categories: WorkCategoryType[]) {
         _isEdited: true,
         _expanded: true,
       });
-
       return;
     }
 
-    const existingWorkItems = existingRow.entity.workItems ?? [];
-    const existingWorkItemIds = new Set(existingWorkItems.map((workItem) => workItem.workItemId).filter(Boolean));
-    const newWorkItems = (category.workItems ?? []).filter((workItem) => !existingWorkItemIds.has(workItem.id));
-
-    if (newWorkItems.length === 0) {
-      return;
+    if (category.status === 'UPDATED' && category.newDescription) {
+      existingRow.entity.description = category.newDescription;
     }
 
-    const nextIndex = existingWorkItems.length + 1;
+    const currentWorkItems = existingRow.entity.workItems ? [...existingRow.entity.workItems] : [];
 
-    existingRow.entity.workItems = [
-      ...existingWorkItems,
-      ...newWorkItems.map((workItem, index) => ({
-        workItemId: workItem.id,
-        description: workItem.description,
-        units: workItem.units,
-        unitPrice: workItem.unitPrice,
-        index: nextIndex + index,
-        isIncluded: true,
-      })),
-    ];
+    (category.workItems ?? []).forEach((selectedItem) => {
+      const existingItem = currentWorkItems.find((item) => item.workItemId === selectedItem.id);
 
+      if (existingItem) {
+        if (selectedItem.newDescription) {
+          existingItem.description = selectedItem.newDescription;
+        }
+      } else {
+        currentWorkItems.push({
+          workItemId: selectedItem.id,
+          description: selectedItem.newDescription ?? selectedItem.newDescription,
+          index: currentWorkItems.length + 1,
+          isIncluded: true,
+        });
+      }
+    });
+
+    existingRow.entity.workItems = currentWorkItems;
     existingRow._isEdited = true;
   });
 
   project.value.workCategories = workCategories.value.map((row) => row.entity);
+  recalculateProjectTotals();
 }
 
 /********************************************************************************************** REFRESH INDIRECT COSTS*/

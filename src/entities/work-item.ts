@@ -1,6 +1,7 @@
 import { Configs, EntityType } from '@/types/entity-configs';
 import { WorkCategory } from './work-category';
 import { formatCurrency } from '@/utils/validation';
+import { UUID } from 'crypto';
 
 export interface WorkItemType extends EntityType {
   index?: number;
@@ -9,6 +10,13 @@ export interface WorkItemType extends EntityType {
   units?: string;
   unitPrice?: number;
   isActive?: boolean;
+}
+
+export interface NewWorkItemType extends EntityType {
+  categoryId?: UUID;
+  status?: string;
+  currentDescription?: string;
+  newDescription?: string;
 }
 
 export class WorkItem {
