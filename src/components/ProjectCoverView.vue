@@ -231,8 +231,15 @@
                       <td />
                       <td />
                       <td class="align-right">TOTAL</td>
+                      <td class="align-right">{{ formatCurrency(project.totalDirectCostMaterials) }}</td>
+                      <td class="align-right">{{ formatCurrency(project.totalDirectCostLabor) }}</td>
                       <td class="align-right">{{ formatCurrency(project.totalDirectCost) }}</td>
-                      <td class="align-right">{{ formatCurrency(project.totalWithoutTax) }}</td>
+                      <td
+                        class="align-right"
+                        :class="{ 'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalWithoutTax') }"
+                      >
+                        {{ formatCurrency(project.totalWithoutTax) }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -274,6 +281,48 @@
                         }"
                       >
                         {{ formatPercentage(project.totalDirectCostPercentage) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-left soft">- Materiais</td>
+                      <td
+                        class="align-right soft"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalDirectCostMaterials'),
+                        }"
+                      >
+                        {{ formatCurrency(project.totalDirectCostMaterials) }}
+                      </td>
+                      <td
+                        class="align-right soft"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged(
+                            'totalDirectCostMaterialsPercentage',
+                          ),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalDirectCostMaterialsPercentage) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-left soft">- Mão de Obra</td>
+                      <td
+                        class="align-right soft"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged('totalDirectCostLabor'),
+                        }"
+                      >
+                        {{ formatCurrency(project.totalDirectCostLabor) }}
+                      </td>
+                      <td
+                        class="align-right soft"
+                        :class="{
+                          'calculated-changed': isFinancialSummaryCalculatedFieldChanged(
+                            'totalDirectCostLaborPercentage',
+                          ),
+                        }"
+                      >
+                        {{ formatPercentage(project.totalDirectCostLaborPercentage) }}
                       </td>
                     </tr>
                     <tr>
@@ -538,15 +587,8 @@ const workCategoryConfigs = computed<Configs<ProjectWorkCategoryType>>(() => {
 
         recalculateProjectTotals();
 
-        calculatedChangedFields.value.add('project.totalDirectCost');
-        calculatedChangedFields.value.add('project.totalMarginProfit');
-        calculatedChangedFields.value.add('project.totalWithoutTax');
-        calculatedChangedFields.value.add('project.totalTax');
-        calculatedChangedFields.value.add('project.totalWithTax');
-        calculatedChangedFields.value.add('project.costPerSquareWithoutTax');
-        calculatedChangedFields.value.add('project.costPerSquareWithTax');
+        markFinancialSummaryCalculatedFields('total');
 
-        // Force Vue to react to the Set mutation
         calculatedChangedFields.value = new Set(calculatedChangedFields.value);
       },
     },
@@ -895,7 +937,11 @@ const calculatedChangedFields = ref<Set<string>>(new Set());
 function recalculateProjectTotals(): void {
   const categories = workCategories.value.map((row) => row.entity);
 
-  const totalDirectCost = categories.reduce((total, category) => total + (category.directCost ?? 0), 0);
+  const totalDirectCostMaterials = categories.reduce((total, category) => total + (category.directCostMaterials ?? 0), 0);
+
+  const totalDirectCostLabor = categories.reduce((total, category) => total + (category.directCostLabor ?? 0), 0);
+
+  const totalDirectCost = totalDirectCostMaterials + totalDirectCostLabor;
 
   const totalWithoutIndirectCosts = categories.reduce((total, category) => total + (category.valueWithMargin ?? 0), 0);
 
@@ -911,7 +957,15 @@ function recalculateProjectTotals(): void {
 
   const totalWithTax = totalWithoutTax + totalTax;
 
+  project.value.totalDirectCostMaterials = totalDirectCostMaterials;
+  project.value.totalDirectCostLabor = totalDirectCostLabor;
   project.value.totalDirectCost = totalDirectCost;
+
+  project.value.totalDirectCostMaterialsPercentage =
+    totalWithoutTax > 0 ? (totalDirectCostMaterials / totalWithoutTax) * 100 : 0;
+
+  project.value.totalDirectCostLaborPercentage =
+    totalWithoutTax > 0 ? (totalDirectCostLabor / totalWithoutTax) * 100 : 0;
 
   project.value.totalDirectCostPercentage = totalWithoutTax > 0 ? (totalDirectCost / totalWithoutTax) * 100 : 0;
 
@@ -936,6 +990,28 @@ function recalculateProjectTotals(): void {
     project.value.grossConstructionArea && project.value.grossConstructionArea > 0
       ? totalWithTax / project.value.grossConstructionArea
       : 0;
+}
+
+function markFinancialSummaryCalculatedFields(changedField: 'materials' | 'labor' | 'total'): void {
+  if (changedField === 'materials' || changedField === 'total') {
+    calculatedChangedFields.value.add('project.totalDirectCostMaterialsPercentage');
+  }
+
+  if (changedField === 'labor' || changedField === 'total') {
+    calculatedChangedFields.value.add('project.totalDirectCostLaborPercentage');
+  }
+
+  if (changedField === 'total') {
+    calculatedChangedFields.value.add('project.totalDirectCostPercentage');
+    calculatedChangedFields.value.add('project.totalMarginProfit');
+    calculatedChangedFields.value.add('project.totalMarginProfitPercentage');
+    calculatedChangedFields.value.add('project.totalWithoutTax');
+    calculatedChangedFields.value.add('project.totalWithoutTaxPercentage');
+    calculatedChangedFields.value.add('project.totalTax');
+    calculatedChangedFields.value.add('project.totalWithTax');
+    calculatedChangedFields.value.add('project.costPerSquareWithoutTax');
+    calculatedChangedFields.value.add('project.costPerSquareWithTax');
+  }
 }
 
 function isWorkCategoryCalculatedFieldChanged(row: WorkCategoryRow, field: string): boolean {

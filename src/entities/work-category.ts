@@ -46,7 +46,7 @@ export class WorkCategory {
           showDisabled: () => false,
           isInvalid: (workCategory: WorkCategoryType) => !workCategory.description,
           columnStyle: {
-            width: '1060px',
+            width: '960px',
           },
           classes: {
             'align-left': true,
@@ -68,6 +68,24 @@ export class WorkCategory {
       },
       unitPrice: {
         label: 'Preço Un.',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: () => '---',
+      },
+      hourlyLaborCost: {
+        label: 'Mão de Obra (€/hora)',
         type: ColumnType.MONEY,
         styleConfig: {
           showDisabled: () => true,

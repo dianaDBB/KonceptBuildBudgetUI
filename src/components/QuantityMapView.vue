@@ -52,8 +52,32 @@
                 >
                 </EntityTableBody>
                 <tr></tr>
+                <tr class="subtotal-row">
+                  <td colspan="12" class="align-right">Total Custo Directo Materiais</td>
+                  <td
+                    class="align-right"
+                    :class="{
+                      'calculated-changed': calculatedChangedFields.has('project.totalDirectCostMaterials'),
+                    }"
+                  >
+                    {{ formatCurrency(project.totalDirectCostMaterials) }}
+                  </td>
+                  <td />
+                </tr>
+                <tr class="subtotal-row">
+                  <td colspan="12" class="align-right">Total Custo Directo Mão de Obra</td>
+                  <td
+                    class="align-right"
+                    :class="{
+                      'calculated-changed': calculatedChangedFields.has('project.totalDirectCostLabor'),
+                    }"
+                  >
+                    {{ formatCurrency(project.totalDirectCostLabor) }}
+                  </td>
+                  <td />
+                </tr>
                 <tr class="total-row">
-                  <td colspan="8" class="align-right">TOTAL CUSTO DIRETO (BRUTO)</td>
+                  <td colspan="12" class="align-right">TOTAL CUSTO DIRETO</td>
                   <td
                     class="align-right"
                     :class="{
@@ -127,21 +151,35 @@ const workItemConfigs = computed<Configs<ProjectWorkItemType>>(() => {
     isIncluded: {
       ...configs.isIncluded,
       onValueChanged: (row) => {
-        recalculateTotals(row);
+        recalculateTotals(row, 'isIncluded');
       },
     },
 
     quantity: {
       ...configs.quantity,
       onValueChanged: (row) => {
-        recalculateTotals(row);
+        recalculateTotals(row, 'quantity');
       },
     },
 
     unitPrice: {
       ...configs.unitPrice,
       onValueChanged: (row) => {
-        recalculateTotals(row);
+        recalculateTotals(row, 'unitPrice');
+      },
+    },
+
+    laborHours: {
+      ...configs.laborHours,
+      onValueChanged: (row) => {
+        recalculateTotals(row, 'laborHours');
+      },
+    },
+
+    customHourlyLaborCost: {
+      ...configs.customHourlyLaborCost,
+      onValueChanged: (row) => {
+        recalculateTotals(row, 'customHourlyLaborCost');
       },
     },
   };
@@ -189,12 +227,14 @@ watch(
 );
 
 function isWorkCategoryFieldChanged(row: WorkCategoryRow | WorkItemRow, field: string): boolean {
-  const categoryIndex = project.value.workCategories?.findIndex(
-    (category) => category.workCategoryId === row.entity.id,
-  );
+  if ('workCategoryId' in row.entity) {
+    const categoryIndex = project.value.workCategories?.findIndex(
+      (category) => category.workCategoryId === row.entity.id,
+    );
 
-  if (categoryIndex !== undefined && categoryIndex >= 0) {
-    return props.changedFields.has(`workCategories[${categoryIndex}].${field}`);
+    return categoryIndex !== undefined && categoryIndex >= 0
+      ? props.changedFields.has(`workCategories[${categoryIndex}].${field}`)
+      : false;
   }
 
   const workItem = row.entity as ProjectWorkItemType;
@@ -315,7 +355,7 @@ async function saveProject() {
 
 const calculatedChangedFields = ref<Set<string>>(new Set());
 
-function recalculateTotals(changedRow?: WorkItemRow): void {
+function recalculateTotals(changedRow?: WorkItemRow, changedField?: keyof ProjectWorkItemType): void {
   let totalDirectCost = 0;
 
   let changedCategoryIndex = -1;
@@ -325,7 +365,7 @@ function recalculateTotals(changedRow?: WorkItemRow): void {
     for (let categoryIndex = 0; categoryIndex < workCategories.value.length; categoryIndex++) {
       const workItems = workCategories.value[categoryIndex].entity.workItems ?? [];
 
-      const workItemIndex = workItems.findIndex((workItem) => workItem === changedRow.entity);
+      const workItemIndex = workItems.findIndex((workItem) => workItem.workItemId === changedRow.entity.workItemId);
 
       if (workItemIndex >= 0) {
         changedCategoryIndex = categoryIndex;
@@ -337,18 +377,34 @@ function recalculateTotals(changedRow?: WorkItemRow): void {
 
   workCategories.value.forEach((categoryRow) => {
     const category = categoryRow.entity;
+    let categoryTotalMaterials = 0;
+    let categoryTotalLabor = 0;
     let categoryTotal = 0;
 
     category.workItems?.forEach((workItem) => {
-      const total =
+      const totalMaterial =
         workItem.isIncluded && workItem.quantity != null && workItem.unitPrice != null
           ? workItem.quantity * workItem.unitPrice
           : 0;
 
+      const totalLabor =
+        workItem.isIncluded && workItem.laborHours != null && workItem.customHourlyLaborCost != null
+          ? workItem.laborHours * workItem.customHourlyLaborCost
+          : 0;
+
+      const total = totalMaterial + totalLabor;
+
+      workItem.totalMaterials = totalMaterial;
+      workItem.totalLabor = totalLabor;
       workItem.total = total;
+
+      categoryTotalMaterials += totalMaterial;
+      categoryTotalLabor += totalLabor;
       categoryTotal += total;
     });
 
+    category.directCostMaterials = categoryTotalMaterials;
+    category.directCostLabor = categoryTotalLabor;
     category.directCost = categoryTotal;
     totalDirectCost += categoryTotal;
   });
@@ -356,9 +412,25 @@ function recalculateTotals(changedRow?: WorkItemRow): void {
   project.value.totalDirectCost = totalDirectCost;
 
   if (changedCategoryIndex >= 0 && changedWorkItemIndex >= 0) {
-    calculatedChangedFields.value.add(
-      `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].total`,
-    );
+    if (changedField === 'quantity' || changedField === 'unitPrice') {
+      calculatedChangedFields.value.add(`workCategories[${changedCategoryIndex}].totalMaterials`);
+      calculatedChangedFields.value.add(
+        `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].totalMaterials`,
+      );
+      calculatedChangedFields.value.add(
+        `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].total`,
+      );
+    }
+
+    if (changedField === 'laborHours' || changedField === 'customHourlyLaborCost') {
+      calculatedChangedFields.value.add(`workCategories[${changedCategoryIndex}].totalLabor`);
+      calculatedChangedFields.value.add(
+        `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].totalLabor`,
+      );
+      calculatedChangedFields.value.add(
+        `workCategories[${changedCategoryIndex}].workItems[${changedWorkItemIndex}].total`,
+      );
+    }
 
     calculatedChangedFields.value.add(`workCategories[${changedCategoryIndex}].total`);
   }
@@ -368,7 +440,7 @@ function recalculateTotals(changedRow?: WorkItemRow): void {
 }
 
 function isCalculatedFieldChanged(row: WorkCategoryRow | WorkItemRow, field: string): boolean {
-  const categoryIndex = workCategories.value.findIndex((categoryRow) => categoryRow === row);
+  const categoryIndex = workCategories.value.findIndex((categoryRow) => categoryRow.entity.id === row.entity.id);
 
   if (categoryIndex >= 0) {
     return calculatedChangedFields.value.has(`workCategories[${categoryIndex}].${field}`);
@@ -379,7 +451,7 @@ function isCalculatedFieldChanged(row: WorkCategoryRow | WorkItemRow, field: str
   for (let categoryIndex = 0; categoryIndex < workCategories.value.length; categoryIndex++) {
     const workItems = workCategories.value[categoryIndex].entity.workItems ?? [];
 
-    const workItemIndex = workItems.findIndex((item) => item === workItem);
+    const workItemIndex = workItems.findIndex((item) => item.workItemId === workItem.workItemId);
 
     if (workItemIndex >= 0) {
       return calculatedChangedFields.value.has(`workCategories[${categoryIndex}].workItems[${workItemIndex}].${field}`);

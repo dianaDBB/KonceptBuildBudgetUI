@@ -50,6 +50,7 @@ class WorkCategoryApi {
       description: workItem.description,
       units: workItem.units,
       unitPrice: workItem.unitPrice,
+      hourlyLaborCost: workItem.hourlyLaborCost,
       isActive: workItem.isActive,
     };
 
@@ -64,6 +65,7 @@ class WorkCategoryApi {
       description: workItem.description,
       units: workItem.units,
       unitPrice: workItem.unitPrice,
+      hourlyLaborCost: workItem.hourlyLaborCost,
       isActive: workItem.isActive,
     };
 

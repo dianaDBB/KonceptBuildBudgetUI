@@ -274,6 +274,11 @@ body {
       &.align-left {
         text-align: left;
       }
+
+      &.soft {
+        font-style: italic;
+        color: var(--color-text-muted);
+      }
     }
 
     .highlight {

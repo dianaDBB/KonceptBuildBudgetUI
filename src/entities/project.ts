@@ -24,7 +24,11 @@ export interface ProjectType extends EntityType {
   workCategories?: ProjectWorkCategoryType[];
   indirectCosts?: ProjectIndirectCostType[];
   paymentStages?: ProjectPaymentStagesType[];
+  totalDirectCostMaterials?: number;
+  totalDirectCostLabor?: number;
   totalDirectCost?: number;
+  totalDirectCostMaterialsPercentage?: number;
+  totalDirectCostLaborPercentage?: number;
   totalDirectCostPercentage?: number;
   totalWithoutTax?: number;
   totalWithoutTaxPercentage?: number;
@@ -45,6 +49,8 @@ export interface ProjectWorkCategoryType extends EntityType {
   index?: number;
   code?: string;
   margin?: number;
+  directCostMaterials?: number;
+  directCostLabor?: number;
   directCost?: number;
   valueWithMargin?: number;
   workItems?: ProjectWorkItemType[];
@@ -59,6 +65,10 @@ export interface ProjectWorkItemType extends EntityType {
   units?: string;
   unitPrice?: number;
   quantity?: number;
+  totalMaterials?: number;
+  customHourlyLaborCost?: number;
+  laborHours?: number;
+  totalLabor?: number;
   total?: number;
   notes?: string;
   clientTotal?: number;
@@ -248,6 +258,42 @@ export class ProjectWorkCategory {
           },
         },
         displayValue: (workCategory: ProjectWorkCategoryType) => formatPercentage(workCategory.margin),
+      },
+      directCostMaterials: {
+        label: 'Custo Directo Materiais (€)',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '90px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCostMaterials),
+      },
+      directCostLabor: {
+        label: 'Custo Directo Mão Obra (€)',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '90px',
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCostLabor),
       },
       directCost: {
         label: 'Custo Directo (€)',

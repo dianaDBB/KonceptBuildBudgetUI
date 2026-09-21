@@ -83,6 +83,8 @@ class ProjectApi {
           customIndex: item.index,
           customUnitPrice: item.unitPrice,
           quantity: item.quantity,
+          laborHours: item.laborHours,
+          customHourlyLaborCost: item.customHourlyLaborCost,
           notes: item.notes,
 
           progressPayments: item.progressPayments?.map((payment) => ({

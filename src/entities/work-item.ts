@@ -9,6 +9,7 @@ export interface WorkItemType extends EntityType {
   description?: string;
   units?: string;
   unitPrice?: number;
+  hourlyLaborCost?: number;
   isActive?: boolean;
 }
 
@@ -75,6 +76,15 @@ export class WorkItem {
           isInvalid: (workItem: WorkItemType) => !workItem.unitPrice,
         },
         displayValue: (workItem: WorkItemType) => formatCurrency(workItem.unitPrice),
+      },
+      hourlyLaborCost: {
+        ...workItemConfigs.hourlyLaborCost,
+        styleConfig: {
+          ...workItemConfigs.hourlyLaborCost.styleConfig,
+          showDisabled: () => false,
+          isInvalid: (workItem: WorkItemType) => workItem.hourlyLaborCost == undefined || workItem.hourlyLaborCost < 0,
+        },
+        displayValue: (workItem: WorkItemType) => formatCurrency(workItem.hourlyLaborCost),
       },
       isActive: {
         ...workItemConfigs.isActive,

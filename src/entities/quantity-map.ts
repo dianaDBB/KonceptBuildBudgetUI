@@ -25,7 +25,7 @@ export class QuantityMapCategory {
           isInvalid: () => false,
           isHighlight: false,
           columnStyle: {
-            width: '60px',
+            width: '50px',
             'font-weight': 600,
           },
           classes: {
@@ -44,7 +44,7 @@ export class QuantityMapCategory {
           showDisabled: () => false,
           isInvalid: (workCategory: ProjectWorkCategoryType) => !workCategory.description,
           columnStyle: {
-            width: '930px',
+            width: '620px',
             'font-weight': 800,
           },
           classes: {
@@ -66,13 +66,13 @@ export class QuantityMapCategory {
         displayValue: () => '',
       },
       quantity: {
-        label: 'Quantidade',
+        label: 'Qt.',
         type: ColumnType.NUMBER,
         styleConfig: {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '80px',
           },
         },
         displayValue: () => '',
@@ -84,10 +84,72 @@ export class QuantityMapCategory {
           showDisabled: () => true,
           isInvalid: () => false,
           columnStyle: {
-            width: '100px',
+            width: '80px',
           },
         },
         displayValue: () => '',
+      },
+      totalMaterials: {
+        label: 'TOTAL Materiais (€)',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
+            'font-weight': 600,
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCostMaterials),
+      },
+      laborHours: {
+        label: 'Mão Obra (horas)',
+        type: ColumnType.NUMBER,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '80px',
+          },
+        },
+        displayValue: () => '',
+      },
+      customHourlyLaborCost: {
+        label: 'Mão Obra (€/hora)',
+        type: ColumnType.MONEY,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '80px',
+          },
+        },
+        displayValue: () => '',
+      },
+      totalLabor: {
+        label: 'TOTAL MãoObra (€)',
+        type: ColumnType.LABEL,
+        styleConfig: {
+          showDisabled: () => true,
+          isInvalid: () => false,
+          columnStyle: {
+            width: '100px',
+            'font-weight': 600,
+          },
+          classes: {
+            'align-right': true,
+          },
+          headerClasses: {
+            'align-right': true,
+          },
+        },
+        displayValue: (workCategory: ProjectWorkCategoryType) => formatCurrency(workCategory.directCostLabor),
       },
       total: {
         label: 'TOTAL',
@@ -121,7 +183,7 @@ export class QuantityMapCategory {
             'align-left': true,
           },
         },
-        displayValue: () => '---',
+        displayValue: () => '',
       },
     };
   }
@@ -202,6 +264,47 @@ export class QuantityMapItem {
             workItem.isIncluded ? workItem.unitPrice == undefined || workItem.unitPrice < 0 : false,
         },
         displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.unitPrice),
+      },
+      totalMaterials: {
+        ...workItemConfigs.totalMaterials,
+        styleConfig: {
+          ...workItemConfigs.totalMaterials.styleConfig,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) =>
+            workItem.isIncluded ? workItem.totalMaterials == undefined || workItem.totalMaterials < 0 : false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.totalMaterials),
+      },
+      laborHours: {
+        ...workItemConfigs.laborHours,
+        styleConfig: {
+          ...workItemConfigs.laborHours.styleConfig,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) =>
+            workItem.isIncluded ? workItem.laborHours == undefined || workItem.laborHours < 0 : false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => formatNumber(workItem.laborHours),
+      },
+      customHourlyLaborCost: {
+        ...workItemConfigs.customHourlyLaborCost,
+        styleConfig: {
+          ...workItemConfigs.customHourlyLaborCost.styleConfig,
+          showDisabled: (workItem: ProjectWorkItemType) => (workItem.isIncluded ? false : true),
+          isInvalid: (workItem: ProjectWorkItemType) =>
+            workItem.isIncluded
+              ? workItem.customHourlyLaborCost == undefined || workItem.customHourlyLaborCost < 0
+              : false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.customHourlyLaborCost),
+      },
+      totalLabor: {
+        ...workItemConfigs.totalLabor,
+        styleConfig: {
+          ...workItemConfigs.totalLabor.styleConfig,
+          showDisabled: () => true,
+          isInvalid: () => false,
+        },
+        displayValue: (workItem: ProjectWorkItemType) => formatCurrency(workItem.totalLabor),
       },
       total: {
         ...workItemConfigs.total,
