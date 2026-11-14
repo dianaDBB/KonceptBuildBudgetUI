@@ -476,6 +476,11 @@
           Apagar Projeto
         </button>
 
+        <button type="button" class="btn" @click="askduplicate">
+          <Copy :size="18" />
+          Duplicar Projeto
+        </button>
+
         <button type="button" class="btn" :disabled="apiStatus.isLoading" @click="getNewWorkCategoriesAndItems">
           <RefreshCcw :size="18" />
           Actualizar Especialidades
@@ -513,6 +518,19 @@
     @confirm="confirmDelete"
   />
 
+  <!-- duplicate dialog-->
+  <ConfirmDialog
+    v-model="showDuplicateDialog"
+    title="Duplicar projeto"
+    :message="[
+      `${project.generatedCode} • ${project.description} • ${project.client}`,
+      'Tem a certeza que quer duplicar este projeto?',
+    ]"
+    confirm-text="Duplicar"
+    cancel-text="Cancelar"
+    @confirm="confirmDuplicate"
+  />
+
   <NewWorkCategoriesDialog
     v-model="showNewWorkCategoriesDialog"
     :categories="newWorkCategories"
@@ -528,7 +546,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { LoaderCircle, RefreshCcw, Save, Trash2 } from 'lucide-vue-next';
+import { Copy, LoaderCircle, RefreshCcw, Save, Trash2 } from 'lucide-vue-next';
 import { ApiResponseStatus } from '@/types/api-response-status';
 import { apiError } from '@/services/api.ts';
 import projectApi from '@/services/project-api.ts';
@@ -924,6 +942,33 @@ async function confirmDelete(): Promise<void> {
   }
 }
 
+/********************************************************************************************************** DUPLICATE */
+
+const showDuplicateDialog = ref(false);
+
+function askduplicate() {
+  showDuplicateDialog.value = true;
+}
+
+async function confirmDuplicate(): Promise<void> {
+  if (!project.value.id) {
+    return;
+  }
+
+  apiStatus.value = { isLoading: true, isSuccess: false, isError: false };
+
+  try {
+    await projectApi.duplicateProject(project.value.id);
+
+    apiStatus.value = { isLoading: false, isSuccess: true, isError: false, message: 'Projeto duplicado com sucesso.' };
+
+    showDeleteDialog.value = false;
+    goToProjectsList();
+  } catch (error: unknown) {
+    apiStatus.value = apiError(error, 'Erro ao eliminar o projeto.');
+  }
+}
+
 /********************************************************************************************************* NAVIGATION */
 
 function goToProjectsList() {
@@ -937,7 +982,10 @@ const calculatedChangedFields = ref<Set<string>>(new Set());
 function recalculateProjectTotals(): void {
   const categories = workCategories.value.map((row) => row.entity);
 
-  const totalDirectCostMaterials = categories.reduce((total, category) => total + (category.directCostMaterials ?? 0), 0);
+  const totalDirectCostMaterials = categories.reduce(
+    (total, category) => total + (category.directCostMaterials ?? 0),
+    0,
+  );
 
   const totalDirectCostLabor = categories.reduce((total, category) => total + (category.directCostLabor ?? 0), 0);
 
